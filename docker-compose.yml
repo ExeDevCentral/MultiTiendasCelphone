@@ -1,0 +1,96 @@
+services:
+  # Proxy / Web Server Gateway
+  nginx:
+    build:
+      context: .
+      dockerfile: ./docker/nginx/Dockerfile
+    ports:
+      - "80:80"
+    volumes:
+      - ./src/backend:/var/www/backend
+      - ./src/frontend/dist:/var/www/frontend
+    depends_on:
+      - backend
+    networks:
+      - pos_network
+    restart: always
+
+  # Backend API (Laravel)
+  backend:
+    build:
+      context: .
+      dockerfile: ./docker/php/Dockerfile
+    volumes:
+      - ./src/backend:/var/www/backend
+    environment:
+      APP_ENV: local
+      APP_DEBUG: 'true'
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: multi_pos_db
+      DB_USERNAME: pos_user
+      DB_PASSWORD: pos_secure_password
+      CACHE_DRIVER: redis
+      SESSION_DRIVER: redis
+      QUEUE_CONNECTION: redis
+      REDIS_HOST: redis
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - pos_network
+    restart: always
+
+  # Database
+  mysql:
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_DATABASE: multi_pos_db
+      MYSQL_USER: pos_user
+      MYSQL_PASSWORD: pos_secure_password
+      MYSQL_ROOT_PASSWORD: root_secure_password
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "33066:3306" # Exposed for local tools (Heidi/DBeaver)
+    networks:
+      - pos_network
+    restart: always
+
+  # Cache & Queues
+  redis:
+    image: redis:alpine
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    networks:
+      - pos_network
+    restart: always
+
+  # Frontend (Dev Server for local dev, usually managed outside for hot-reload or mapped)
+  # For production-like consistency we build and serve static via Nginx, 
+  # BUT for development we often want Node running. 
+  # Let's keep node separate or use a specialized container if requested. 
+  # For this setup: We will build locally or use a node container to 'npm run dev' if needed.
+  # Let's include a node service for tooling.
+  node:
+    image: node:20-alpine
+    working_dir: /var/www/frontend
+    volumes:
+      - ./src/frontend:/var/www/frontend
+    command: npm run dev -- --host
+    ports:
+      - "5173:5173"
+    networks:
+      - pos_network
+    restart: always       
+
+networks:
+  pos_network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+  redis_data:

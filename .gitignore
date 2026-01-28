@@ -1,0 +1,32 @@
+# Dependencies
+/src/backend/vendor
+/src/frontend/node_modules
+
+# Environment
+/src/backend/.env
+/src/backend/.env.backup
+/src/frontend/.env
+/src/frontend/.env.local
+
+# IDEs & System
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Laravel
+/src/backend/storage/*.key
+/src/backend/storage/logs/
+/src/backend/storage/framework/cache/
+/src/backend/storage/framework/sessions/
+/src/backend/storage/framework/testing/
+/src/backend/storage/framework/views/
+/src/backend/public/hot
+/src/backend/public/storage
+
+# Frontend
+/src/frontend/dist
+/src/frontend/stats.html
+
+# Docker
+.data/
