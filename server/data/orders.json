@@ -1,0 +1,61 @@
+[
+  {
+    "id": "ORD-7821",
+    "storeId": "store-celstore-premium",
+    "customer": {
+      "name": "Valentina Gómez",
+      "email": "valentina@example.com",
+      "phone": "+5491144332211",
+      "address": "Av. Santa Fe 3200, CABA"
+    },
+    "items": [
+      {
+        "productId": "prod-iphone-16-pro-max",
+        "name": "iPhone 16 Pro Max",
+        "color": "Titanio Natural",
+        "storage": "256 GB",
+        "price": 1399,
+        "quantity": 1
+      },
+      {
+        "productId": "acc-carbon-fiber-case",
+        "name": "Funda Blindada Fibra de Carbono Aeroespacial",
+        "price": 29,
+        "quantity": 1
+      }
+    ],
+    "total": 1428,
+    "status": "Entregado",
+    "date": "2026-08-25T14:20:00Z",
+    "paymentMethod": "Apple Pay"
+  },
+  {
+    "id": "ORD-7822",
+    "storeId": "store-retromobile",
+    "customer": {
+      "name": "Marcos Rossi",
+      "email": "marcos.rossi@example.com",
+      "phone": "+5491188776655",
+      "address": "Calle Corrientes 1540, Rosario"
+    },
+    "items": [
+      {
+        "productId": "prod-motorola-razr-v3",
+        "name": "Motorola RAZR V3 Clamshell",
+        "color": "Plata Metálico Satinado",
+        "price": 149,
+        "quantity": 1
+      },
+      {
+        "productId": "acc-razr-leather-holster",
+        "name": "Funda Vintage de Cuero con Clip para Cinturón Moto RAZR",
+        "price": 24,
+        "quantity": 1
+      }
+    ],
+    "total": 173,
+    "status": "En Preparación",
+    "date": "2026-08-27T10:15:00Z",
+    "paymentMethod": "WhatsApp Directo"
+  }
+]

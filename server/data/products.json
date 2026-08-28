@@ -1,0 +1,636 @@
+[
+  {
+    "id": "prod-iphone-16-pro-max",
+    "storeId": "store-celstore-premium",
+    "name": "iPhone 16 Pro Max",
+    "brand": "Apple",
+    "type": "phone",
+    "modelYear": 2024,
+    "generationCategory": "last_2_years",
+    "price": 1399,
+    "originalPrice": 1499,
+    "stock": 14,
+    "rating": 4.95,
+    "reviewCount": 342,
+    "condition": "Nuevo Sellado con Garantía Apple 1 Año",
+    "tagline": "Titanio Grado 5. Cámara de 48 MP Fusion y Chip A18 Pro.",
+    "model3dType": "modern_flagship",
+    "images": [
+      "https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=800&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=800&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?w=800&auto=format&fit=crop&q=80"
+    ],
+    "colors": [
+      { "name": "Titanio Natural", "hex": "#9e9689", "threeHex": "#8e867b" },
+      { "name": "Titanio Negro Espacial", "hex": "#2c2c2e", "threeHex": "#1c1c1e" },
+      { "name": "Titanio Blanco Desierto", "hex": "#d6cec2", "threeHex": "#c8beaf" },
+      { "name": "Titanio Azul Profundo", "hex": "#2e3a4e", "threeHex": "#202c40" }
+    ],
+    "storageOptions": ["256 GB", "512 GB", "1 TB"],
+    "specs": {
+      "screen": "Super Retina XDR OLED 6.9\" 120Hz ProMotion",
+      "processor": "Apple A18 Pro (3nm de 2da generación)",
+      "ram": "8 GB LPDDR5X",
+      "storage": "256 GB NVMe",
+      "battery": "4685 mAh (Hasta 33 horas de reproducción de video)",
+      "camera": "Triple Pro 48MP Principal + 48MP Ultra Gran Angular + 12MP Teleobjetivo 5x Óptico",
+      "os": "iOS 18 con Apple Intelligence",
+      "weight": "227 g",
+      "connectivity": "5G, Wi-Fi 7, Bluetooth 5.3, USB-C 3.2 10Gbps"
+    },
+    "solutions": [
+      {
+        "id": "sol-1",
+        "title": "Producción de Cine y Redes en tu Bolsillo",
+        "badge": "Creadores & Fotografía",
+        "icon": "Camera",
+        "description": "Graba en 4K Dolby Vision a 120 fps y ProRes Log directo a SSD externo vía USB-C. No necesitas cámaras réflex pesadas ni equipos de miles de dólares."
+      },
+      {
+        "id": "sol-2",
+        "title": "Batería que Aguanta tu Jornada Más Larga",
+        "badge": "Autonomía Extrema",
+        "icon": "Zap",
+        "description": "Sal de casa a las 7 AM, atiende llamadas, edita video, usa GPS y llega a la noche con más del 35% restante sin depender de enchufes."
+      },
+      {
+        "id": "sol-3",
+        "title": "Titanio Ultraliviano y Resistencia Extrema",
+        "badge": "Durabilidad Premium",
+        "icon": "ShieldCheck",
+        "description": "Estructura interna de aluminio 100% reciclado y chasis de titanio grado aeroespacial que disipa el calor un 20% mejor y resiste caídas."
+      },
+      {
+        "id": "sol-4",
+        "title": "Inteligencia Artificial Privada al Instante",
+        "badge": "Productividad",
+        "icon": "Cpu",
+        "description": "Resume correos largos en un segundo, retoca fotos eliminando objetos con un toque y transcribe reuniones en tiempo real."
+      }
+    ],
+    "isFeatured": true,
+    "tags": ["Destacado", "Último Lanzamiento", "Apple", "Top Ventas"]
+  },
+  {
+    "id": "prod-galaxy-s25-ultra",
+    "storeId": "store-celstore-premium",
+    "name": "Samsung Galaxy S25 Ultra",
+    "brand": "Samsung",
+    "type": "phone",
+    "modelYear": 2025,
+    "generationCategory": "last_2_years",
+    "price": 1349,
+    "originalPrice": 1449,
+    "stock": 9,
+    "rating": 4.92,
+    "reviewCount": 198,
+    "condition": "Nuevo Sellado con S-Pen Integrado",
+    "tagline": "Galaxy AI de última generación, sensor de 200 MP y Snapdragon 8 Elite.",
+    "model3dType": "modern_flagship",
+    "images": [
+      "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=800&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1580910051074-3eb694886505?w=800&auto=format&fit=crop&q=80"
+    ],
+    "colors": [
+      { "name": "Titanium Gray", "hex": "#6b6f75", "threeHex": "#575b61" },
+      { "name": "Titanium Black", "hex": "#1e2124", "threeHex": "#141618" },
+      { "name": "Titanium Jade Green", "hex": "#3d5a53", "threeHex": "#2e4842" },
+      { "name": "Titanium Silver Blue", "hex": "#7d93a6", "threeHex": "#667d91" }
+    ],
+    "storageOptions": ["256 GB", "512 GB", "1 TB"],
+    "specs": {
+      "screen": "Dynamic AMOLED 2X 6.86\" QHD+ 120Hz Anti-Reflectante",
+      "processor": "Qualcomm Snapdragon 8 Elite for Galaxy",
+      "ram": "12 GB / 16 GB LPDDR5X",
+      "storage": "512 GB UFS 4.0",
+      "battery": "5000 mAh (Carga ultra rápida 45W)",
+      "camera": "Cuádruple 200MP + 50MP Periscopio 5x + 50MP Ultra Gran Angular + 10MP Teleobjetivo",
+      "os": "One UI 7 (Android 15) con 7 años de actualizaciones",
+      "weight": "219 g",
+      "connectivity": "5G SA/NSA, Wi-Fi 7, S-Pen Bluetooth"
+    },
+    "solutions": [
+      {
+        "id": "sol-s25-1",
+        "title": "Firma Documentos y Diseña en Cualquier Lugar",
+        "badge": "Productividad Total",
+        "icon": "PenTool",
+        "description": "El S-Pen integrado te permite firmar contratos, tomar notas a mano alzada convertidas a texto y recortar imágenes con precisión milimétrica."
+      },
+      {
+        "id": "sol-s25-2",
+        "title": "Zoom Óptico Espacial 100x de Nitidez Extrema",
+        "badge": "Super Zoom",
+        "icon": "Eye",
+        "description": "Captura el escenario en recitales desde la última fila con claridad cristalina gracias al sensor de 200MP y procesado neural en vivo."
+      },
+      {
+        "id": "sol-s25-3",
+        "title": "Traducción y Resumen en Vivo sin Conexión",
+        "badge": "Galaxy AI",
+        "icon": "Globe",
+        "description": "Habla por teléfono con alguien en Tokio o Berlín y escucha la traducción simultánea en tiempo real sin revelar tus datos a servidores."
+      }
+    ],
+    "isFeatured": true,
+    "tags": ["Último Lanzamiento", "Samsung", "S-Pen", "Zoom 100x"]
+  },
+  {
+    "id": "prod-google-pixel-9-pro",
+    "storeId": "store-celstore-premium",
+    "name": "Google Pixel 9 Pro XL",
+    "brand": "Google",
+    "type": "phone",
+    "modelYear": 2024,
+    "generationCategory": "last_2_years",
+    "price": 1099,
+    "originalPrice": 1199,
+    "stock": 8,
+    "rating": 4.88,
+    "reviewCount": 112,
+    "condition": "Nuevo Sellado con Google Gemini Advanced",
+    "tagline": "La mejor cámara con IA computacional del mundo y Android puro.",
+    "model3dType": "modern_flagship",
+    "images": [
+      "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=800&auto=format&fit=crop&q=80"
+    ],
+    "colors": [
+      { "name": "Obsidian", "hex": "#1a1a1a", "threeHex": "#121212" },
+      { "name": "Porcelain", "hex": "#ece8e1", "threeHex": "#d9d4cb" },
+      { "name": "Hazel", "hex": "#6c7062", "threeHex": "#575b4f" },
+      { "name": "Rose Quartz", "hex": "#d6b5b5", "threeHex": "#be9b9b" }
+    ],
+    "storageOptions": ["128 GB", "256 GB", "512 GB"],
+    "specs": {
+      "screen": "Super Actua LTPO OLED 6.8\" 3000 nits pico",
+      "processor": "Google Tensor G4 con coprocesador Titan M2",
+      "ram": "16 GB",
+      "storage": "256 GB",
+      "battery": "5060 mAh",
+      "camera": "50MP Principal + 48MP Ultra Gran Angular con Macro + 48MP Telefoto 5x",
+      "os": "Android 15 Puro",
+      "weight": "221 g",
+      "connectivity": "5G, Wi-Fi 7, UWB"
+    },
+    "solutions": [
+      {
+        "id": "sol-pixel-1",
+        "title": "Nunca Más una Foto Arruinada",
+        "badge": "IA de Foto Mágica",
+        "icon": "Sparkles",
+        "description": "Función 'Best Take' combina las mejores expresiones de todos en fotos grupales y el 'Editor Mágico' reinventa la iluminación a tu gusto."
+      },
+      {
+        "id": "sol-pixel-2",
+        "title": "Pantalla Ultra Brillante Bajo el Sol Directo",
+        "badge": "Visibilidad Extrema",
+        "icon": "Sun",
+        "description": "3000 nits de brillo pico para que leas mensajes, mapas y veas contenido en la playa sin forzar la vista."
+      }
+    ],
+    "isFeatured": false,
+    "tags": ["Último Lanzamiento", "Google", "Android Puro", "IA"]
+  },
+  {
+    "id": "prod-nokia-3310-legend",
+    "storeId": "store-retromobile",
+    "name": "Nokia 3310 'The Indestructible Legend'",
+    "brand": "Nokia",
+    "type": "phone",
+    "modelYear": 2000,
+    "generationCategory": "vintage_classic",
+    "price": 89,
+    "originalPrice": 120,
+    "stock": 25,
+    "rating": 4.99,
+    "reviewCount": 850,
+    "condition": "Restaurado Grado Coleccionista / Batería Nueva 100%",
+    "tagline": "El teléfono más resistente de la historia humana. Snake II preinstalado.",
+    "model3dType": "vintage_bar",
+    "images": [
+      "https://images.unsplash.com/photo-1580910051074-3eb694886505?w=800&auto=format&fit=crop&q=80"
+    ],
+    "colors": [
+      { "name": "Azul Marino Clásico", "hex": "#1b2838", "threeHex": "#141e2b" },
+      { "name": "Gris Grafito Original", "hex": "#545b62", "threeHex": "#43494e" },
+      { "name": "Amarillo Solar", "hex": "#eab308", "threeHex": "#ca9a07" }
+    ],
+    "storageOptions": ["Memoria SIM"],
+    "specs": {
+      "screen": "Monocromática 84x48 píxeles con retroiluminación verde esmeralda",
+      "processor": "Arquitectura MAD2",
+      "ram": "Interna para 250 contactos",
+      "storage": "Timbres monofónicos + Compositor",
+      "battery": "900 mAh NiMH (Hasta 260 horas de espera / 12 días)",
+      "camera": "Sin cámara (Cero distracciones)",
+      "os": "Nokia OS Serie 20",
+      "weight": "133 g",
+      "connectivity": "GSM 900/1800 MHz"
+    },
+    "solutions": [
+      {
+        "id": "sol-nokia-1",
+        "title": "Detox Digital y Paz Mental Garantizada",
+        "badge": "Salud Mental",
+        "icon": "HeartHandshake",
+        "description": "Sin notificaciones adictivas, sin algoritmos ni redes sociales. Solo llamadas claras, SMS y el juego de la víbora Snake II."
+      },
+      {
+        "id": "sol-nokia-2",
+        "title": "Batería para Semanas Enteras",
+        "badge": "Autonomía Legendaria",
+        "icon": "BatteryCharging",
+        "description": "Cárgalo el primer día de tus vacaciones o expedición de camping y olvídate del cargador hasta que vuelvas a tu casa."
+      },
+      {
+        "id": "sol-nokia-3",
+        "title": "Resistencia a Golpes, Caídas y Asfalto",
+        "badge": "Indestructible",
+        "icon": "ShieldAlert",
+        "description": "Carcasas intercambiables Xpress-on. Si cae de 2 metros se desarma la tapa, la encajas y sigue funcionando como el primer día."
+      }
+    ],
+    "isFeatured": true,
+    "tags": ["Vintage", "Snake II", "Indestructible", "Colección", "Detox"]
+  },
+  {
+    "id": "prod-motorola-razr-v3",
+    "storeId": "store-retromobile",
+    "name": "Motorola RAZR V3 Clamshell",
+    "brand": "Motorola",
+    "type": "phone",
+    "modelYear": 2004,
+    "generationCategory": "vintage_classic",
+    "price": 149,
+    "originalPrice": 180,
+    "stock": 18,
+    "rating": 4.96,
+    "reviewCount": 420,
+    "condition": "Restaurado con Bisagra de Aluminio Impecable",
+    "tagline": "El ícono de estilo de los 2000s. Cortar la llamada con un flap nunca se sintió tan bien.",
+    "model3dType": "vintage_flip",
+    "images": [
+      "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&auto=format&fit=crop&q=80"
+    ],
+    "colors": [
+      { "name": "Plata Metálico Satinado", "hex": "#c0c0c0", "threeHex": "#a8a8a8" },
+      { "name": "Rosa Hot Pink Glam", "hex": "#e91e63", "threeHex": "#c2185b" },
+      { "name": "Negro Mate Stealth", "hex": "#212121", "threeHex": "#171717" }
+    ],
+    "storageOptions": ["5.5 MB Internos"],
+    "specs": {
+      "screen": "Principal TFT 2.2\" 256k colores + Secundaria externa CSTN",
+      "processor": "ARM7",
+      "ram": "5.5 MB",
+      "storage": "5.5 MB",
+      "battery": "680 mAh Li-Ion (Hasta 280 horas en espera)",
+      "camera": "VGA 640x480 píxeles con zoom digital 4x",
+      "os": "Motorola Synergy",
+      "weight": "95 g de puro magnesio y aluminio",
+      "connectivity": "GSM Quad-band, Bluetooth 1.2, Mini-USB"
+    },
+    "solutions": [
+      {
+        "id": "sol-razr-1",
+        "title": "La Satisfacción Insuperable de Cerrar el Flip",
+        "badge": "Estilo Retro",
+        "icon": "Sparkles",
+        "description": "Termina cualquier conversación cerrando la tapa metálica con el chasquido más placentero del diseño industrial del siglo XXI."
+      },
+      {
+        "id": "sol-razr-2",
+        "title": "Diseño Ultra Delgado que Cabe en Cualquier Bolsillo",
+        "badge": "Elegancia 95g",
+        "icon": "Feather",
+        "description": "Cuerpo de aleación de magnesio y aluminio de apenas 13.9 mm de grosor con teclado cortado a láser electroluminiscente."
+      }
+    ],
+    "isFeatured": true,
+    "tags": ["Vintage", "Flip Phone", "Moda 2000s", "Motorola", "Icono"]
+  },
+  {
+    "id": "prod-sony-ericsson-w810i",
+    "storeId": "store-retromobile",
+    "name": "Sony Ericsson Walkman W810i",
+    "brand": "Sony Ericsson",
+    "type": "phone",
+    "modelYear": 2006,
+    "generationCategory": "vintage_classic",
+    "price": 129,
+    "originalPrice": 160,
+    "stock": 12,
+    "rating": 4.93,
+    "reviewCount": 310,
+    "condition": "Grado A Restaurado / Incluye Memoria Memory Stick 512MB",
+    "tagline": "El rey de la música portátil con altavoz estéreo Walkman y cámara autofocus de 2 MP.",
+    "model3dType": "vintage_bar",
+    "images": [
+      "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=800&auto=format&fit=crop&q=80"
+    ],
+    "colors": [
+      { "name": "Negro Naranja Walkman", "hex": "#111111", "threeHex": "#0d0d0d" },
+      { "name": "Blanco Puro Walkman", "hex": "#f5f5f5", "threeHex": "#e0e0e0" }
+    ],
+    "storageOptions": ["Memory Stick PRO Duo 512MB / 2GB"],
+    "specs": {
+      "screen": "TFT 1.9\" 176x220 píxeles 262k colores",
+      "processor": "Sony Walkman Audio DSP",
+      "ram": "20 MB Interna",
+      "storage": "Ranura Memory Stick expandible",
+      "battery": "900 mAh (Hasta 30 horas de reproducción Walkman continua)",
+      "camera": "2.0 MP con Autoenfoque y Flash LED dual",
+      "os": "Sony Ericsson OSE",
+      "weight": "99 g",
+      "connectivity": "GSM, EDGE, Bluetooth 2.0, Infrarrojos (IrDA)"
+    },
+    "solutions": [
+      {
+        "id": "sol-w810i-1",
+        "title": "Audio de Calidad de Estudio Walkman Sin Distracciones",
+        "badge": "Amantes de la Música",
+        "icon": "Headphones",
+        "description": "Ecualizador Mega Bass®, botón directo Walkman y decodificador MP3/AAC de alta fidelidad sin requerir suscripciones mensuales."
+      },
+      {
+        "id": "sol-w810i-2",
+        "title": "Cámara Clásica con Enfoque Real y Flash LED",
+        "badge": "Fotografía Retro",
+        "icon": "Camera",
+        "description": "Saca fotos con la auténtica estética cálida de los 2000s gracias a su lente con autofocus real de vidrio."
+      }
+    ],
+    "isFeatured": false,
+    "tags": ["Vintage", "Walkman", "Música MP3", "Sony", "Retro"]
+  },
+  {
+    "id": "prod-blackberry-bold-9900",
+    "storeId": "store-retromobile",
+    "name": "BlackBerry Bold 9900 Touch & Type",
+    "brand": "BlackBerry",
+    "type": "phone",
+    "modelYear": 2011,
+    "generationCategory": "vintage_classic",
+    "price": 139,
+    "originalPrice": 170,
+    "stock": 15,
+    "rating": 4.91,
+    "reviewCount": 260,
+    "condition": "Teclado QWERTY Físico Nuevo / Chasis Acero Inoxidable",
+    "tagline": "El mejor teclado físico jamás creado por la humanidad. BBM y máxima elegancia ejecutiva.",
+    "model3dType": "vintage_bar",
+    "images": [
+      "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&auto=format&fit=crop&q=80"
+    ],
+    "colors": [
+      { "name": "Negro Carbón & Acero", "hex": "#1f2326", "threeHex": "#16181a" },
+      { "name": "Blanco Polar & Cromo", "hex": "#f0f2f5", "threeHex": "#dadde2" }
+    ],
+    "storageOptions": ["8 GB Internos + MicroSD"],
+    "specs": {
+      "screen": "Pantalla Táctil Capacitiva 2.8\" 640x480 (287 ppi) + Teclado QWERTY completo",
+      "processor": "1.2 GHz QC 8655",
+      "ram": "768 MB",
+      "storage": "8 GB eMMC",
+      "battery": "1230 mAh",
+      "camera": "5 MP con Flash LED y Grabación 720p HD",
+      "os": "BlackBerry 7.1 OS",
+      "weight": "130 g con marco de acero forjado",
+      "connectivity": "3G HSPA+, Wi-Fi dual-band, NFC, Trackpad óptico"
+    },
+    "solutions": [
+      {
+        "id": "sol-bb-1",
+        "title": "Escribe Textos y Correos a la Velocidad del Pensamiento",
+        "badge": "Teclado Táctil Físico",
+        "icon": "Keyboard",
+        "description": "Las teclas esculpidas y curvadas del Bold 9900 te permiten escribir sin mirar la pantalla con 0% de errores de tipeo."
+      },
+      {
+        "id": "sol-bb-2",
+        "title": "Elegancia Ejecutiva en Acero Inoxidable",
+        "badge": "Diseño Icónico",
+        "icon": "Briefcase",
+        "description": "Bisel de acero pulido y tapa trasera de compuesto de fibra de vidrio texturizada con el icónico LED rojo de alertas."
+      }
+    ],
+    "isFeatured": false,
+    "tags": ["Vintage", "BlackBerry", "QWERTY", "Negocios", "Colección"]
+  },
+  {
+    "id": "prod-iphone-14-pro",
+    "storeId": "store-technova",
+    "name": "iPhone 14 Pro",
+    "brand": "Apple",
+    "type": "phone",
+    "modelYear": 2022,
+    "generationCategory": "recent_gen",
+    "price": 799,
+    "originalPrice": 999,
+    "stock": 16,
+    "rating": 4.89,
+    "reviewCount": 410,
+    "condition": "Reacondicionado Grado A+ Excelente",
+    "tagline": "Dynamic Island, Cámara de 48 MP y Pantalla Siempre Activa.",
+    "model3dType": "modern_flagship",
+    "images": [
+      "https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=800&auto=format&fit=crop&q=80"
+    ],
+    "colors": [
+      { "name": "Morado Oscuro Deep Purple", "hex": "#4b3d54", "threeHex": "#382d40" },
+      { "name": "Negro Espacial Space Black", "hex": "#272528", "threeHex": "#181719" },
+      { "name": "Oro Gold", "hex": "#f4e8ce", "threeHex": "#e0d3b6" }
+    ],
+    "storageOptions": ["128 GB", "256 GB"],
+    "specs": {
+      "screen": "Super Retina XDR OLED 6.1\" 120Hz ProMotion",
+      "processor": "Apple A16 Bionic (4nm)",
+      "ram": "6 GB",
+      "storage": "128 GB / 256 GB",
+      "battery": "3200 mAh",
+      "camera": "48MP + 12MP Ultra Gran Angular + 12MP Tele 3x",
+      "os": "iOS 18 Actualizable",
+      "weight": "206 g",
+      "connectivity": "5G, Wi-Fi 6, Lightning"
+    },
+    "solutions": [
+      {
+        "id": "sol-14p-1",
+        "title": "Experiencia Pro de Gama Alta a la Mitad de Precio",
+        "badge": "Mejor Relación Valor/Precio",
+        "icon": "Award",
+        "description": "Obtén la Dynamic Island, la pantalla de 120Hz fluida y las cámaras Pro ahorrando cientos de dólares frente al último modelo."
+      }
+    ],
+    "isFeatured": false,
+    "tags": ["Generación Reciente", "Apple", "Gama Alta", "Reacondicionado"]
+  },
+  {
+    "id": "prod-xiaomi-14t-pro",
+    "storeId": "store-technova",
+    "name": "Xiaomi 14T Pro Leica",
+    "brand": "Xiaomi",
+    "type": "phone",
+    "modelYear": 2024,
+    "generationCategory": "last_2_years",
+    "price": 699,
+    "originalPrice": 799,
+    "stock": 20,
+    "rating": 4.87,
+    "reviewCount": 140,
+    "condition": "Nuevo Sellado con Óptica Profesional Leica",
+    "tagline": "Lentes Leica Summilux, Carga Hiperrápida 120W y Chip Dimensity 9300+.",
+    "model3dType": "modern_flagship",
+    "images": [
+      "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=800&auto=format&fit=crop&q=80"
+    ],
+    "colors": [
+      { "name": "Titan Gray", "hex": "#6d7278", "threeHex": "#575b60" },
+      { "name": "Titan Blue", "hex": "#304257", "threeHex": "#233345" },
+      { "name": "Titan Black", "hex": "#1b1d20", "threeHex": "#121316" }
+    ],
+    "storageOptions": ["256 GB", "512 GB"],
+    "specs": {
+      "screen": "AMOLED CrystalRes 6.67\" 144Hz 4000 nits",
+      "processor": "MediaTek Dimensity 9300+ (4nm)",
+      "ram": "12 GB LPDDR5X",
+      "storage": "512 GB UFS 4.0",
+      "battery": "5000 mAh (Carga 100% en 19 minutos con 120W HyperCharge)",
+      "camera": "Triple 50MP Leica Light Fusion 900 + 50MP Teleobjetivo + 12MP Gran Angular",
+      "os": "Xiaomi HyperOS",
+      "weight": "209 g",
+      "connectivity": "5G, Wi-Fi 7, Carga Inalámbrica 50W"
+    },
+    "solutions": [
+      {
+        "id": "sol-xi-1",
+        "title": "Batería Completa en el Tiempo que te Tomas un Café",
+        "badge": "Carga 120W",
+        "icon": "Zap",
+        "description": "De 0% al 100% en apenas 19 minutos con el cargador HyperCharge incluido. Olvídate de dejar el celular cargando toda la noche."
+      },
+      {
+        "id": "sol-xi-2",
+        "title": "Look Fotográfico Profesional Leica Auténtico",
+        "badge": "Lentes Leica",
+        "icon": "Camera",
+        "description": "Perfiles Leica Authentic y Leica Vibrant para tonos de piel naturales y contraste cinematográfico con efecto bokeh de ensueño."
+      }
+    ],
+    "isFeatured": true,
+    "tags": ["Últimos 2 Años", "Xiaomi", "Leica", "Carga 120W"]
+  },
+  {
+    "id": "acc-magsafe-charger-65w",
+    "storeId": "store-technova",
+    "name": "Cargador Rápido GaN 65W + Base MagSafe 3-en-1",
+    "brand": "PowerCore Tech",
+    "type": "accessory",
+    "category": "Cargadores & Energía",
+    "price": 49,
+    "originalPrice": 69,
+    "stock": 45,
+    "rating": 4.94,
+    "reviewCount": 180,
+    "images": [
+      "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=600&auto=format&fit=crop&q=80"
+    ],
+    "description": "Carga simultáneamente tu celular, reloj inteligente y auriculares inalámbricos con tecnología GaN ultra compacta y magnética segura.",
+    "compatibility": "Compatible con iPhone 12 en adelante, Galaxy S23/S24/S25 y dispositivos Qi2.",
+    "isFeatured": true
+  },
+  {
+    "id": "acc-carbon-fiber-case",
+    "storeId": "store-technova",
+    "name": "Funda Blindada Fibra de Carbono Aeroespacial",
+    "brand": "ArmorShield",
+    "type": "accessory",
+    "category": "Fundas & Protección",
+    "price": 29,
+    "originalPrice": 39,
+    "stock": 60,
+    "rating": 4.91,
+    "reviewCount": 210,
+    "images": [
+      "https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=600&auto=format&fit=crop&q=80"
+    ],
+    "description": "Apenas 0.6mm de espesor con fibra de aramida 600D. Protección militar contra impactos sin añadir peso ni volumen.",
+    "compatibility": "Modelos iPhone 14/15/16 Pro y Galaxy S24/S25 Ultra.",
+    "isFeatured": true
+  },
+  {
+    "id": "acc-anc-earbuds-pro",
+    "storeId": "store-technova",
+    "name": "Auriculares Inalámbricos Pro con Cancelación Activa de Ruido",
+    "brand": "AcousticVibe",
+    "type": "accessory",
+    "category": "Audio & Auriculares",
+    "price": 79,
+    "originalPrice": 119,
+    "stock": 35,
+    "rating": 4.88,
+    "reviewCount": 165,
+    "images": [
+      "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=600&auto=format&fit=crop&q=80"
+    ],
+    "description": "Aislamiento de ruido de 45dB, modo transparencia espacial, audio Hi-Res LDAC y hasta 36 horas de autonomía con el estuche.",
+    "compatibility": "Bluetooth 5.3 universal (iOS, Android, Windows, Mac).",
+    "isFeatured": true
+  },
+  {
+    "id": "acc-vintage-nokia-charger",
+    "storeId": "store-retromobile",
+    "name": "Cargador Clásico Punta Fina 2mm Original Nokia",
+    "brand": "Nokia Classic",
+    "type": "accessory",
+    "category": "Cargadores & Vintage",
+    "price": 18,
+    "originalPrice": 25,
+    "stock": 30,
+    "rating": 4.98,
+    "reviewCount": 110,
+    "images": [
+      "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=600&auto=format&fit=crop&q=80"
+    ],
+    "description": "Transformador de pared original de aguja para teléfonos clásicos Nokia 3310, 1100, N95, E71 y modelos afines.",
+    "compatibility": "Nokia Series 20/30/40/60 con puerto de aguja.",
+    "isFeatured": true
+  },
+  {
+    "id": "acc-razr-leather-holster",
+    "storeId": "store-retromobile",
+    "name": "Funda Vintage de Cuero con Clip para Cinturón Moto RAZR",
+    "brand": "RetroHeritage",
+    "type": "accessory",
+    "category": "Fundas & Protección",
+    "price": 24,
+    "originalPrice": 32,
+    "stock": 22,
+    "rating": 4.96,
+    "reviewCount": 94,
+    "images": [
+      "https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=600&auto=format&fit=crop&q=80"
+    ],
+    "description": "Funda de cuero genuino estilo ejecutivo de los años 2000 con cierre magnético y clip giratorio de acero para cinturón.",
+    "compatibility": "Motorola RAZR V3, V3i, V3x, PEBL y clamshells clásicos.",
+    "isFeatured": true
+  },
+  {
+    "id": "acc-tempered-glass-9h",
+    "storeId": "store-technova",
+    "name": "Pack x2 Cristal Templado 9H Sapphire Anti-Espía + Marco Instalador",
+    "brand": "GlassShield Pro",
+    "type": "accessory",
+    "category": "Fundas & Protección",
+    "price": 16,
+    "originalPrice": 22,
+    "stock": 80,
+    "rating": 4.93,
+    "reviewCount": 240,
+    "images": [
+      "https://images.unsplash.com/photo-1580910051074-3eb694886505?w=600&auto=format&fit=crop&q=80"
+    ],
+    "description": "Privacidad lateral de 28 grados para que nadie vea tu pantalla en el transporte público, con dureza de diamante 9H.",
+    "compatibility": "Modelos iPhone 14/15/16 y Galaxy S23/S24/S25.",
+    "isFeatured": false
+  }
+]
