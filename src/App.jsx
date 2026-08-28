@@ -1,13 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense, lazy } from 'react';
 import { StoreProvider, useStore } from './context/StoreContext';
-import { CartProvider } from './context/CartContext';
+import { CartProvider, useCart } from './context/CartContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 import { CartDrawer } from './components/CartDrawer';
 import { CheckoutModal } from './components/CheckoutModal';
 import { ComparisonModal } from './components/ComparisonModal';
-import { PhoneViewer3D } from './components/PhoneViewer3D';
+import { WebGLErrorBoundary } from './components/WebGLErrorBoundary';
+import { AlertCircle, ShoppingBag, X, ArrowRight, Sparkles } from 'lucide-react';
+
+// Lazy load 3D Studio for modal preview
+const PhoneViewer3D = lazy(() =>
+  import('./components/PhoneViewer3D').then(m => ({ default: m.PhoneViewer3D }))
+);
 
 // Views
 import { Home } from './views/Home';
@@ -16,9 +22,7 @@ import { ProductDetail } from './views/ProductDetail';
 import { AccessoriesShop } from './views/AccessoriesShop';
 import { StoreSelector } from './views/StoreSelector';
 import { AdminLogin } from './views/AdminLogin';
-import { AdminDashboard } from './views/AdminDashboard';
-import { X, Sparkles, Eye, ShoppingBag } from 'lucide-react';
-import { useCart } from './context/CartContext';
+import { AdminDashboard } from './views/admin/AdminDashboard';
 
 const AppContent = () => {
   const [currentView, setCurrentView] = useState('home');
@@ -29,7 +33,8 @@ const AppContent = () => {
   const [preview3DProduct, setPreview3DProduct] = useState(null);
   const [preview3DColor, setPreview3DColor] = useState(null);
 
-  const { addToCart } = useCart();
+  const { addToCart, crossStoreConflict, resolveCrossStoreConflict } = useCart();
+  const { stores } = useStore();
 
   const handleNavigate = (view, params = {}) => {
     setCurrentView(view);
@@ -47,6 +52,10 @@ const AppContent = () => {
     setPreview3DProduct(product);
     setPreview3DColor(color || product.colors?.[0] || { name: 'Titanio Natural', hex: '#8e867b' });
   };
+
+  // Find store names for cross store conflict
+  const currentConflictStore = stores.find(s => s.id === crossStoreConflict?.currentStoreId);
+  const newConflictStore = stores.find(s => s.id === crossStoreConflict?.newStoreId);
 
   return (
     <div className="min-h-screen flex flex-col bg-neutral-950 text-neutral-100 selection:bg-blue-600 selection:text-white">
@@ -102,6 +111,48 @@ const AppContent = () => {
       <CheckoutModal />
       <ComparisonModal />
 
+      {/* MULTI-TENANT CART CONFLICT MODAL */}
+      {crossStoreConflict && (
+        <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4">
+          <div
+            onClick={() => resolveCrossStoreConflict(false)}
+            className="fixed inset-0 bg-black/80 backdrop-blur-md"
+          />
+
+          <div className="relative w-full max-w-md bg-neutral-950 border border-white/20 rounded-3xl p-6 shadow-2xl text-white z-10 space-y-4">
+            <div className="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center mx-auto">
+              <AlertCircle className="w-6 h-6" />
+            </div>
+
+            <div className="text-center space-y-1">
+              <h3 className="text-lg font-bold">Cambio de Sucursal en la Bolsa</h3>
+              <p className="text-xs text-neutral-400 leading-relaxed">
+                Tu bolsa de compras actualmente contiene artículos de <strong className="text-white">{currentConflictStore?.name || 'otra sucursal'}</strong>.
+              </p>
+              <p className="text-xs text-neutral-300">
+                ¿Deseas vaciar tu bolsa actual para iniciar un nuevo pedido en <strong className="text-blue-400">{newConflictStore?.name || 'esta sucursal'}</strong>?
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-2 pt-2">
+              <button
+                onClick={() => resolveCrossStoreConflict(true)}
+                className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-all shadow-md shadow-blue-600/30"
+              >
+                Vaciar Bolsa e Iniciar Compra en {newConflictStore?.name || 'Nueva Tienda'}
+              </button>
+
+              <button
+                onClick={() => resolveCrossStoreConflict(false)}
+                className="w-full py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-neutral-400 hover:text-white text-xs font-semibold transition-colors"
+              >
+                Conservar mi Bolsa Actual
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Global Quick 3D Preview Modal */}
       {preview3DProduct && (
         <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4">
@@ -127,14 +178,25 @@ const AppContent = () => {
               </button>
             </div>
 
-            <PhoneViewer3D
-              modelType={preview3DProduct.model3dType || 'modern_flagship'}
-              selectedColor={preview3DColor}
-              availableColors={preview3DProduct.colors || []}
-              onColorChange={(c) => setPreview3DColor(c)}
-              phoneName={preview3DProduct.name}
-              height="450px"
-            />
+            <WebGLErrorBoundary fallbackImages={preview3DProduct.images} height="450px">
+              <Suspense
+                fallback={
+                  <div className="h-[450px] w-full rounded-2xl glass-panel flex flex-col items-center justify-center gap-3">
+                    <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                    <p className="text-xs text-neutral-400 font-mono">Renderizando modelo 3D WebGL...</p>
+                  </div>
+                }
+              >
+                <PhoneViewer3D
+                  modelType={preview3DProduct.model3dType || 'modern_flagship'}
+                  selectedColor={preview3DColor}
+                  availableColors={preview3DProduct.colors || []}
+                  onColorChange={(c) => setPreview3DColor(c)}
+                  phoneName={preview3DProduct.name}
+                  height="450px"
+                />
+              </Suspense>
+            </WebGLErrorBoundary>
 
             <div className="flex items-center justify-between pt-2 border-t border-white/10">
               <div className="text-xl font-extrabold text-white">

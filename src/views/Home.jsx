@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense, lazy } from 'react';
 import {
   Sparkles,
   Zap,
@@ -14,10 +14,15 @@ import {
   Flame
 } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
-import { PhoneViewer3D } from '../components/PhoneViewer3D';
 import { GenerationFilter } from '../components/GenerationFilter';
 import { SolutionsBento } from '../components/SolutionsBento';
 import { ProductCard } from '../components/ProductCard';
+import { WebGLErrorBoundary } from '../components/WebGLErrorBoundary';
+
+// Lazy load 3D Studio to keep initial page load fast
+const PhoneViewer3D = lazy(() =>
+  import('../components/PhoneViewer3D').then(m => ({ default: m.PhoneViewer3D }))
+);
 
 export const Home = ({ onNavigate, onOpenDetail, onOpen3DModal }) => {
   const { stores, setActiveStore, filteredProducts, generationFilter, setGenerationFilter } = useStore();
@@ -174,16 +179,27 @@ export const Home = ({ onNavigate, onOpenDetail, onOpen3DModal }) => {
             </div>
           </div>
 
-          {/* Right Column: Interactive 3D Phone Studio */}
+          {/* Right Column: Interactive 3D Phone Studio with WebGL Error Boundary */}
           <div className="lg:col-span-6 relative z-10">
-            <PhoneViewer3D
-              modelType={heroModelType}
-              selectedColor={heroColor}
-              availableColors={heroModelType === 'modern_flagship' ? heroColors : vintageColors}
-              onColorChange={(c) => setHeroColor(c)}
-              phoneName={heroModelType === 'modern_flagship' ? 'iPhone 16 Pro Max 3D' : heroModelType === 'vintage_bar' ? 'Nokia 3310 3D' : 'RAZR V3 3D'}
-              height="500px"
-            />
+            <WebGLErrorBoundary height="500px">
+              <Suspense
+                fallback={
+                  <div className="h-[500px] w-full rounded-2xl glass-panel flex flex-col items-center justify-center gap-3">
+                    <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                    <p className="text-xs text-neutral-400 font-mono">Iniciando estudio 3D...</p>
+                  </div>
+                }
+              >
+                <PhoneViewer3D
+                  modelType={heroModelType}
+                  selectedColor={heroColor}
+                  availableColors={heroModelType === 'modern_flagship' ? heroColors : vintageColors}
+                  onColorChange={(c) => setHeroColor(c)}
+                  phoneName={heroModelType === 'modern_flagship' ? 'iPhone 16 Pro Max 3D' : heroModelType === 'vintage_bar' ? 'Nokia 3310 3D' : 'RAZR V3 3D'}
+                  height="500px"
+                />
+              </Suspense>
+            </WebGLErrorBoundary>
           </div>
         </div>
       </section>

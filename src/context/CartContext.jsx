@@ -14,18 +14,33 @@ export const CartProvider = ({ children }) => {
 
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [crossStoreConflict, setCrossStoreConflict] = useState(null); // { pendingProduct, pendingOptions, currentStoreName, newStoreName }
 
   useEffect(() => {
     localStorage.setItem('celstore_cart', JSON.stringify(items));
   }, [items]);
 
-  const addToCart = (product, options = {}) => {
+  // Current active store in cart
+  const cartStoreId = items.length > 0 ? items[0].storeId : null;
+
+  const addToCart = (product, options = {}, forceOverride = false) => {
     const {
       color = product.colors?.[0]?.name || 'Estándar',
       storage = product.storageOptions?.[0] || 'Base',
       quantity = 1,
       bundleDiscount = 0
     } = options;
+
+    // Multi-Tenant Isolation Check: Prevent mixing items from different stores
+    if (items.length > 0 && product.storeId && cartStoreId && product.storeId !== cartStoreId && !forceOverride) {
+      setCrossStoreConflict({
+        pendingProduct: product,
+        pendingOptions: options,
+        currentStoreId: cartStoreId,
+        newStoreId: product.storeId
+      });
+      return false;
+    }
 
     const cartItemId = `${product.id}-${color}-${storage}`;
 
@@ -60,6 +75,16 @@ export const CartProvider = ({ children }) => {
     });
 
     setIsCartOpen(true);
+    return true;
+  };
+
+  const resolveCrossStoreConflict = (acceptNewStore) => {
+    if (acceptNewStore && crossStoreConflict) {
+      // Clear previous store items and add new store product
+      setItems([]);
+      addToCart(crossStoreConflict.pendingProduct, crossStoreConflict.pendingOptions, true);
+    }
+    setCrossStoreConflict(null);
   };
 
   const removeFromCart = (cartItemId) => {
@@ -100,6 +125,7 @@ export const CartProvider = ({ children }) => {
     <CartContext.Provider
       value={{
         items,
+        cartStoreId,
         itemCount,
         subtotal,
         discountTotal,
@@ -109,6 +135,8 @@ export const CartProvider = ({ children }) => {
         setIsCartOpen,
         isCheckoutOpen,
         setIsCheckoutOpen,
+        crossStoreConflict,
+        resolveCrossStoreConflict,
         addToCart,
         removeFromCart,
         updateQuantity,

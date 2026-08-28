@@ -1,94 +1,115 @@
-# 📱 CelStore™ 3D — Plataforma E-Commerce Multi-Tienda de Celulares
+# 📱 CelStore™ 3D — Plataforma E-Commerce Multi-Tienda de Celulares (Production Ready)
 
-> **Ecosistema de comercio electrónico de celulares de alta gama con estética Apple SF Pro, visor 3D interactivo 360°, segmentación generacional (Últimos 2 Años vs Clásicos Vintage), storytelling orientado a soluciones para el usuario, mini-tienda de accesorios y panel de administración multi-tienda (multi-tenant) con login independiente por sucursal.**
-
----
-
-## 🌟 Características Principales
-
-### 1. 🚀 Segmentación Generacional Inteligente
-- **Últimos 2 Años (2024 - 2026)**: Buques insignia en Titanio grado aeroespacial (iPhone 16 Pro Max, Samsung Galaxy S25 Ultra, Google Pixel 9 Pro XL, Xiaomi 14T Pro).
-- **Generaciones Recientes (2020 - 2023)**: Opciones de alto rendimiento y mejor relación costo/beneficio (iPhone 14 Pro, etc.).
-- **Clásicos & Vintage Legends (1998 - 2012)**: Joyas de la telefonía para coleccionistas y detox digital (Nokia 3310 con Snake II, Motorola RAZR V3 Clamshell, Sony Ericsson Walkman W810i, BlackBerry Bold 9900 QWERTY).
-- **Línea de Tiempo Interactiva**: Recorrido visual por un cuarto de siglo de evolución móvil.
-
-### 2. 🎮 Visor 3D Interactivo 360° (Three.js PBR Studio)
-- Render 3D en tiempo real con iluminación physically-based:
-  - **Smartphone Moderno**: Acabados en Titanio Natural, Negro Espacial, Blanco Desierto y Azul Profundo con reflejos realistas en cámara triple de 48MP y pantalla OLED activa.
-  - **Nokia Barra Clásico**: Chasis retro con pantalla LCD verde retroiluminada y preview jugable del Snake II.
-  - **Motorola RAZR Flip**: Bisagra abatible de aluminio y pantallas duales.
-- Controles orbitales con mouse y táctil (girar 360°, zoom en lentes de cámara, encendido de pantalla y cambio de acabados al vuelo).
-
-### 3. 🎯 Storytelling: "¿Qué soluciona para ti?" (Filosofía Apple)
-En lugar de fichas técnicas frías e incomprensibles, cada producto cuenta con tarjetas estilo Bento destacando soluciones para la vida:
-- 📸 **Creadores & Fotografía**: Producción de video 4K cinematográfico sin equipos pesados.
-- ⚡ **Autonomía Extrema**: Baterías para todo el día y cargas hiperrápidas de 120W (100% en 19 min).
-- 🧘 **Detox Digital & Resistencia (Vintage)**: Batería de 2 semanas, resistencia legendaria a caídas y cero notificaciones adictivas.
-- 💼 **Productividad Ejecutiva**: Firma de contratos con S-Pen y traducción de llamadas en vivo con IA.
-
-### 4. 🏬 Arquitectura Multi-Tienda (Multi-Tenant)
-- **Sucursales Afiliadas**:
-  - `CelStore™ Flagship & Apple Hub` (Especializada en últimos 2 años)
-  - `RetroMobile & Vintage Vault` (Especializada en leyendas clásicas de colección)
-  - `TechNova MegaStore & Accesorios` (Catálogo híbrido y accesorios universales)
-- Cada tienda cuenta con su propia base de datos, inventario, precios, banners, calificaciones y canal de WhatsApp dedicado.
-
-### 5. 🔒 Portal de Administración & Asistente IA de Redacción
-- Login independiente para cada dueño de tienda (`/admin/login`) y SuperAdmin global.
-- Carga y edición rápida de productos nuevos y vintage.
-- ✨ **Generador Asistido de Textos de Soluciones**: Redacta automáticamente los argumentos emocionales y de productividad para la ficha del celular con 1 solo clic.
-- Control de stock en tiempo real, cambio de banner de tienda y seguimiento de pedidos.
-
-### 6. ⚡ Mini-Tienda de Accesorios & Checkout Rápido
-- Sección dedicada a cargadores GaN 65W, bases MagSafe 3-en-1, fundas de fibra de aramida aeroespacial, auriculares ANC y cargadores vintage de aguja.
-- Cross-selling de combos con descuento automático.
-- **Compra en 1 Clic por WhatsApp**: Genera mensaje listo y formateado con sucursal, modelo, acabados y dirección.
-- **Simulador de Checkout SSL**: Pago con Tarjeta, Apple Pay o Cripto con recibo imprimible y celebración de confeti.
+> **Ecosistema de comercio electrónico multi-tienda de celulares de alta gama con estética Apple SF Pro, visor 3D interactivo 360° con Lazy Loading y Fallback WebGL, segmentación generacional (Últimos 2 Años vs Clásicos Vintage), base de datos multi-tenant PostgreSQL/Supabase con Row Level Security (RLS), control de stock atómico anti-concurrencia, pasarela MercadoPago SDK, SEO dinámico OpenGraph y panel de administración modular.**
 
 ---
 
-## 🛠️ Tecnologías Utilizadas
+## 🌟 Arquitectura para Producción
 
-- **Frontend**: React 18, Vite 6, Tailwind CSS v4, Lucide Icons, Canvas Confetti.
-- **3D Engine**: Three.js (WebGL, PBR Materials, Orbit Controls, Texturas Dinámicas de Pantalla).
-- **Backend**: Node.js, Express REST API, CORS.
-- **Persistencia**: Data Store JSON Multi-Tenant con aislamiento por `store_id` y sincronización local de alta resiliencia.
+```mermaid
+graph TD
+    subgraph Base de Datos Multi-Tenant (PostgreSQL + Supabase RLS)
+        STORES[Tabla: stores]
+        PRODUCTS[Tabla: products con store_id]
+        ORDERS[Tabla: orders con store_id]
+        
+        RLS[Row Level Security: store_id = auth.jwt.store_id]
+        RLS --> PRODUCTS
+        RLS --> ORDERS
+        
+        STOCK_LOCK[Función SQL Atómica: decrease_stock_atomic con FOR UPDATE]
+        STOCK_LOCK --> PRODUCTS
+    end
 
----
+    subgraph Frontend de Alto Rendimiento
+        LAZY_3D[Lazy Loading Three.js + WebGL Error Boundary]
+        SEO_OG[SEO Dinámico & OpenGraph Meta Tags para WhatsApp]
+        CART_GUARD[Guardián de Aislamiento Multi-Tenant de Carrito]
+        MP_CHECKOUT[MercadoPago SDK + Pedido 1-Clic WhatsApp]
+    end
 
-## 🚀 Instalación y Puesta en Marcha
-
-### 1. Clonar el repositorio:
-```bash
-git clone https://github.com/ExeDevCentral/MultiTiendasCelphone.git
-cd MultiTiendasCelphone
+    subgraph Panel de Administración Modular (Anti God-Component)
+        SHELL[AdminDashboard.jsx Orchestrator]
+        SHELL --> LIST[ProductList.jsx - Draft/Publicado & Filtros]
+        SHELL --> FORM[ProductFormModal.jsx con Validación Zod]
+        SHELL --> DUP[Duplicador de Productos en 1 Clic]
+        SHELL --> BULK[BulkStockEditor.jsx - Editor Masivo de Stock/Precios]
+        SHELL --> UPLOAD[ImageUploader.jsx - Supabase Storage]
+        SHELL --> AI_SOL[Generador Asistido de Textos de Solución]
+    end
 ```
 
-### 2. Instalar dependencias:
+---
+
+## 🚀 Características Clave Implementadas
+
+### 1. 🗄️ Base de Datos Multi-Tenant & RLS en PostgreSQL
+- **Aislamiento Seguro por `store_id`**: Políticas de Row Level Security (RLS) garantizan que cada comerciante solo acceda y modifique los productos y pedidos de su propia sucursal.
+- **Control de Stock Atómico**: Función PL/pgSQL `decrease_stock_atomic` con bloqueo de fila `FOR UPDATE` para eliminar sobreventas y condiciones de carrera en compras simultáneas.
+- Archivo de migración listo en `supabase/migrations/20260828_init_multitenant.sql`.
+
+### 2. 🧩 Panel de Administración Modular (Arquitectura Limpia)
+- Descompuesto en subcomponentes especializados en `src/views/admin/components/`:
+  - `ProductList.jsx`: Listado con buscador, filtros y badges de estado.
+  - `ProductFormModal.jsx`: Formulario con validación estricta Zod, estados **Borrador (`draft`) / Publicado (`published`)**.
+  - `ImageUploader.jsx`: Carga de fotos a Supabase Storage con dropzone y preview interactivo.
+  - `BulkStockEditor.jsx`: Editor en línea para modificar stocks y precios masivamente sin abrir modales.
+  - `ProductDuplicator.jsx`: Clonación de productos en 1 solo clic.
+  - `StoreSettingsForm.jsx`: Personalización de banners, logotipos y WhatsApp oficial.
+  - `OrdersTracker.jsx`: Registro de pedidos y botón de contacto al cliente.
+
+### 3. ⚡ Rendimiento WebGL, LCP & Fallback 2D
+- **Lazy Loading de Three.js**: Separación del bundle 3D (485 KB) del bundle principal (333 KB), logrando una carga ultrarrápida en redes móviles.
+- **WebGL Error Boundary**: Si el dispositivo del usuario no soporta WebGL o está en modo ahorro de energía extremo, conmuta automáticamente a una galería 2D de alta resolución.
+
+### 4. 🌐 SEO Dinámico & OpenGraph para WhatsApp
+- Componente `SEOHead.jsx` que inyecta dinámicamente `<title>`, `<meta name="description">` y etiquetas `og:image`, `og:title` y `og:description` por producto y por tienda.
+- Compartir cualquier celular por WhatsApp o redes sociales muestra una tarjeta rica con foto, precio y beneficios.
+
+### 5. 🛡️ Guardián de Carrito Multi-Tenant
+- Previene la mezcla accidental de productos de diferentes comerciantes en una misma orden.
+- Despliega un modal inteligente al intentar comprar en otra tienda para resolver el conflicto de forma transparente.
+
+### 6. 💳 Pasarela de Pagos MercadoPago SDK & Pedidos WhatsApp
+- Endpoint `/api/payments/mercadopago/create-preference` para checkout transparente / redirección a MercadoPago.
+- Webhook receptor IPN `/api/payments/mercadopago/webhook`.
+- Pedido directo por WhatsApp en 1 clic con mensaje formateado.
+
+---
+
+## 🧪 Suite de Pruebas Automatizadas (Vitest)
+
+Ejecutar tests unitarios y de concurrencia:
 ```bash
+npm test
+```
+
+- `tests/stock-concurrency.test.js`: Comprobación de locks atómicos contra compras concurrentes.
+- `tests/cart-multitenant.test.js`: Verificación de aislamiento del carrito entre sucursales.
+- `tests/product-validation.test.js`: Validación de esquemas Zod (precios positivos, stock no negativo).
+
+---
+
+## 🚀 Puesta en Marcha
+
+```bash
+# 1. Instalar dependencias
 npm install
-```
 
-### 3. Iniciar el servidor (Frontend + Backend concurrentes):
-```bash
+# 2. Ejecutar entorno de desarrollo (Frontend + Backend)
 npm run dev
-```
 
-- **Frontend**: `http://localhost:5173`
-- **Backend API**: `http://localhost:5000`
+# 3. Compilar para producción
+npm run build
+```
 
 ---
 
-## 🔑 Credenciales de Demostración (Panel de Administración)
+## 🔑 Credenciales de Acceso
 
-| Rol / Tienda | Correo | Contraseña |
+| Tienda / Rol | Correo | Contraseña |
 | :--- | :--- | :--- |
 | 📱 **CelStore Flagships** | `admin@celstore.com` | `password123` |
 | 📟 **RetroMobile Vault** | `admin@retromobile.com` | `password123` |
 | ⚡ **TechNova MegaStore** | `admin@technova.com` | `password123` |
 | 👑 **SuperAdmin Global** | `superadmin@platform.com` | `admin123` |
-
----
-
-## 📄 Licencia
-Este proyecto está licenciado bajo la Licencia MIT.

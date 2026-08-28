@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense, lazy } from 'react';
 import {
   ArrowLeft,
   ShoppingBag,
@@ -10,29 +10,33 @@ import {
   CheckCircle,
   Zap,
   Sparkles,
-  HeartHandshake,
-  Camera,
-  Cpu,
-  Feather,
-  Plus,
-  Scale
+  Scale,
+  CreditCard
 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useStore } from '../context/StoreContext';
-import { PhoneViewer3D } from '../components/PhoneViewer3D';
+import { SEOHead } from '../components/SEOHead';
+import { WebGLErrorBoundary } from '../components/WebGLErrorBoundary';
+import { mercadopagoService } from '../services/mercadopago';
+
+// Lazy load 3D Studio to drastically optimize initial bundle and mobile LCP
+const PhoneViewer3D = lazy(() =>
+  import('../components/PhoneViewer3D').then(m => ({ default: m.PhoneViewer3D }))
+);
 
 export const ProductDetail = ({ product, onBack, onNavigate }) => {
-  const { addToCart } = useCart();
+  const { addToCart, setIsCheckoutOpen } = useCart();
   const { stores, toggleCompare, comparedProducts } = useStore();
 
   const storeInfo = stores.find(s => s.id === product.storeId) || stores[0];
   const [selectedColor, setSelectedColor] = useState(product.colors?.[0] || { name: 'Estándar', hex: '#8e867b' });
   const [selectedStorage, setSelectedStorage] = useState(product.storageOptions?.[0] || '256 GB');
   const [includeBundle, setIncludeBundle] = useState(false);
+  const [loadingPayment, setLoadingPayment] = useState(false);
 
   const isCompared = comparedProducts.some(p => p.id === product.id);
 
-  const handleBuyNow = () => {
+  const handleAddToCart = () => {
     addToCart(product, {
       color: selectedColor.name,
       storage: selectedStorage,
@@ -52,6 +56,35 @@ export const ProductDetail = ({ product, onBack, onNavigate }) => {
     }
   };
 
+  const handleMercadoPagoDirect = async () => {
+    setLoadingPayment(true);
+    try {
+      const preference = await mercadopagoService.createPreference({
+        storeId: product.storeId,
+        items: [
+          {
+            productId: product.id,
+            name: product.name,
+            color: selectedColor.name,
+            price: includeBundle ? product.price + 49 : product.price,
+            quantity: 1
+          }
+        ],
+        customer: {
+          name: 'Comprador CelStore',
+          email: 'comprador@example.com'
+        }
+      });
+      mercadopagoService.redirectToCheckout(preference);
+    } catch (err) {
+      console.warn('MercadoPago fallback to checkout modal:', err);
+      handleAddToCart();
+      setIsCheckoutOpen(true);
+    } finally {
+      setLoadingPayment(false);
+    }
+  };
+
   const handleWhatsApp = () => {
     const phone = storeInfo?.phoneWhatsApp || '+5491145239900';
     const text = encodeURIComponent(
@@ -60,13 +93,21 @@ export const ProductDetail = ({ product, onBack, onNavigate }) => {
       `• Almacenamiento: ${selectedStorage}\n` +
       `• Precio: $${product.price} USD\n` +
       (includeBundle ? `• Combo Accesorio: Sí (+$49 USD)\n` : '') +
-      `¿Me confirman disponibilidad y despacho inmediato?`
+      `• Enlace del producto: ${window.location.href}\n\n` +
+      `¿Tienen stock para despacho inmediato?`
     );
     window.open(`https://wa.me/${phone.replace(/[^0-9]/g, '')}?text=${text}`, '_blank');
   };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-12">
+      {/* Dynamic SEO & OpenGraph Meta Tags for WhatsApp Sharing */}
+      <SEOHead
+        title={`${product.name} en ${storeInfo?.name || 'CelStore'} - $${product.price} USD`}
+        description={product.tagline || product.solutions?.[0]?.description || `Compra ${product.name} con garantía oficial en CelStore MultiTiendas.`}
+        image={product.images?.[0] || 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=1200'}
+      />
+
       {/* Top Breadcrumb Bar */}
       <div className="flex items-center justify-between text-xs text-neutral-400">
         <button
@@ -85,16 +126,27 @@ export const ProductDetail = ({ product, onBack, onNavigate }) => {
 
       {/* Main Product Showcase (2 Columns) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-        {/* Left Column: Interactive 3D Phone Studio */}
+        {/* Left Column: Interactive 3D Phone Studio with WebGL Error Boundary & Suspense */}
         <div className="lg:col-span-7 space-y-4">
-          <PhoneViewer3D
-            modelType={product.model3dType || 'modern_flagship'}
-            selectedColor={selectedColor}
-            availableColors={product.colors || []}
-            onColorChange={(c) => setSelectedColor(c)}
-            phoneName={product.name}
-            height="550px"
-          />
+          <WebGLErrorBoundary fallbackImages={product.images} height="550px">
+            <Suspense
+              fallback={
+                <div className="h-[550px] w-full rounded-2xl glass-panel flex flex-col items-center justify-center gap-3">
+                  <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                  <p className="text-xs text-neutral-400 font-mono">Cargando motor 3D WebGL...</p>
+                </div>
+              }
+            >
+              <PhoneViewer3D
+                modelType={product.model3dType || 'modern_flagship'}
+                selectedColor={selectedColor}
+                availableColors={product.colors || []}
+                onColorChange={(c) => setSelectedColor(c)}
+                phoneName={product.name}
+                height="550px"
+              />
+            </Suspense>
+          </WebGLErrorBoundary>
 
           <div className="flex items-center justify-between p-4 rounded-2xl glass-panel border border-white/10 text-xs text-neutral-400">
             <div className="flex items-center gap-2">
@@ -240,19 +292,30 @@ export const ProductDetail = ({ product, onBack, onNavigate }) => {
           {/* Action Buttons */}
           <div className="space-y-2.5 pt-2">
             <button
-              onClick={handleBuyNow}
+              onClick={handleAddToCart}
               className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-xl shadow-blue-600/30 transition-all hover:scale-[1.02]"
             >
               <ShoppingBag className="w-4 h-4" />
               <span>Añadir a la Bolsa • ${includeBundle ? product.price + 49 : product.price} USD</span>
             </button>
 
+            {/* MercadoPago Real Checkout Button */}
+            <button
+              onClick={handleMercadoPagoDirect}
+              disabled={loadingPayment}
+              className="w-full py-3.5 px-6 rounded-2xl bg-sky-500 hover:bg-sky-400 text-black font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-sky-500/25 transition-all hover:scale-[1.02]"
+            >
+              <CreditCard className="w-4 h-4 text-black" />
+              <span>{loadingPayment ? 'Conectando MercadoPago...' : 'Pagar con MercadoPago / Cuotas'}</span>
+            </button>
+
+            {/* WhatsApp Direct Buy */}
             <button
               onClick={handleWhatsApp}
-              className="w-full py-3.5 px-6 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/25 transition-all hover:scale-[1.02]"
+              className="w-full py-3 px-6 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20 transition-all"
             >
               <MessageSquare className="w-4 h-4" />
-              <span>Pedir por WhatsApp a {storeInfo?.name}</span>
+              <span>Consultar / Pedir por WhatsApp</span>
             </button>
           </div>
 

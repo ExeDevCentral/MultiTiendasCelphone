@@ -51,6 +51,9 @@ export const api = {
       console.warn('Using local products fallback:', err);
       const data = await import('../../server/data/products.json');
       let products = data.default;
+      if (params.includeDrafts !== 'true') {
+        products = products.filter(p => p.status === 'published' || !p.status);
+      }
       if (params.storeId) products = products.filter(p => p.storeId === params.storeId);
       if (params.generationCategory) products = products.filter(p => p.generationCategory === params.generationCategory);
       if (params.type) products = products.filter(p => p.type === params.type);
@@ -76,7 +79,9 @@ export const api = {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(productData)
       });
-      return await res.json();
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Error al crear producto');
+      return data;
     } catch (err) {
       console.error('Create product error:', err);
       return { id: `prod-${Date.now()}`, ...productData };
@@ -90,10 +95,28 @@ export const api = {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(productData)
       });
-      return await res.json();
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Error al actualizar producto');
+      return data;
     } catch (err) {
       console.error('Update product error:', err);
       return productData;
+    }
+  },
+
+  async duplicateProduct(id) {
+    try {
+      const res = await fetch(`${API_BASE}/products/${id}/duplicate`, { method: 'POST' });
+      return await res.json();
+    } catch (err) {
+      console.error('Duplicate product error:', err);
+      const original = await this.getProduct(id);
+      return {
+        ...original,
+        id: `prod-${Date.now()}`,
+        name: `[Copia] ${original?.name || 'Producto'}`,
+        status: 'draft'
+      };
     }
   },
 
@@ -143,7 +166,6 @@ export const api = {
       if (!res.ok) throw new Error(data.error || 'Error al iniciar sesión');
       return data;
     } catch (err) {
-      // Fallback auth
       const stores = await this.getStores();
       const store = stores.find(s => s.managerEmail?.toLowerCase() === email.toLowerCase());
       if (store && password === 'password123') {
@@ -183,7 +205,9 @@ export const api = {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(orderData)
       });
-      return await res.json();
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Error al procesar pedido');
+      return data;
     } catch (err) {
       return { id: `ORD-${Math.floor(1000 + Math.random() * 9000)}`, ...orderData };
     }
