@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from 'react';
 import { ShoppingBag, Sparkles, Filter, ShieldCheck, Zap, Layers, ArrowLeft } from 'lucide-react';
 import { useStore } from '../context/StoreContext';

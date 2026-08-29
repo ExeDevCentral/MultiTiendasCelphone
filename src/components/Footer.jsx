@@ -1,71 +1,97 @@
+'use client';
+
 import React from 'react';
-import { Smartphone, ShieldCheck, Truck, RefreshCw, MessageSquare, Heart, Sparkles } from 'lucide-react';
+import { ShieldCheck, Truck, Sparkles, MessageSquare } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
+import { playSubtleClick } from '../utils/audioHaptics';
 
 export const Footer = ({ onNavigate }) => {
   const { stores, setActiveStore, setGenerationFilter } = useStore();
 
   const handleStoreClick = (store) => {
+    playSubtleClick();
     setActiveStore(store);
     onNavigate('store_catalog', { storeId: store.id });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleGenClick = (category) => {
+    playSubtleClick();
     setGenerationFilter(category);
     onNavigate('home');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
-    <footer className="w-full bg-neutral-950 border-t border-white/10 text-neutral-400 text-xs pt-16 pb-12 mt-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 space-y-12">
-        {/* Value Proposition Highlights */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 pb-12 border-b border-white/10 text-neutral-300">
-          <div className="flex items-start gap-3.5">
-            <div className="p-2.5 rounded-2xl bg-blue-500/10 text-blue-400 border border-blue-500/20 shrink-0">
-              <ShieldCheck className="w-5 h-5" />
+    <footer className="w-full bg-[#060608] border-t border-white/[0.06] text-neutral-400 text-xs pt-16 pb-12 mt-24">
+      <div className="max-w-7xl mx-auto px-6 space-y-14">
+        
+        {/* Value Proposition Highlights de Lujo */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-14 border-b border-white/[0.04]">
+          <div className="flex items-start gap-4">
+            <div className="p-3 rounded-2xl bg-white/[0.03] text-[#c5a880] border border-white/[0.06] shrink-0">
+              <ShieldCheck className="w-4 h-4" />
             </div>
             <div>
-              <h4 className="text-sm font-bold text-white mb-1">Garantía Certificada</h4>
-              <p className="text-xs text-neutral-400">
-                1 año oficial en flagships nuevos y 6 meses en modelos vintage restaurados.
+              <h4 
+                className="text-base font-light text-white mb-1"
+                style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+              >
+                Garantía Certificada
+              </h4>
+              <p className="text-xs text-neutral-500 font-light leading-relaxed">
+                12 meses en piezas de titanio y 6 meses en modelos de colección restaurados.
               </p>
             </div>
           </div>
 
-          <div className="flex items-start gap-3.5">
-            <div className="p-2.5 rounded-2xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shrink-0">
-              <Truck className="w-5 h-5" />
+          <div className="flex items-start gap-4">
+            <div className="p-3 rounded-2xl bg-white/[0.03] text-[#c5a880] border border-white/[0.06] shrink-0">
+              <Truck className="w-4 h-4" />
             </div>
             <div>
-              <h4 className="text-sm font-bold text-white mb-1">Envío Express Seguro</h4>
-              <p className="text-xs text-neutral-400">
-                Despacho prioritario en 24h con seguro contra siniestros y tracking GPS.
+              <h4 
+                className="text-base font-light text-white mb-1"
+                style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+              >
+                Despacho Blindado Express
+              </h4>
+              <p className="text-xs text-neutral-500 font-light leading-relaxed">
+                Entrega prioritaria asegurada en packaging hermético de alta resistencia.
               </p>
             </div>
           </div>
 
-          <div className="flex items-start gap-3.5">
-            <div className="p-2.5 rounded-2xl bg-amber-500/10 text-amber-400 border border-amber-500/20 shrink-0">
-              <Sparkles className="w-5 h-5" />
+          <div className="flex items-start gap-4">
+            <div className="p-3 rounded-2xl bg-white/[0.03] text-[#c5a880] border border-white/[0.06] shrink-0">
+              <Sparkles className="w-4 h-4" />
             </div>
             <div>
-              <h4 className="text-sm font-bold text-white mb-1">Visor 3D Interactivo</h4>
-              <p className="text-xs text-neutral-400">
-                Inspecciona cada detalle en 360° antes de comprar tu próximo teléfono.
+              <h4 
+                className="text-base font-light text-white mb-1"
+                style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+              >
+                Visor Espacial 3D
+              </h4>
+              <p className="text-xs text-neutral-500 font-light leading-relaxed">
+                Inspección volumétrica por mapa de profundidad con respuesta a giroscopio.
               </p>
             </div>
           </div>
 
-          <div className="flex items-start gap-3.5">
-            <div className="p-2.5 rounded-2xl bg-purple-500/10 text-purple-400 border border-purple-500/20 shrink-0">
-              <MessageSquare className="w-5 h-5" />
+          <div className="flex items-start gap-4">
+            <div className="p-3 rounded-2xl bg-white/[0.03] text-[#c5a880] border border-white/[0.06] shrink-0">
+              <MessageSquare className="w-4 h-4" />
             </div>
             <div>
-              <h4 className="text-sm font-bold text-white mb-1">Atención WhatsApp 1-a-1</h4>
-              <p className="text-xs text-neutral-400">
-                Asesoramiento personalizado directamente con los dueños de cada sucursal.
+              <h4 
+                className="text-base font-light text-white mb-1"
+                style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+              >
+                Concierge 1-a-1
+              </h4>
+              <p className="text-xs text-neutral-500 font-light leading-relaxed">
+                Atención directa con los directores de cada boutique asociada.
               </p>
             </div>
           </div>
@@ -73,98 +99,110 @@ export const Footer = ({ onNavigate }) => {
 
         {/* Directory Columns */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-          {/* Col 1: Brand & MultiTiendas Info */}
+          {/* Col 1: Brand Info */}
           <div className="col-span-2 md:col-span-1 space-y-3">
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-xl bg-blue-600 flex items-center justify-center text-white">
-                <Smartphone className="w-4 h-4" />
-              </div>
-              <span className="font-extrabold text-white text-base">CelStore™</span>
-            </div>
-            <p className="text-xs text-neutral-400 leading-relaxed">
-              La primera plataforma de comercio móvil multi-tienda que conecta generaciones: desde los últimos lanzamientos de titanio hasta las leyendas de colección de los 2000s.
+            <span 
+              className="text-lg font-light text-white tracking-widest uppercase block"
+              style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+            >
+              CelStore <span className="text-[#c5a880] text-xs font-sans">Atelier</span>
+            </span>
+            <p className="text-xs text-neutral-500 font-light leading-relaxed">
+              Plataforma generacional de alta costura móvil que fusiona ingeniería contemporánea de titanio con leyendas históricas de diseño.
             </p>
           </div>
 
-          {/* Col 2: Generational Directory */}
-          <div className="space-y-2.5">
-            <h5 className="text-xs font-bold text-white uppercase tracking-wider">Generaciones</h5>
-            <ul className="space-y-2">
+          {/* Col 2: Generaciones */}
+          <div className="space-y-3">
+            <h5 className="text-[10px] font-light text-[#c5a880] uppercase tracking-[0.3em]">Colecciones</h5>
+            <ul className="space-y-2 text-xs font-light text-neutral-400">
               <li>
                 <button
                   onClick={() => handleGenClick('last_2_years')}
-                  className="hover:text-white transition-colors"
+                  className="hover:text-white transition-colors cursor-pointer"
                 >
-                  🚀 Últimos 2 Años (2024 - 2026)
+                  Flagships (2024 - 2026)
                 </button>
               </li>
               <li>
                 <button
                   onClick={() => handleGenClick('recent_gen')}
-                  className="hover:text-white transition-colors"
+                  className="hover:text-white transition-colors cursor-pointer"
                 >
-                  ⏳ Generaciones Recientes (2020 - 2023)
+                  Series 2020 - 2023
                 </button>
               </li>
               <li>
                 <button
                   onClick={() => handleGenClick('vintage_classic')}
-                  className="hover:text-white transition-colors"
+                  className="hover:text-white transition-colors cursor-pointer"
                 >
-                  📟 Clásicos & Vintage Legends
+                  Vintage Archive Legends
                 </button>
               </li>
               <li>
                 <button
-                  onClick={() => { onNavigate('accessories'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                  className="hover:text-white transition-colors"
+                  onClick={() => {
+                    playSubtleClick();
+                    onNavigate('accessories');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="hover:text-white transition-colors cursor-pointer"
                 >
-                  ⚡ Mini-Tienda de Accesorios
+                  Complementos & MagSafe
                 </button>
               </li>
             </ul>
           </div>
 
           {/* Col 3: Sucursales Afiliadas */}
-          <div className="space-y-2.5">
-            <h5 className="text-xs font-bold text-white uppercase tracking-wider">Nuestras Sucursales</h5>
-            <ul className="space-y-2">
+          <div className="space-y-3">
+            <h5 className="text-[10px] font-light text-[#c5a880] uppercase tracking-[0.3em]">Boutiques</h5>
+            <ul className="space-y-2 text-xs font-light text-neutral-400">
               {stores.map((store) => (
                 <li key={store.id}>
                   <button
                     onClick={() => handleStoreClick(store)}
-                    className="hover:text-blue-400 transition-colors text-left"
+                    className="hover:text-[#f5e0c3] transition-colors text-left cursor-pointer"
                   >
-                    🏬 {store.name}
+                    {store.name}
                   </button>
                 </li>
               ))}
               <li>
                 <button
-                  onClick={() => { onNavigate('store_selector'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                  className="text-blue-400 hover:underline"
+                  onClick={() => {
+                    playSubtleClick();
+                    onNavigate('store_selector');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="text-[#c5a880] hover:text-white transition-colors text-[11px] tracking-wider uppercase cursor-pointer"
                 >
-                  Ver todas las tiendas →
+                  Ver red de tiendas →
                 </button>
               </li>
             </ul>
           </div>
 
-          {/* Col 4: Dueños de Tienda & Admin */}
-          <div className="space-y-2.5">
-            <h5 className="text-xs font-bold text-white uppercase tracking-wider">Comerciantes & Tiendas</h5>
-            <ul className="space-y-2">
+          {/* Col 4: Portal */}
+          <div className="space-y-3">
+            <h5 className="text-[10px] font-light text-[#c5a880] uppercase tracking-[0.3em]">Comerciantes</h5>
+            <ul className="space-y-2 text-xs font-light text-neutral-400">
               <li>
                 <button
-                  onClick={() => { onNavigate('admin_login'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                  className="text-emerald-400 hover:text-emerald-300 font-semibold transition-colors"
+                  onClick={() => {
+                    playSubtleClick();
+                    onNavigate('admin_login');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="text-[#c5a880] hover:text-white font-light tracking-wider uppercase text-[11px] transition-colors cursor-pointer"
                 >
-                  🔒 Portal de Acceso para Tiendas
+                  Portal de Gestión de Tienda
                 </button>
               </li>
               <li>
-                <span className="text-neutral-500 text-[11px]">
-                  Administra tu base de datos, carga productos nuevos o vintage y sincroniza tus ventas por WhatsApp.
+                <span className="text-neutral-500 text-[11px] font-light leading-relaxed block">
+                  Administración de catálogo, control de stock atómico y activación de fotos 3D con IA.
                 </span>
               </li>
             </ul>
@@ -172,11 +210,8 @@ export const Footer = ({ onNavigate }) => {
         </div>
 
         {/* Bottom copyright */}
-        <div className="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-neutral-500">
-          <p>© {new Date().getFullYear()} CelStore MultiTiendas Inc. Todos los derechos reservados.</p>
-          <div className="flex items-center gap-1 text-neutral-400">
-            <span>Diseñado con estética Apple SF Pro</span>
-          </div>
+        <div className="pt-8 border-t border-[rgba(243,239,230,0.08)] flex items-center justify-center text-xs text-[#8b8680]">
+          <p>© 2026 CelStore — Atelier Generacional</p>
         </div>
       </div>
     </footer>

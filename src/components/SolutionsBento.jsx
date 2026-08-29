@@ -1,11 +1,15 @@
+'use client';
+
 import React from 'react';
-import { Camera, Zap, ShieldCheck, HeartHandshake, Briefcase, Sparkles, ArrowRight, Play } from 'lucide-react';
+import { Camera, Zap, HeartHandshake, Briefcase, ArrowRight } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
+import { playSubtleClick } from '../utils/audioHaptics';
 
 export const SolutionsBento = ({ onSelectCategory }) => {
   const { setGenerationFilter, setSearchQuery } = useStore();
 
   const handlePillClick = (filterType, query = '') => {
+    playSubtleClick();
     if (filterType) setGenerationFilter(filterType);
     if (query) setSearchQuery(query);
     const catalogEl = document.getElementById('catalog-section');
@@ -15,170 +19,137 @@ export const SolutionsBento = ({ onSelectCategory }) => {
   };
 
   return (
-    <section className="w-full py-16 px-4 max-w-7xl mx-auto">
-      {/* Section Header */}
-      <div className="text-center max-w-3xl mx-auto mb-14">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-semibold uppercase tracking-wider mb-4">
-          <Sparkles className="w-3.5 h-3.5" />
-          Filosofía Orientada a Soluciones
-        </div>
-        <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-gradient-apple mb-4">
+    <section className="w-full py-16 px-6 sm:px-12 max-w-[1180px] mx-auto">
+      {/* Section Header Editorial */}
+      <div className="text-center max-w-2xl mx-auto mb-12">
+        <p className="eyebrow !mb-2">
+          Curaduría Funcional · Propósito y Forma
+        </p>
+        <h2 className="text-3xl sm:text-4xl font-bold text-[#f3efe6] mb-3">
           No compres solo gigabytes. <br />
-          <span className="text-gradient-blue">Elige qué soluciona para tu vida.</span>
+          <span className="text-[#e4c972]">Elige la solución para tu estilo de vida.</span>
         </h2>
-        <p className="text-neutral-400 text-sm sm:text-base leading-relaxed">
-          Ya sea que busques crear contenido cinematográfico 4K, desconectarte del ruido digital o tener una batería que dure semanas enteras.
+        <p className="text-[#8b8680] text-sm leading-relaxed max-w-xl mx-auto">
+          Desde producción cinematográfica en titanio hasta la serenidad analógica del detox digital de colección.
         </p>
       </div>
 
-      {/* Bento Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5 auto-rows-[240px]">
-        {/* Bento 1: Creadores & Cámara (Spans 2 cols) */}
+      {/* Bento Grid de Lujo 60-30-10 */}
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 auto-rows-[250px]">
+        
+        {/* Bento 1: Creación & Cine */}
         <div
           onClick={() => handlePillClick('last_2_years', 'Apple')}
-          className="md:col-span-2 row-span-1 rounded-3xl p-7 glass-panel glass-panel-hover relative overflow-hidden flex flex-col justify-between cursor-pointer border border-white/10 group bg-gradient-to-br from-blue-950/40 via-neutral-900/60 to-black/80"
+          className="md:col-span-2 row-span-1 rounded-[22px] p-7 bg-[#131316] border border-[rgba(243,239,230,0.08)] hover:border-[#c9a227] relative overflow-hidden flex flex-col justify-between cursor-pointer group transition-all duration-300 shadow-lg"
         >
-          <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
           <div className="flex items-start justify-between z-10">
-            <div className="p-3 rounded-2xl bg-blue-500/20 text-blue-400 border border-blue-500/30">
-              <Camera className="w-6 h-6" />
+            <div className="p-2.5 rounded-xl bg-[#1b1b1f] text-[#c9a227] border border-[rgba(243,239,230,0.08)]">
+              <Camera className="w-5 h-5" />
             </div>
-            <span className="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-blue-500/15 text-blue-400 border border-blue-500/30">
-              Creadores & Fotografía
+            <span className="text-[11px] tracking-wide uppercase font-medium px-3 py-1 rounded-full bg-[rgba(243,239,230,0.04)] text-[#e4c972] border border-[rgba(243,239,230,0.12)]">
+              Cinematografía & ProRes
             </span>
           </div>
 
-          <div className="z-10 mt-4">
-            <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">
-              Producción de Cine en tu Bolsillo
+          <div className="z-10 mt-2">
+            <h3 className="text-xl font-bold text-[#f3efe6] mb-1.5 group-hover:text-[#e4c972] transition-colors">
+              Estudio de Cine en Titanio
             </h3>
-            <p className="text-xs sm:text-sm text-neutral-400 line-clamp-2">
-              Graba video 4K a 120 fps en ProRes Log, sensor de 48MP/200MP y estabilización de nivel gimbal para tus redes sin llevar equipos pesados.
+            <p className="text-xs text-[#8b8680] line-clamp-2 leading-relaxed">
+              Grabación en 4K a 120 fps ProRes Log con rango dinámico cinematográfico para creación sin equipo pesado.
             </p>
           </div>
 
-          <div className="flex items-center gap-2 text-xs font-semibold text-blue-400 group-hover:translate-x-1 transition-transform z-10 pt-2">
-            <span>Ver modelos recomendados para creadores</span>
-            <ArrowRight className="w-4 h-4" />
+          <div className="flex items-center gap-2 text-xs font-semibold text-[#c9a227] group-hover:translate-x-1 transition-transform z-10">
+            <span>Ver selección de creadores</span>
+            <ArrowRight className="w-3.5 h-3.5" />
           </div>
         </div>
 
-        {/* Bento 2: Batería Extrema */}
+        {/* Bento 2: Autonomía Extrema */}
         <div
           onClick={() => handlePillClick('last_2_years', 'Xiaomi')}
-          className="md:col-span-1 row-span-1 rounded-3xl p-7 glass-panel glass-panel-hover relative overflow-hidden flex flex-col justify-between cursor-pointer border border-white/10 group bg-gradient-to-br from-emerald-950/40 via-neutral-900/60 to-black/80"
+          className="md:col-span-1 row-span-1 rounded-[22px] p-7 bg-[#131316] border border-[rgba(243,239,230,0.08)] hover:border-[#c9a227] relative overflow-hidden flex flex-col justify-between cursor-pointer group transition-all duration-300 shadow-lg"
         >
           <div className="flex items-start justify-between z-10">
-            <div className="p-3 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-              <Zap className="w-6 h-6" />
+            <div className="p-2.5 rounded-xl bg-[#1b1b1f] text-[#f3efe6] border border-[rgba(243,239,230,0.08)]">
+              <Zap className="w-5 h-5 text-[#e4c972]" />
             </div>
-            <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+            <span className="text-[10px] tracking-wide uppercase font-medium px-2.5 py-1 rounded-full bg-[rgba(243,239,230,0.04)] text-[#8b8680] border border-[rgba(243,239,230,0.08)]">
               Autonomía
             </span>
           </div>
 
-          <div className="z-10 mt-2">
-            <h3 className="text-xl font-bold text-white mb-1 group-hover:text-emerald-400 transition-colors">
-              Cero Ansiedad de Batería
+          <div className="z-10 mt-1">
+            <h3 className="text-lg font-bold text-[#f3efe6] mb-1">
+              Cero Ansiedad Energética
             </h3>
-            <p className="text-xs text-neutral-400 line-clamp-2">
-              Hasta 33 horas de video continuo y cargas hiperrápidas de 120W (100% en 19 min).
+            <p className="text-xs text-[#8b8680] line-clamp-2">
+              Hasta 33 horas continuas y carga de 120W para días intensivos de viaje.
             </p>
           </div>
 
-          <div className="flex items-center gap-1.5 text-xs font-semibold text-emerald-400 group-hover:translate-x-1 transition-transform z-10">
-            <span>Explorar modelos</span>
-            <ArrowRight className="w-3.5 h-3.5" />
+          <div className="flex items-center gap-1.5 text-xs text-[#8b8680] group-hover:text-[#f3efe6] transition-colors z-10">
+            <span>Explorar</span>
+            <ArrowRight className="w-3 h-3" />
           </div>
         </div>
 
-        {/* Bento 3: Vintage & Detox Digital */}
+        {/* Bento 3: Vintage Archive */}
         <div
           onClick={() => handlePillClick('vintage_classic')}
-          className="md:col-span-1 row-span-1 rounded-3xl p-7 glass-panel glass-panel-hover relative overflow-hidden flex flex-col justify-between cursor-pointer border border-white/10 group bg-gradient-to-br from-amber-950/40 via-neutral-900/60 to-black/80"
+          className="md:col-span-1 row-span-1 rounded-[22px] p-7 bg-[#131316] border border-[rgba(243,239,230,0.08)] hover:border-[#c9a227] relative overflow-hidden flex flex-col justify-between cursor-pointer group transition-all duration-300 shadow-lg"
         >
           <div className="flex items-start justify-between z-10">
-            <div className="p-3 rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/30">
-              <HeartHandshake className="w-6 h-6" />
+            <div className="p-2.5 rounded-xl bg-[#1b1b1f] text-[#c9a227] border border-[rgba(243,239,230,0.08)]">
+              <HeartHandshake className="w-5 h-5" />
             </div>
-            <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/30">
-              Detox & Leyendas
+            <span className="text-[10px] tracking-wide uppercase font-medium px-2.5 py-1 rounded-full bg-[rgba(201,162,39,0.10)] text-[#e4c972] border border-[#c9a227]/30">
+              Vintage Legends
             </span>
           </div>
 
-          <div className="z-10 mt-2">
-            <h3 className="text-xl font-bold text-white mb-1 group-hover:text-amber-400 transition-colors">
-              Paz Mental & Nostalgia
+          <div className="z-10 mt-1">
+            <h3 className="text-lg font-bold text-[#f3efe6] mb-1">
+              Detox Digital & Serenidad
             </h3>
-            <p className="text-xs text-neutral-400 line-clamp-2">
-              Cero notificaciones adictivas, resistencia a caídas y batería de 2 semanas enteras.
+            <p className="text-xs text-[#8b8680] line-clamp-2">
+              Cero notificaciones intrusivas, durabilidad legendaria y 2 semanas de batería.
             </p>
           </div>
 
-          <div className="flex items-center gap-1.5 text-xs font-semibold text-amber-400 group-hover:translate-x-1 transition-transform z-10">
-            <span>Ver Clásicos Vintage</span>
-            <ArrowRight className="w-3.5 h-3.5" />
+          <div className="flex items-center gap-1.5 text-xs text-[#c9a227] group-hover:translate-x-1 transition-transform z-10">
+            <span>Ver Archive</span>
+            <ArrowRight className="w-3 h-3" />
           </div>
         </div>
 
-        {/* Bento 4: Productividad & Negocios */}
+        {/* Bento 4: Productividad Ejecutiva */}
         <div
           onClick={() => handlePillClick('last_2_years', 'Samsung')}
-          className="md:col-span-2 row-span-1 rounded-3xl p-7 glass-panel glass-panel-hover relative overflow-hidden flex flex-col justify-between cursor-pointer border border-white/10 group bg-gradient-to-br from-purple-950/40 via-neutral-900/60 to-black/80"
+          className="md:col-span-2 row-span-1 rounded-[22px] p-7 bg-[#131316] border border-[rgba(243,239,230,0.08)] hover:border-[#c9a227] relative overflow-hidden flex flex-col justify-between cursor-pointer group transition-all duration-300 shadow-lg"
         >
           <div className="flex items-start justify-between z-10">
-            <div className="p-3 rounded-2xl bg-purple-500/20 text-purple-400 border border-purple-500/30">
-              <Briefcase className="w-6 h-6" />
+            <div className="p-2.5 rounded-xl bg-[#1b1b1f] text-[#8b8680] border border-[rgba(243,239,230,0.08)]">
+              <Briefcase className="w-5 h-5 text-[#f3efe6]" />
             </div>
-            <span className="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-purple-500/15 text-purple-400 border border-purple-500/30">
+            <span className="text-[11px] tracking-wide uppercase font-medium px-3 py-1 rounded-full bg-[rgba(243,239,230,0.04)] text-[#8b8680] border border-[rgba(243,239,230,0.12)]">
               Productividad & Negocios
             </span>
           </div>
 
-          <div className="z-10 mt-3">
-            <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-purple-400 transition-colors">
-              Tu Oficina Ejecutiva Móvil
+          <div className="z-10 mt-2">
+            <h3 className="text-xl font-bold text-[#f3efe6] mb-1 group-hover:text-[#e4c972] transition-colors">
+              Oficina Ejecutiva Multitarea
             </h3>
-            <p className="text-xs sm:text-sm text-neutral-400 line-clamp-2">
-              Firma contratos con S-Pen en mano, traduce llamadas al instante en vivo con IA y divide la pantalla para trabajar con dos aplicaciones simultáneas.
+            <p className="text-xs text-[#8b8680] line-clamp-2 leading-relaxed">
+              Traducción simultánea por IA, firma de documentos con stylus y pantalla dividida en formato libro.
             </p>
           </div>
 
-          <div className="flex items-center gap-2 text-xs font-semibold text-purple-400 group-hover:translate-x-1 transition-transform z-10">
-            <span>Descubrir buques insignia empresariales</span>
-            <ArrowRight className="w-4 h-4" />
-          </div>
-        </div>
-
-        {/* Bento 5: Ecosistema & Accesorios */}
-        <div
-          onClick={() => {
-            const accTab = document.getElementById('accessories-section');
-            if (accTab) accTab.scrollIntoView({ behavior: 'smooth' });
-          }}
-          className="md:col-span-2 row-span-1 rounded-3xl p-7 glass-panel glass-panel-hover relative overflow-hidden flex flex-col justify-between cursor-pointer border border-white/10 group bg-gradient-to-br from-cyan-950/40 via-neutral-900/60 to-black/80"
-        >
-          <div className="flex items-start justify-between z-10">
-            <div className="p-3 rounded-2xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
-              <ShieldCheck className="w-6 h-6" />
-            </div>
-            <span className="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-cyan-500/15 text-cyan-400 border border-cyan-500/30">
-              Mini-Tienda de Accesorios
-            </span>
-          </div>
-
-          <div className="z-10 mt-3">
-            <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-cyan-400 transition-colors">
-              Protección, Carga GaN y Accesorios Retro
-            </h3>
-            <p className="text-xs sm:text-sm text-neutral-400 line-clamp-2">
-              Potencia tu teléfono con bases MagSafe 3-en-1, fundas de aramida aeroespacial y repuestos originales de época.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2 text-xs font-semibold text-cyan-400 group-hover:translate-x-1 transition-transform z-10">
-            <span>Explorar Mini-Tienda de Accesorios</span>
-            <ArrowRight className="w-4 h-4" />
+          <div className="flex items-center gap-2 text-xs font-semibold text-[#c9a227] group-hover:translate-x-1 transition-transform z-10">
+            <span>Descubrir buques ejecutivos</span>
+            <ArrowRight className="w-3.5 h-3.5" />
           </div>
         </div>
       </div>

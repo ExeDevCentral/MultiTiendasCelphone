@@ -1,46 +1,45 @@
 import React, { useState, Suspense, lazy } from 'react';
 import {
   ArrowLeft,
-  ShoppingBag,
-  MessageSquare,
-  ShieldCheck,
-  Truck,
   RotateCw,
-  Star,
-  CheckCircle,
-  Zap,
-  Sparkles,
-  Scale,
-  CreditCard
+  Scale
 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useStore } from '../context/StoreContext';
 import { SEOHead } from '../components/SEOHead';
 import { WebGLErrorBoundary } from '../components/WebGLErrorBoundary';
+import { StickyBuyBar } from '../components/StickyBuyBar';
 import { mercadopagoService } from '../services/mercadopago';
+import { playSubtleClick, playCartSuccess, playSpatialOpen } from '../utils/audioHaptics';
+import { showLuxuryNotification } from '../components/LuxuryToaster';
 
-// Lazy load 3D Studio to drastically optimize initial bundle and mobile LCP
 const PhoneViewer3D = lazy(() =>
-  import('../components/PhoneViewer3D').then(m => ({ default: m.PhoneViewer3D }))
+  import('../components/PhoneViewer3D').then((m) => ({ default: m.PhoneViewer3D }))
 );
 
-export const ProductDetail = ({ product, onBack, onNavigate }) => {
+export const ProductDetail = ({ product, onBack, onNavigate, onOpen3DModal }) => {
   const { addToCart, setIsCheckoutOpen } = useCart();
   const { stores, toggleCompare, comparedProducts } = useStore();
 
-  const storeInfo = stores.find(s => s.id === product.storeId) || stores[0];
-  const [selectedColor, setSelectedColor] = useState(product.colors?.[0] || { name: 'Estándar', hex: '#8e867b' });
-  const [selectedStorage, setSelectedStorage] = useState(product.storageOptions?.[0] || '256 GB');
+  const storeInfo = stores.find((s) => s.id === product.storeId) || stores[0];
+  const [selectedColor, setSelectedColor] = useState(
+    product.colors?.[0] || { name: 'Titanio Natural', hex: '#8a8378', threeHex: '#8e867b' }
+  );
+  const [selectedStorage, setSelectedStorage] = useState(
+    product.storageOptions?.[1] || product.storageOptions?.[0] || '256 GB'
+  );
+  const [viewMode, setViewMode] = useState('image'); // 'image' | '3d'
   const [includeBundle, setIncludeBundle] = useState(false);
   const [loadingPayment, setLoadingPayment] = useState(false);
 
-  const isCompared = comparedProducts.some(p => p.id === product.id);
+  const isCompared = comparedProducts.some((p) => p.id === product.id);
 
   const handleAddToCart = () => {
+    playCartSuccess();
     addToCart(product, {
       color: selectedColor.name,
       storage: selectedStorage,
-      quantity: 1
+      quantity: 1,
     });
 
     if (includeBundle) {
@@ -51,12 +50,18 @@ export const ProductDetail = ({ product, onBack, onNavigate }) => {
         originalPrice: 78,
         type: 'accessory',
         storeId: product.storeId,
-        images: ['https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=400']
+        images: ['https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=400'],
       });
     }
+
+    showLuxuryNotification(
+      'Pieza Añadida a la Bolsa',
+      `${product.name} (${selectedColor.name}, ${selectedStorage})`
+    );
   };
 
   const handleMercadoPagoDirect = async () => {
+    playSubtleClick();
     setLoadingPayment(true);
     try {
       const preference = await mercadopagoService.createPreference({
@@ -67,13 +72,13 @@ export const ProductDetail = ({ product, onBack, onNavigate }) => {
             name: product.name,
             color: selectedColor.name,
             price: includeBundle ? product.price + 49 : product.price,
-            quantity: 1
-          }
+            quantity: 1,
+          },
         ],
         customer: {
-          name: 'Comprador CelStore',
-          email: 'comprador@example.com'
-        }
+          name: 'Comprador CelStore Atelier',
+          email: 'comprador@atelier.com',
+        },
       });
       mercadopagoService.redirectToCheckout(preference);
     } catch (err) {
@@ -86,146 +91,173 @@ export const ProductDetail = ({ product, onBack, onNavigate }) => {
   };
 
   const handleWhatsApp = () => {
+    playSubtleClick();
     const phone = storeInfo?.phoneWhatsApp || '+5491145239900';
     const text = encodeURIComponent(
-      `¡Hola *${storeInfo?.name}*! Quiero comprar el *${product.name}*:\n` +
-      `• Acabado: ${selectedColor.name}\n` +
-      `• Almacenamiento: ${selectedStorage}\n` +
-      `• Precio: $${product.price} USD\n` +
-      (includeBundle ? `• Combo Accesorio: Sí (+$49 USD)\n` : '') +
-      `• Enlace del producto: ${window.location.href}\n\n` +
-      `¿Tienen stock para despacho inmediato?`
+      `¡Hola *${storeInfo?.name}*! Deseo comprar el *${product.name}*:\n` +
+        `• Acabado: ${selectedColor.name}\n` +
+        `• Almacenamiento: ${selectedStorage}\n` +
+        `• Importe: $${product.price} USD\n` +
+        (includeBundle ? `• Combo Accesorio: Sí (+$49 USD)\n` : '') +
+        `• Enlace: ${window.location.href}\n\n` +
+        `¿Cuentan con disponibilidad de stock para despacho inmediato?`
     );
-    window.open(`https://wa.me/${phone.replace(/[^0-9]/g, '')}?text=${text}`, '_blank');
+    window.open(`https://wa.me/${phone.replace(/\D/g, '')}?text=${text}`, '_blank');
   };
 
+  const installmentsAmount = Math.round(product.price / 12);
+
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-12">
-      {/* Dynamic SEO & OpenGraph Meta Tags for WhatsApp Sharing */}
+    <div className="w-full pb-20">
       <SEOHead
         title={`${product.name} en ${storeInfo?.name || 'CelStore'} - $${product.price} USD`}
-        description={product.tagline || product.solutions?.[0]?.description || `Compra ${product.name} con garantía oficial en CelStore MultiTiendas.`}
+        description={product.tagline || product.solutions?.[0]?.description || `Compra ${product.name} con garantía oficial en CelStore Atelier.`}
         image={product.images?.[0] || 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=1200'}
       />
 
-      {/* Top Breadcrumb Bar */}
-      <div className="flex items-center justify-between text-xs text-neutral-400">
+      {/* 1. STICKY BUY BAR (Elemento Firma en PC al hacer Scroll) */}
+      <StickyBuyBar
+        product={product}
+        selectedColor={selectedColor}
+        selectedStorage={selectedStorage}
+        onBuy={handleAddToCart}
+        onOpen3D={() => setViewMode(viewMode === '3d' ? 'image' : '3d')}
+      />
+
+      {/* Top Breadcrumb */}
+      <div className="max-w-[1180px] mx-auto px-6 sm:px-12 pt-8 flex items-center justify-between text-xs text-[#8b8680]">
         <button
-          onClick={onBack}
-          className="flex items-center gap-1.5 hover:text-white transition-colors group"
+          type="button"
+          onClick={() => {
+            playSubtleClick();
+            onBack();
+          }}
+          className="flex items-center gap-2 hover:text-[#f3efe6] transition-colors group cursor-pointer tracking-wider uppercase text-[11px]"
         >
-          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+          <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
           <span>Volver al Catálogo</span>
         </button>
 
-        <div className="flex items-center gap-2">
-          <span className="text-neutral-500">Tienda:</span>
-          <span className="text-blue-400 font-semibold">{storeInfo?.name}</span>
+        <div className="flex items-center gap-2 text-[11px] tracking-wider uppercase">
+          <span className="text-[#8b8680]">Boutique:</span>
+          <span className="text-[#e4c972] font-medium">{storeInfo?.name}</span>
         </div>
       </div>
 
-      {/* Main Product Showcase (2 Columns) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-        {/* Left Column: Interactive 3D Phone Studio with WebGL Error Boundary & Suspense */}
-        <div className="lg:col-span-7 space-y-4">
-          <WebGLErrorBoundary fallbackImages={product.images} height="550px">
-            <Suspense
-              fallback={
-                <div className="h-[550px] w-full rounded-2xl glass-panel flex flex-col items-center justify-center gap-3">
-                  <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-                  <p className="text-xs text-neutral-400 font-mono">Cargando motor 3D WebGL...</p>
-                </div>
-              }
-            >
-              <PhoneViewer3D
-                modelType={product.model3dType || 'modern_flagship'}
-                selectedColor={selectedColor}
-                availableColors={product.colors || []}
-                onColorChange={(c) => setSelectedColor(c)}
-                phoneName={product.name}
-                height="550px"
-              />
-            </Suspense>
-          </WebGLErrorBoundary>
+      {/* 2. HERO / PRODUCT SHOWCASE GRID (Proporciones exactas para PC) */}
+      <section className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-12 py-10 lg:py-16 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+        
+        {/* Left Stage: Visor de Producto con Gradiente Radial de Oro (7 cols) */}
+        <div className="lg:col-span-7 relative">
+          <div className="product-stage w-full min-h-[460px] h-[520px] relative rounded-[28px] overflow-hidden flex items-center justify-center p-6 shadow-2xl">
+            <span className="absolute top-5 left-5 text-[12px] tracking-[0.06em] text-[#8b8680] border border-[rgba(243,239,230,0.16)] px-3 py-1.5 rounded-full backdrop-blur-md z-10 bg-[#0a0a0c]/60">
+              {viewMode === '3d' ? 'Estudio 3D Activo' : 'Vista 3D disponible'}
+            </span>
 
-          <div className="flex items-center justify-between p-4 rounded-2xl glass-panel border border-white/10 text-xs text-neutral-400">
-            <div className="flex items-center gap-2">
-              <RotateCw className="w-4 h-4 text-blue-400 animate-spin" style={{ animationDuration: '10s' }} />
-              <span>Arrastra con el mouse para girar 360° en tiempo real</span>
-            </div>
+            {viewMode === 'image' ? (
+              <img
+                src={product.images?.[0]}
+                alt={product.name}
+                className="max-h-[78%] max-w-[78%] object-contain filter drop-shadow-[0_30px_50px_rgba(0,0,0,0.55)] transition-transform duration-500 hover:scale-105"
+              />
+            ) : (
+              <div className="w-full h-full">
+                <WebGLErrorBoundary fallbackImages={product.images} height="500px">
+                  <Suspense
+                    fallback={
+                      <div className="w-full h-full flex flex-col items-center justify-center gap-3">
+                        <div className="w-6 h-6 border-2 border-[#c9a227] border-t-transparent rounded-full animate-spin" />
+                        <p className="text-xs text-[#8b8680]">Iniciando visor 3D...</p>
+                      </div>
+                    }
+                  >
+                    <PhoneViewer3D
+                      modelType={product.model3dType || 'modern_flagship'}
+                      selectedColor={selectedColor}
+                      availableColors={product.colors || []}
+                      onColorChange={(c) => {
+                        playSubtleClick();
+                        setSelectedColor(c);
+                      }}
+                      phoneName={product.name}
+                      height="500px"
+                    />
+                  </Suspense>
+                </WebGLErrorBoundary>
+              </div>
+            )}
+          </div>
+
+          {/* Toggle entre 2D y 3D debajo del Stage */}
+          <div className="flex items-center justify-between mt-3 px-2 text-xs text-[#8b8680]">
             <button
-              onClick={() => toggleCompare(product)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border transition-all ${
-                isCompared
-                  ? 'bg-blue-600 border-blue-400 text-white'
-                  : 'bg-white/5 border-white/10 text-neutral-300 hover:bg-white/10'
-              }`}
+              type="button"
+              onClick={() => {
+                playSubtleClick();
+                setViewMode(viewMode === '3d' ? 'image' : '3d');
+              }}
+              className="flex items-center gap-1.5 text-[#e4c972] hover:underline cursor-pointer"
+            >
+              <RotateCw className="w-3.5 h-3.5" />
+              <span>{viewMode === '3d' ? 'Ver Fotografía de Estudio' : 'Rotar en Visor 3D Interactivo'}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                playSubtleClick();
+                toggleCompare(product);
+                showLuxuryNotification(
+                  isCompared ? 'Removido de Comparación' : 'Añadido a Comparación',
+                  product.name
+                );
+              }}
+              className="flex items-center gap-1.5 text-[#8b8680] hover:text-[#f3efe6] cursor-pointer"
             >
               <Scale className="w-3.5 h-3.5" />
-              <span>{isCompared ? 'Comparando' : 'Comparar'}</span>
+              <span>{isCompared ? 'En Comparador' : 'Comparar'}</span>
             </button>
           </div>
         </div>
 
-        {/* Right Column: Buying Box & Specifications */}
-        <div className="lg:col-span-5 space-y-6">
+        {/* Right Info: Copy Editorial y Selectores */}
+        <div className="space-y-6">
           <div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-blue-400 bg-blue-500/10 px-2.5 py-0.5 rounded-full border border-blue-500/20">
-                {product.brand} • {product.modelYear}
-              </span>
-              <span className="text-xs text-neutral-400 flex items-center gap-1">
-                <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
-                {product.rating} ({product.reviewCount} reseñas)
-              </span>
-            </div>
+            <p className="eyebrow">
+              {product.generationCategory === 'vintage_classic'
+                ? `Vintage Archive · Edición ${product.modelYear}`
+                : `Flagship ${product.modelYear || '2026'} · Titanio Grado 5`}
+            </p>
 
-            <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-              {product.name}
+            <h1 className="text-3xl sm:text-[40px] font-bold text-[#f3efe6] leading-[1.1] tracking-tight">
+              {product.headline || 'Filmá como en el cine. Editá en el bolsillo.'}
             </h1>
-            <p className="text-xs sm:text-sm text-neutral-400 mt-2 leading-relaxed">
-              {product.tagline || product.condition}
+
+            <p className="text-[16px] sm:text-[17px] text-[#8b8680] leading-[1.6] mt-4 max-w-[42ch]">
+              {product.solutions?.[0]?.description ||
+                'Grabá en calidad de estudio y armá el corte final antes de llegar a casa. Una batería que aguanta el día completo sin que pienses en el cargador.'}
             </p>
           </div>
 
-          {/* Pricing Box */}
-          <div className="p-5 rounded-2xl bg-neutral-900/60 border border-white/10 flex items-center justify-between">
-            <div>
-              <div className="text-xs text-neutral-400">Precio Oficial de Tienda</div>
-              <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-black text-white">${product.price}</span>
-                <span className="text-xs text-neutral-400">USD</span>
-                {product.originalPrice && (
-                  <span className="text-sm text-neutral-500 line-through">
-                    ${product.originalPrice}
-                  </span>
-                )}
-              </div>
-            </div>
-
-            <div className="text-right">
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                <CheckCircle className="w-3 h-3" />
-                {product.stock} disponibles en stock
-              </span>
-            </div>
-          </div>
-
-          {/* Color Selector */}
+          {/* Selector de Color (Swatches circulares de 34px) */}
           {product.colors && product.colors.length > 0 && (
             <div className="space-y-2.5">
-              <label className="text-xs font-bold uppercase tracking-wider text-neutral-300 block">
-                Acabado Exterior: <span className="text-blue-400">{selectedColor.name}</span>
-              </label>
-              <div className="flex items-center gap-2">
+              <p className="text-[12px] text-[#8b8680] tracking-[0.06em] uppercase font-medium">
+                COLOR: <span className="text-[#f3efe6] font-normal">{selectedColor.name}</span>
+              </p>
+              <div className="flex items-center gap-2.5">
                 {product.colors.map((color, idx) => (
                   <button
+                    type="button"
                     key={idx}
-                    onClick={() => setSelectedColor(color)}
-                    className={`w-9 h-9 rounded-full border-2 transition-all flex items-center justify-center ${
+                    onClick={() => {
+                      playSubtleClick();
+                      setSelectedColor(color);
+                    }}
+                    className={`w-[34px] h-[34px] rounded-full border-2 transition-all cursor-pointer ${
                       selectedColor.name === color.name
-                        ? 'border-blue-400 scale-110 ring-2 ring-white/50 shadow-lg'
-                        : 'border-white/20 opacity-80 hover:opacity-100 hover:scale-105'
+                        ? 'border-[#c9a227] scale-110 shadow-lg'
+                        : 'border-transparent opacity-80 hover:opacity-100 hover:scale-105'
                     }`}
                     style={{ backgroundColor: color.hex }}
                     title={color.name}
@@ -235,21 +267,25 @@ export const ProductDetail = ({ product, onBack, onNavigate }) => {
             </div>
           )}
 
-          {/* Storage Options */}
+          {/* Selector de Almacenamiento (Pills de 100px redondeadas) */}
           {product.storageOptions && product.storageOptions.length > 0 && (
             <div className="space-y-2.5">
-              <label className="text-xs font-bold uppercase tracking-wider text-neutral-300 block">
-                Capacidad de Almacenamiento:
-              </label>
-              <div className="grid grid-cols-3 gap-2">
+              <p className="text-[12px] text-[#8b8680] tracking-[0.06em] uppercase font-medium">
+                ALMACENAMIENTO
+              </p>
+              <div className="flex flex-wrap gap-2.5">
                 {product.storageOptions.map((opt, idx) => (
                   <button
+                    type="button"
                     key={idx}
-                    onClick={() => setSelectedStorage(opt)}
-                    className={`py-2.5 rounded-xl border text-xs font-bold transition-all ${
+                    onClick={() => {
+                      playSubtleClick();
+                      setSelectedStorage(opt);
+                    }}
+                    className={`px-[18px] py-[10px] rounded-full text-[13px] transition-all cursor-pointer ${
                       selectedStorage === opt
-                        ? 'bg-blue-600 border-blue-400 text-white shadow-md shadow-blue-600/30'
-                        : 'glass-panel text-neutral-300 hover:bg-white/10'
+                        ? 'border border-[#c9a227] text-[#f3efe6] bg-[rgba(201,162,39,0.08)]'
+                        : 'border border-[rgba(243,239,230,0.16)] text-[#8b8680] hover:text-[#f3efe6]'
                     }`}
                   >
                     {opt}
@@ -259,126 +295,106 @@ export const ProductDetail = ({ product, onBack, onNavigate }) => {
             </div>
           )}
 
-          {/* Cross-Sell Bundle Checkbox */}
-          <div
-            onClick={() => setIncludeBundle(!includeBundle)}
-            className={`p-4 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
-              includeBundle
-                ? 'bg-blue-950/40 border-blue-400 ring-1 ring-blue-400'
-                : 'glass-panel border-white/10 hover:bg-white/5'
-            }`}
-          >
-            <div className="flex items-center gap-3">
-              <div className={`w-5 h-5 rounded-lg border flex items-center justify-center transition-colors ${
-                includeBundle ? 'bg-blue-600 border-blue-400 text-white' : 'border-white/20 bg-neutral-900'
-              }`}>
-                {includeBundle && <CheckCircle className="w-3.5 h-3.5" />}
-              </div>
-              <div>
-                <p className="text-xs font-bold text-white">
-                  Añadir Combo Pro de Accesorios
-                </p>
-                <p className="text-[11px] text-neutral-400">
-                  Cargador Rápido GaN 65W + Funda Blindada Aramida
-                </p>
-              </div>
-            </div>
-            <div className="text-right">
-              <span className="text-xs font-bold text-emerald-400">+$49 USD</span>
-              <span className="text-[10px] text-neutral-500 line-through block">$78 USD</span>
-            </div>
+          {/* Fila de Precios y Cuotas */}
+          <div className="flex items-baseline gap-3 pt-2">
+            <span className="text-[28px] sm:text-[32px] font-bold text-[#f3efe6] font-mono tracking-tight">
+              ${product.price} <span className="text-sm text-[#8b8680] font-sans">USD</span>
+            </span>
+            <span className="text-[13px] text-[#8b8680]">
+              o 12 cuotas sin interés de ${installmentsAmount} USD
+            </span>
           </div>
 
-          {/* Action Buttons */}
-          <div className="space-y-2.5 pt-2">
+          {/* Botones de Acción Primaria */}
+          <div className="flex flex-col sm:flex-row gap-3.5 pt-2">
             <button
+              type="button"
               onClick={handleAddToCart}
-              className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-xl shadow-blue-600/30 transition-all hover:scale-[1.02]"
+              className="flex-1 py-4 px-7 bg-[#c9a227] hover:bg-[#e4c972] text-[#0a0a0c] font-bold text-[15px] rounded-[12px] transition-all cursor-pointer text-center shadow-lg hover:-translate-y-0.5"
             >
-              <ShoppingBag className="w-4 h-4" />
-              <span>Añadir a la Bolsa • ${includeBundle ? product.price + 49 : product.price} USD</span>
+              Comprar
             </button>
 
-            {/* MercadoPago Real Checkout Button */}
             <button
-              onClick={handleMercadoPagoDirect}
-              disabled={loadingPayment}
-              className="w-full py-3.5 px-6 rounded-2xl bg-sky-500 hover:bg-sky-400 text-black font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-sky-500/25 transition-all hover:scale-[1.02]"
+              type="button"
+              onClick={() => {
+                playSpatialOpen();
+                if (onOpen3DModal) {
+                  onOpen3DModal(product, selectedColor);
+                } else {
+                  setViewMode('3d');
+                }
+              }}
+              className="py-4 px-6 rounded-[12px] border border-[rgba(243,239,230,0.16)] hover:border-[#c9a227] text-[#f3efe6] hover:text-[#e4c972] text-[14px] transition-all cursor-pointer whitespace-nowrap"
             >
-              <CreditCard className="w-4 h-4 text-black" />
-              <span>{loadingPayment ? 'Conectando MercadoPago...' : 'Pagar con MercadoPago / Cuotas'}</span>
-            </button>
-
-            {/* WhatsApp Direct Buy */}
-            <button
-              onClick={handleWhatsApp}
-              className="w-full py-3 px-6 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20 transition-all"
-            >
-              <MessageSquare className="w-4 h-4" />
-              <span>Consultar / Pedir por WhatsApp</span>
+              Ver en 3D →
             </button>
           </div>
 
-          {/* Security & Warranty Tags */}
-          <div className="grid grid-cols-2 gap-3 pt-3 border-t border-white/10 text-neutral-400 text-xs">
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-blue-400" />
-              <span>Garantía Oficial {storeInfo?.name}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Truck className="w-4 h-4 text-emerald-400" />
-              <span>Envío Gratis con Seguro</span>
-            </div>
+          {/* Fila de Confianza y Garantía */}
+          <div className="flex flex-wrap gap-6 pt-4 text-[12.5px] text-[#8b8680]">
+            <span className="flex items-center gap-1.5">
+              🚚 Envío gratis
+            </span>
+            <span className="flex items-center gap-1.5">
+              🛡️ Garantía oficial 12 meses
+            </span>
+            <span className="flex items-center gap-1.5">
+              ↩️ Cambio en 30 días
+            </span>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* "QUÉ SOLUCIONA PARA TI" SECTION (Apple Philosophy) */}
-      {product.solutions && product.solutions.length > 0 && (
-        <section className="pt-10 border-t border-white/10 space-y-6">
-          <div className="text-center max-w-2xl mx-auto">
-            <span className="text-xs font-bold uppercase tracking-wider text-blue-400 flex items-center justify-center gap-1.5 mb-2">
-              <Sparkles className="w-4 h-4" />
-              Propuesta de Valor & Soluciones Reales
-            </span>
-            <h3 className="text-3xl font-extrabold text-white">
-              ¿Por qué este teléfono es para ti?
+      {/* 3. BENEFICIOS REALES EN 3 COLUMNAS (Filosofía de Soluciones para PC) */}
+      <section className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-12 pt-12 mt-8 border-t border-[rgba(243,239,230,0.08)]">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+          <div className="space-y-2.5">
+            <span className="text-[#c9a227] text-[20px] block">◆</span>
+            <h3 className="text-[18px] font-semibold text-[#f3efe6]">
+              Autonomía real de todo el día
             </h3>
+            <p className="text-[14.5px] text-[#8b8680] leading-[1.6]">
+              Salís a la mañana y llegás a la noche sin buscar un cargador. Pensado para tu rutina, no para un laboratorio de pruebas.
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {product.solutions.map((sol, idx) => (
-              <div
-                key={idx}
-                className="p-6 rounded-3xl glass-panel border border-white/10 flex flex-col justify-between"
-              >
-                <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-blue-400 px-2.5 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 inline-block mb-3">
-                    {sol.badge}
-                  </span>
-                  <h4 className="text-base font-bold text-white mb-2">{sol.title}</h4>
-                  <p className="text-xs text-neutral-400 leading-relaxed">
-                    {sol.description}
-                  </p>
-                </div>
-              </div>
-            ))}
+          <div className="space-y-2.5">
+            <span className="text-[#c9a227] text-[20px] block">◆</span>
+            <h3 className="text-[18px] font-semibold text-[#f3efe6]">
+              Titanio que aguanta lo que le tirás
+            </h3>
+            <p className="text-[14.5px] text-[#8b8680] leading-[1.6]">
+              Se banca la mochila, el bolsillo y las caídas de todos los días — sin perder el brillo del primer día.
+            </p>
           </div>
-        </section>
-      )}
 
-      {/* SPECIFICATIONS TABLE */}
+          <div className="space-y-2.5">
+            <span className="text-[#c9a227] text-[20px] block">◆</span>
+            <h3 className="text-[18px] font-semibold text-[#f3efe6]">
+              Fotos que no necesitan filtro
+            </h3>
+            <p className="text-[14.5px] text-[#8b8680] leading-[1.6]">
+              Sacá la foto y compartila. El procesamiento hace el resto para que tu recuerdo se vea como lo viviste.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* 4. ESPECIFICACIONES TÉCNICAS (COLAPSIBLE / TABLA) */}
       {product.specs && (
-        <section className="pt-8 border-t border-white/10 space-y-6">
-          <h3 className="text-2xl font-bold text-white">Ficha Técnica Completa</h3>
+        <section className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-12 pt-14 mt-10 border-t border-[rgba(243,239,230,0.08)]">
+          <h3 className="text-xl font-semibold text-[#f3efe6] mb-6">
+            Ficha Técnica de Precisión
+          </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {Object.entries(product.specs).map(([key, val]) => (
               <div
                 key={key}
-                className="p-4 rounded-2xl bg-white/[0.02] border border-white/5 flex items-center justify-between"
+                className="p-4 rounded-xl bg-[#131316] border border-[rgba(243,239,230,0.08)] flex items-center justify-between text-xs"
               >
-                <span className="text-xs text-neutral-400 uppercase font-semibold">{key}</span>
-                <span className="text-xs text-neutral-200 font-medium text-right max-w-[60%]">{val}</span>
+                <span className="text-[#8b8680] uppercase tracking-wider text-[11px] font-medium">{key}</span>
+                <span className="text-[#f3efe6] text-right max-w-[60%] font-mono">{val}</span>
               </div>
             ))}
           </div>

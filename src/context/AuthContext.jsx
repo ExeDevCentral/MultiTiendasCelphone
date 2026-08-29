@@ -1,23 +1,27 @@
+'use client';
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { api } from '../services/api';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(() => {
-    try {
-      const saved = localStorage.getItem('celstore_auth_user');
-      return saved ? JSON.parse(saved) : null;
-    } catch {
-      return null;
-    }
-  });
-
-  const [token, setToken] = useState(() => {
-    return localStorage.getItem('celstore_auth_token') || null;
-  });
-
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    try {
+      if (typeof window !== 'undefined') {
+        const savedUser = localStorage.getItem('celstore_auth_user');
+        const savedToken = localStorage.getItem('celstore_auth_token');
+        if (savedUser) setUser(JSON.parse(savedUser));
+        if (savedToken) setToken(savedToken);
+      }
+    } catch {
+      // fallback
+    }
+  }, []);
 
   const login = async (email, password) => {
     setLoading(true);

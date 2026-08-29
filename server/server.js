@@ -214,7 +214,71 @@ app.delete('/api/products/:id', (req, res) => {
   res.json({ message: 'Producto eliminado correctamente' });
 });
 
-// ================= ATOMIC STOCK DECREMENT & CONCURRENCY =================
+// ================= STAGE 6: DEPTH MAP GENERATION PIPELINE =================
+app.post('/api/products/:id/generate-depth', async (req, res) => {
+  const products = readData(PRODUCTS_FILE);
+  const product = products.find(p => p.id === req.params.id);
+
+  if (!product) return res.status(404).json({ error: 'Producto no encontrado' });
+
+  const photoUrl = product.photo_url || (product.images && product.images[0]);
+  if (!photoUrl) {
+    return res.status(400).json({ error: 'El producto no tiene una imagen principal para generar profundidad' });
+  }
+
+  // 1. Marcar como procesando
+  product.depth_status = 'processing';
+  writeData(PRODUCTS_FILE, products);
+
+  try {
+    const replicateToken = process.env.REPLICATE_API_TOKEN;
+
+    if (replicateToken) {
+      const response = await fetch("https://api.replicate.com/v1/predictions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${replicateToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          version: "depth-anything/depth-anything-v2:latest",
+          input: { image: photoUrl },
+        }),
+      });
+
+      const prediction = await response.json();
+      let depthResult = prediction;
+
+      while (depthResult.status !== "succeeded" && depthResult.status !== "failed") {
+        await new Promise((r) => setTimeout(r, 1000));
+        const pollRes = await fetch(`https://api.replicate.com/v1/predictions/${depthResult.id}`, {
+          headers: { Authorization: `Bearer ${replicateToken}` },
+        });
+        depthResult = await pollRes.json();
+      }
+
+      if (depthResult.status === "succeeded") {
+        product.depth_map_url = depthResult.output;
+        product.depth_status = 'ready';
+      } else {
+        product.depth_status = 'error';
+      }
+    } else {
+      // Simulación de inferencia local inmediata lista para visualización
+      product.depth_map_url = photoUrl;
+      product.depth_status = 'ready';
+    }
+
+    writeData(PRODUCTS_FILE, products);
+    return res.json({ success: true, product });
+  } catch (error) {
+    console.error('Error generating depth map:', error);
+    product.depth_status = 'error';
+    writeData(PRODUCTS_FILE, products);
+    return res.status(500).json({ error: 'Fallo al procesar mapa de profundidad', details: error.message });
+  }
+});
+
 app.post('/api/products/:id/decrease-stock', (req, res) => {
   const { quantity = 1 } = req.body;
   const products = readData(PRODUCTS_FILE);

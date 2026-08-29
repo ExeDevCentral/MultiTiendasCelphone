@@ -1,6 +1,8 @@
+'use client';
+
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { RotateCw, ZoomIn, Eye, Sparkles, Smartphone, Layers, RefreshCw, Palette } from 'lucide-react';
+import { RotateCw, ZoomIn, Sparkles, Smartphone, RefreshCw, Palette, Eye } from 'lucide-react';
 
 export const PhoneViewer3D = ({
   modelType = 'modern_flagship', // 'modern_flagship' | 'vintage_bar' | 'vintage_flip'
@@ -167,8 +169,9 @@ export const PhoneViewer3D = ({
   useEffect(() => {
     if (!mountRef.current) return;
 
-    const width = mountRef.current.clientWidth || 450;
-    const heightNum = mountRef.current.clientHeight || 480;
+    const width = mountRef.current.clientWidth > 50 ? mountRef.current.clientWidth : 520;
+    const computedHeight = mountRef.current.clientHeight > 50 ? mountRef.current.clientHeight : (parseInt(height, 10) || 520);
+    const heightNum = computedHeight;
 
     // 1. Scene setup
     const scene = new THREE.Scene();
@@ -180,7 +183,7 @@ export const PhoneViewer3D = ({
     cameraRef.current = camera;
 
     // 3. Renderer
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
     renderer.setSize(width, heightNum);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.shadowMap.enabled = true;
@@ -190,20 +193,20 @@ export const PhoneViewer3D = ({
     mountRef.current.innerHTML = '';
     mountRef.current.appendChild(renderer.domElement);
 
-    // 4. Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
+    // 4. Studio Lighting de Alta Costura
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1.4);
     scene.add(ambientLight);
 
-    const mainKeyLight = new THREE.DirectionalLight(0xffffff, 2.5);
+    const mainKeyLight = new THREE.DirectionalLight(0xffffff, 2.8);
     mainKeyLight.position.set(5, 8, 7);
     mainKeyLight.castShadow = true;
     scene.add(mainKeyLight);
 
-    const rimBlueLight = new THREE.DirectionalLight(0x2997ff, 3.0);
-    rimBlueLight.position.set(-6, -4, -5);
-    scene.add(rimBlueLight);
+    const rimChampagneLight = new THREE.DirectionalLight(0xc5a880, 2.5);
+    rimChampagneLight.position.set(-6, -4, -5);
+    scene.add(rimChampagneLight);
 
-    const bottomFillLight = new THREE.PointLight(0xffffff, 1.2, 20);
+    const bottomFillLight = new THREE.PointLight(0xf5e0c3, 1.2, 20);
     bottomFillLight.position.set(0, -5, 4);
     scene.add(bottomFillLight);
 
@@ -529,21 +532,22 @@ export const PhoneViewer3D = ({
   };
 
   return (
-    <div className="relative w-full rounded-2xl overflow-hidden glass-panel border border-white/10 shadow-2xl group select-none">
+    <div className="relative w-full rounded-2xl overflow-hidden bg-[#131316] border border-[rgba(243,239,230,0.12)] shadow-2xl group select-none">
       {/* Top Floating Info Bar */}
       <div className="absolute top-4 left-4 right-4 z-10 flex items-center justify-between pointer-events-none">
-        <div className="flex items-center gap-2 bg-black/60 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/10 text-xs font-medium text-neutral-300 pointer-events-auto">
-          <Smartphone className="w-3.5 h-3.5 text-blue-400" />
+        <div className="flex items-center gap-2 bg-[#0a0a0c]/85 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-[rgba(243,239,230,0.16)] text-xs font-medium text-[#f3efe6] pointer-events-auto">
+          <Smartphone className="w-3.5 h-3.5 text-[#e4c972]" />
           <span>Visor 3D Interactivo 360°</span>
         </div>
 
         <div className="flex items-center gap-2 pointer-events-auto">
           <button
+            type="button"
             onClick={() => setAutoRotate(!autoRotate)}
-            className={`p-2 rounded-full border transition-all text-xs flex items-center gap-1.5 backdrop-blur-md ${
+            className={`p-2 rounded-full border transition-all text-xs flex items-center gap-1.5 backdrop-blur-md cursor-pointer ${
               autoRotate
-                ? 'bg-blue-600/80 border-blue-400 text-white'
-                : 'bg-black/60 border-white/10 text-neutral-400 hover:text-white'
+                ? 'bg-[rgba(201,162,39,0.20)] border-[#c9a227] text-[#e4c972]'
+                : 'bg-[#0a0a0c]/85 border-[rgba(243,239,230,0.16)] text-[#8b8680] hover:text-[#f3efe6]'
             }`}
             title="Auto-rotación"
           >
@@ -552,8 +556,9 @@ export const PhoneViewer3D = ({
           </button>
 
           <button
+            type="button"
             onClick={resetView}
-            className="p-2 rounded-full bg-black/60 hover:bg-white/10 border border-white/10 text-neutral-300 hover:text-white transition-all text-xs"
+            className="p-2 rounded-full bg-[#0a0a0c]/85 hover:bg-[#1b1b1f] border border-[rgba(243,239,230,0.16)] text-[#8b8680] hover:text-[#f3efe6] transition-all text-xs cursor-pointer"
             title="Centrar Vista"
           >
             <RefreshCw className="w-3.5 h-3.5" />
@@ -568,38 +573,39 @@ export const PhoneViewer3D = ({
         className="w-full cursor-grab active:cursor-grabbing flex items-center justify-center relative"
       >
         {loading && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-neutral-950/80 backdrop-blur-sm z-20">
-            <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-            <p className="text-xs text-neutral-400 font-mono">Renderizando modelo 3D PBR...</p>
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-[#0a0a0c]/90 backdrop-blur-sm z-20">
+            <div className="w-8 h-8 border-2 border-[#c9a227] border-t-transparent rounded-full animate-spin" />
+            <p className="text-xs text-[#8b8680] font-mono">Renderizando modelo 3D PBR...</p>
           </div>
         )}
       </div>
 
       {/* Interactive Bottom Control Toolbar */}
-      <div className="absolute bottom-4 left-4 right-4 z-10 flex flex-wrap items-center justify-between gap-3 bg-neutral-900/80 backdrop-blur-xl p-3 rounded-2xl border border-white/10 shadow-lg">
+      <div className="absolute bottom-4 left-4 right-4 z-10 flex flex-wrap items-center justify-between gap-3 bg-[#0a0a0c]/90 backdrop-blur-xl p-3 rounded-2xl border border-[rgba(243,239,230,0.12)] shadow-lg">
         {/* Colors Palette */}
         {availableColors.length > 0 && (
           <div className="flex items-center gap-2">
-            <span className="text-[11px] text-neutral-400 uppercase tracking-wider font-semibold flex items-center gap-1">
-              <Palette className="w-3 h-3 text-neutral-400" />
+            <span className="text-[11px] text-[#8b8680] uppercase tracking-wider font-semibold flex items-center gap-1">
+              <Palette className="w-3 h-3 text-[#8b8680]" />
               Acabado:
             </span>
             <div className="flex items-center gap-1.5">
               {availableColors.map((col, idx) => (
                 <button
+                  type="button"
                   key={idx}
                   onClick={() => onColorChange && onColorChange(col)}
-                  className={`w-6 h-6 rounded-full border-2 transition-transform hover:scale-110 ${
+                  className={`w-6 h-6 rounded-full border-2 transition-transform hover:scale-110 cursor-pointer ${
                     selectedColor?.name === col.name
-                      ? 'border-blue-400 scale-110 shadow-md shadow-blue-500/30 ring-2 ring-white/30'
-                      : 'border-white/20 opacity-80 hover:opacity-100'
+                      ? 'border-[#c9a227] scale-110 shadow-md ring-2 ring-white/30'
+                      : 'border-transparent opacity-70 hover:opacity-100'
                   }`}
                   style={{ backgroundColor: col.hex }}
                   title={col.name}
                 />
               ))}
             </div>
-            <span className="text-xs text-neutral-300 font-medium hidden md:inline ml-1">
+            <span className="text-xs text-[#f3efe6] font-medium hidden md:inline ml-1">
               {selectedColor?.name}
             </span>
           </div>
@@ -610,11 +616,12 @@ export const PhoneViewer3D = ({
           {modelType === 'modern_flagship' && (
             <>
               <button
+                type="button"
                 onClick={() => setScreenMode(screenMode === 'camera' ? 'wallpaper' : 'camera')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium border flex items-center gap-1.5 transition-all ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium border flex items-center gap-1.5 transition-all cursor-pointer ${
                   screenMode === 'camera'
-                    ? 'bg-amber-500/20 border-amber-400 text-amber-300'
-                    : 'bg-white/5 border-white/10 text-neutral-300 hover:bg-white/10'
+                    ? 'bg-[rgba(201,162,39,0.20)] border-[#c9a227] text-[#e4c972]'
+                    : 'bg-[#1b1b1f] border-[rgba(243,239,230,0.16)] text-[#8b8680] hover:text-[#f3efe6]'
                 }`}
               >
                 <Eye className="w-3.5 h-3.5" />
@@ -622,11 +629,12 @@ export const PhoneViewer3D = ({
               </button>
 
               <button
+                type="button"
                 onClick={toggleCameraZoom}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium border flex items-center gap-1.5 transition-all ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium border flex items-center gap-1.5 transition-all cursor-pointer ${
                   cameraZoomed
-                    ? 'bg-blue-600 border-blue-400 text-white'
-                    : 'bg-white/5 border-white/10 text-neutral-300 hover:bg-white/10'
+                    ? 'bg-[rgba(201,162,39,0.20)] border-[#c9a227] text-[#e4c972]'
+                    : 'bg-[#1b1b1f] border-[rgba(243,239,230,0.16)] text-[#8b8680] hover:text-[#f3efe6]'
                 }`}
               >
                 <ZoomIn className="w-3.5 h-3.5" />
@@ -636,7 +644,7 @@ export const PhoneViewer3D = ({
           )}
 
           {modelType === 'vintage_bar' && (
-            <div className="px-3 py-1 text-xs bg-amber-500/10 border border-amber-500/30 text-amber-300 rounded-lg flex items-center gap-1.5">
+            <div className="px-3 py-1 text-xs bg-[rgba(201,162,39,0.10)] border border-[#c9a227]/40 text-[#e4c972] rounded-lg flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5" />
               <span>Snake II & Pantalla LCD Retro</span>
             </div>

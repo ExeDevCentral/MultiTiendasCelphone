@@ -1,15 +1,13 @@
+'use client';
+
 import React, { useState } from 'react';
 import {
-  Smartphone,
   ShoppingBag,
   Scale,
   Search,
   Store,
   ChevronDown,
-  User,
   Shield,
-  Layers,
-  Zap,
   History,
   X,
   Menu
@@ -17,6 +15,7 @@ import {
 import { useStore } from '../context/StoreContext';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import { playSubtleClick } from '../utils/audioHaptics';
 
 export const Navbar = ({ currentView, onNavigate }) => {
   const {
@@ -39,6 +38,7 @@ export const Navbar = ({ currentView, onNavigate }) => {
   const [showSearchModal, setShowSearchModal] = useState(false);
 
   const handleStoreSelect = (store) => {
+    playSubtleClick();
     setActiveStore(store);
     setIsStoreMenuOpen(false);
     if (store) {
@@ -49,6 +49,7 @@ export const Navbar = ({ currentView, onNavigate }) => {
   };
 
   const handleNavClick = (view, genCategory = null) => {
+    playSubtleClick();
     if (genCategory) {
       setGenerationFilter(genCategory);
     }
@@ -58,295 +59,277 @@ export const Navbar = ({ currentView, onNavigate }) => {
 
   return (
     <>
-      <header className="sticky top-0 z-40 w-full px-4 py-3 transition-all duration-300">
-        <div className="max-w-7xl mx-auto rounded-full glass-panel border border-white/10 px-4 sm:px-6 py-2.5 flex items-center justify-between shadow-2xl backdrop-blur-2xl">
-          {/* Brand Logo */}
+      <header className="sticky top-0 z-40 w-full px-6 sm:px-10 lg:px-12 py-4 bg-[#0a0a0c]/85 backdrop-blur-md border-b border-[rgba(243,239,230,0.08)] transition-all duration-300">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          
+          {/* Brand Logo Wordmark (Cormorant Garamond Italic 22px) */}
           <div
             onClick={() => handleNavClick('home')}
-            className="flex items-center gap-2.5 cursor-pointer group select-none"
+            className="flex items-center gap-3 cursor-pointer group select-none"
           >
-            <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-sky-400 p-0.5 shadow-lg shadow-blue-500/25 group-hover:scale-105 transition-transform flex items-center justify-center">
-              <Smartphone className="w-5 h-5 text-white" />
-            </div>
-            <div className="flex flex-col">
-              <span className="font-extrabold text-sm sm:text-base tracking-tight text-white flex items-center gap-1">
-                CelStore<span className="text-blue-400 text-xs font-mono">3D</span>
-              </span>
-              <span className="text-[9px] text-neutral-400 tracking-wider uppercase font-semibold hidden sm:inline">
-                Multi-Tiendas Generacional
-              </span>
-            </div>
+            <span className="wordmark text-[22px] sm:text-[24px] text-[#f3efe6] tracking-[0.02em] hover:text-[#e4c972] transition-colors">
+              CelStore
+            </span>
           </div>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-1 text-xs font-medium text-neutral-300">
+          <nav className="hidden lg:flex items-center gap-8 text-[13px] tracking-[0.04em] text-[#8b8680]">
             <button
+              type="button"
               onClick={() => handleNavClick('home')}
-              className={`px-3 py-1.5 rounded-full transition-all ${
-                currentView === 'home' ? 'bg-white/10 text-white font-semibold' : 'hover:text-white hover:bg-white/5'
+              className={`transition-colors cursor-pointer ${
+                currentView === 'home' && generationFilter === 'all'
+                  ? 'text-[#f3efe6] font-medium'
+                  : 'hover:text-[#f3efe6]'
               }`}
             >
-              Inicio
+              Colección
             </button>
 
             <button
+              type="button"
               onClick={() => handleNavClick('home', 'last_2_years')}
-              className={`px-3 py-1.5 rounded-full transition-all flex items-center gap-1.5 ${
-                generationFilter === 'last_2_years' ? 'bg-blue-500/20 text-blue-400 font-semibold' : 'hover:text-white hover:bg-white/5'
+              className={`transition-colors cursor-pointer ${
+                generationFilter === 'last_2_years'
+                  ? 'text-[#e4c972] font-medium'
+                  : 'hover:text-[#f3efe6]'
               }`}
             >
-              <Zap className="w-3.5 h-3.5 text-blue-400" />
-              <span>Últimos 2 Años</span>
+              Flagships 2024-2026
             </button>
 
             <button
+              type="button"
               onClick={() => handleNavClick('home', 'vintage_classic')}
-              className={`px-3 py-1.5 rounded-full transition-all flex items-center gap-1.5 ${
-                generationFilter === 'vintage_classic' ? 'bg-amber-500/20 text-amber-400 font-semibold' : 'hover:text-white hover:bg-white/5'
+              className={`transition-colors cursor-pointer ${
+                generationFilter === 'vintage_classic'
+                  ? 'text-[#e4c972] font-medium'
+                  : 'hover:text-[#f3efe6]'
               }`}
             >
-              <History className="w-3.5 h-3.5 text-amber-400" />
-              <span>Clásicos & Vintage</span>
+              Vintage Archive
             </button>
 
             <button
+              type="button"
               onClick={() => handleNavClick('accessories')}
-              className={`px-3 py-1.5 rounded-full transition-all flex items-center gap-1.5 ${
-                currentView === 'accessories' ? 'bg-cyan-500/20 text-cyan-400 font-semibold' : 'hover:text-white hover:bg-white/5'
+              className={`transition-colors cursor-pointer ${
+                currentView === 'accessories'
+                  ? 'text-[#f3efe6] font-medium'
+                  : 'hover:text-[#f3efe6]'
               }`}
             >
-              <span>Accesorios</span>
+              Accesorios
             </button>
 
             <button
+              type="button"
               onClick={() => handleNavClick('store_selector')}
-              className={`px-3 py-1.5 rounded-full transition-all flex items-center gap-1.5 ${
-                currentView === 'store_selector' ? 'bg-white/10 text-white font-semibold' : 'hover:text-white hover:bg-white/5'
+              className={`transition-colors cursor-pointer ${
+                currentView === 'store_selector'
+                  ? 'text-[#f3efe6] font-medium'
+                  : 'hover:text-[#f3efe6]'
               }`}
             >
-              <Store className="w-3.5 h-3.5" />
-              <span>Sucursales</span>
+              Boutiques
             </button>
           </nav>
 
-          {/* Right Action Icons & Active Store Selector */}
-          <div className="flex items-center gap-2 sm:gap-2.5">
-            {/* Active Store Switcher Dropdown */}
+          {/* Right Action Icons */}
+          <div className="flex items-center gap-3">
+            {/* Search Trigger */}
+            <button
+              type="button"
+              onClick={() => {
+                playSubtleClick();
+                setShowSearchModal(true);
+              }}
+              className="p-2 text-[#8b8680] hover:text-[#f3efe6] transition-colors cursor-pointer"
+              title="Buscar en catálogo"
+            >
+              <Search className="w-4 h-4" />
+            </button>
+
+            {/* Comparador de Modelos */}
+            {comparedProducts.length > 0 && (
+              <button
+                type="button"
+                onClick={() => {
+                  playSubtleClick();
+                  setIsCompareOpen(true);
+                }}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#c9a227] text-[#e4c972] bg-[rgba(201,162,39,0.08)] text-[11px] font-medium transition-all hover:bg-[rgba(201,162,39,0.15)] cursor-pointer"
+              >
+                <Scale className="w-3.5 h-3.5" />
+                <span>{comparedProducts.length}</span>
+              </button>
+            )}
+
+            {/* Selector de Sucursal Activa */}
             <div className="relative">
               <button
-                onClick={() => setIsStoreMenuOpen(!isStoreMenuOpen)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-neutral-200 transition-all"
-                title="Cambiar Tienda / Sucursal"
+                type="button"
+                onClick={() => {
+                  playSubtleClick();
+                  setIsStoreMenuOpen(!isStoreMenuOpen);
+                }}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-[rgba(243,239,230,0.16)] text-[#8b8680] hover:text-[#f3efe6] text-[11px] transition-all cursor-pointer max-w-[130px] sm:max-w-[170px]"
               >
-                <Store className="w-3.5 h-3.5 text-blue-400" />
-                <span className="max-w-[90px] sm:max-w-[120px] truncate font-medium">
-                  {activeStore ? activeStore.name : 'Todas las Tiendas'}
-                </span>
-                <ChevronDown className="w-3 h-3 text-neutral-400" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#c9a227] shrink-0" />
+                <span className="truncate">{activeStore?.name || 'Todas las Tiendas'}</span>
+                <ChevronDown className="w-3 h-3 shrink-0 text-[#8b8680]" />
               </button>
 
-              {/* Store Dropdown Menu */}
               {isStoreMenuOpen && (
-                <div className="absolute right-0 mt-2 w-64 rounded-2xl glass-panel border border-white/15 p-2 shadow-2xl z-50 text-xs">
-                  <div className="px-3 py-1.5 text-[10px] uppercase font-bold text-neutral-400 tracking-wider border-b border-white/10 mb-1">
-                    Selecciona Sucursal
+                <div className="absolute right-0 mt-3 w-64 rounded-2xl bg-[#131316] border border-[rgba(243,239,230,0.16)] shadow-2xl p-2 z-50 backdrop-blur-2xl">
+                  <div className="px-3 py-2 border-b border-[rgba(243,239,230,0.08)] text-[9px] tracking-[0.25em] uppercase text-[#e4c972]">
+                    Seleccionar Sucursal
                   </div>
                   <button
+                    type="button"
                     onClick={() => handleStoreSelect(null)}
-                    className={`w-full text-left px-3 py-2 rounded-xl transition-colors flex items-center justify-between ${
-                      !activeStore ? 'bg-blue-600 text-white font-semibold' : 'text-neutral-300 hover:bg-white/10'
+                    className={`w-full text-left px-3 py-2 rounded-xl text-xs transition-all cursor-pointer ${
+                      !activeStore ? 'bg-[rgba(243,239,230,0.08)] text-[#f3efe6]' : 'text-[#8b8680] hover:text-[#f3efe6]'
                     }`}
                   >
-                    <span>🌐 Todas las Tiendas (Hub Global)</span>
+                    Todas las Boutiques (Catálogo Global)
                   </button>
-
                   {stores.map((s) => (
                     <button
+                      type="button"
                       key={s.id}
                       onClick={() => handleStoreSelect(s)}
-                      className={`w-full text-left px-3 py-2 rounded-xl transition-colors flex flex-col mt-1 ${
+                      className={`w-full text-left px-3 py-2 rounded-xl text-xs transition-all flex items-center justify-between cursor-pointer ${
                         activeStore?.id === s.id
-                          ? 'bg-blue-600 text-white font-semibold'
-                          : 'text-neutral-300 hover:bg-white/10'
+                          ? 'bg-[rgba(201,162,39,0.15)] text-[#e4c972]'
+                          : 'text-[#8b8680] hover:text-[#f3efe6]'
                       }`}
                     >
-                      <span className="font-medium truncate">{s.name}</span>
-                      <span className="text-[10px] opacity-75">{s.specialty}</span>
+                      <span className="truncate">{s.name}</span>
+                      <span className="text-[10px] text-[#c9a227]">★ {s.rating}</span>
                     </button>
                   ))}
                 </div>
               )}
             </div>
 
-            {/* Quick Search Button */}
+            {/* Bolsa de Compras (Cart) */}
             <button
-              onClick={() => setShowSearchModal(true)}
-              className="p-2 rounded-full hover:bg-white/10 text-neutral-300 hover:text-white transition-colors"
-              title="Buscar celular o solución"
-            >
-              <Search className="w-4 h-4" />
-            </button>
-
-            {/* Compare Badge Trigger */}
-            {comparedProducts.length > 0 && (
-              <button
-                onClick={() => setIsCompareOpen(true)}
-                className="relative p-2 rounded-full bg-blue-600/20 text-blue-400 border border-blue-500/40 hover:bg-blue-600/30 transition-colors"
-                title="Comparar modelos seleccionados"
-              >
-                <Scale className="w-4 h-4" />
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-md">
-                  {comparedProducts.length}
-                </span>
-              </button>
-            )}
-
-            {/* Cart Button */}
-            <button
-              onClick={() => setIsCartOpen(true)}
-              className="relative p-2 sm:px-3 sm:py-1.5 rounded-full bg-blue-600 hover:bg-blue-500 text-white transition-all flex items-center gap-1.5 shadow-md shadow-blue-600/25 hover:scale-105"
-              title="Ver Bolsa de Compras"
+              type="button"
+              onClick={() => {
+                playSubtleClick();
+                setIsCartOpen(true);
+              }}
+              className="relative p-2.5 rounded-xl border border-[rgba(243,239,230,0.16)] hover:border-[#c9a227] text-[#f3efe6] hover:text-[#e4c972] transition-colors cursor-pointer"
+              title="Bolsa de compras"
             >
               <ShoppingBag className="w-4 h-4" />
-              <span className="hidden sm:inline text-xs font-bold font-mono">{itemCount}</span>
               {itemCount > 0 && (
-                <span className="sm:hidden absolute -top-1 -right-1 w-4 h-4 bg-rose-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-[#c9a227] text-[#0a0a0c] text-[10px] font-bold flex items-center justify-center shadow-md">
                   {itemCount}
                 </span>
               )}
             </button>
 
-            {/* Admin / Store Manager Portal Link */}
-            {isAuthenticated ? (
-              <button
-                onClick={() => handleNavClick('admin_dashboard')}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-xs font-semibold hover:bg-emerald-500/30 transition-all"
-                title="Panel de Administración"
-              >
-                <Shield className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Panel Admin</span>
-              </button>
-            ) : (
-              <button
-                onClick={() => handleNavClick('admin_login')}
-                className="p-2 rounded-full hover:bg-white/10 text-neutral-400 hover:text-white transition-colors"
-                title="Login Dueños de Tienda"
-              >
-                <User className="w-4 h-4" />
-              </button>
-            )}
-
-            {/* Mobile Hamburger Toggle */}
+            {/* Acceso Admin */}
             <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden p-2 rounded-full hover:bg-white/10 text-neutral-300 hover:text-white"
+              type="button"
+              onClick={() => {
+                playSubtleClick();
+                if (isAuthenticated) {
+                  onNavigate('admin_dashboard');
+                } else {
+                  onNavigate('admin_login');
+                }
+              }}
+              className="hidden sm:flex p-2 text-[#8b8680] hover:text-[#f3efe6] transition-colors cursor-pointer"
+              title={isAuthenticated ? 'Panel de Administración' : 'Ingreso Admin'}
             >
-              <Menu className="w-5 h-5" />
+              <Shield className="w-4 h-4" />
+            </button>
+
+            {/* Mobile Menu Toggle */}
+            <button
+              type="button"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="lg:hidden p-2 text-[#8b8680] hover:text-[#f3efe6]"
+            >
+              {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5 text-[#f3efe6]" />}
             </button>
           </div>
         </div>
 
-        {/* Mobile Menu Dropdown */}
+        {/* Mobile Navigation Dropdown */}
         {isMobileMenuOpen && (
-          <div className="lg:hidden mt-2 max-w-7xl mx-auto rounded-3xl glass-panel border border-white/15 p-4 shadow-2xl space-y-2 text-sm text-neutral-200">
+          <div className="lg:hidden mt-3 max-w-[1180px] mx-auto rounded-2xl bg-[#131316] border border-[rgba(243,239,230,0.16)] p-5 space-y-2">
             <button
+              type="button"
               onClick={() => handleNavClick('home')}
-              className="w-full text-left px-4 py-2.5 rounded-xl hover:bg-white/10 transition-colors"
+              className="w-full text-left px-4 py-3 rounded-xl text-xs text-[#8b8680] hover:text-[#f3efe6]"
             >
-              🏠 Inicio
+              Colección Principal
             </button>
             <button
+              type="button"
               onClick={() => handleNavClick('home', 'last_2_years')}
-              className="w-full text-left px-4 py-2.5 rounded-xl hover:bg-white/10 transition-colors text-blue-400 font-semibold"
+              className="w-full text-left px-4 py-3 rounded-xl text-xs text-[#8b8680] hover:text-[#f3efe6]"
             >
-              🚀 Últimos 2 Años (2024 - 2026)
+              Flagships (2024 - 2026)
             </button>
             <button
+              type="button"
               onClick={() => handleNavClick('home', 'vintage_classic')}
-              className="w-full text-left px-4 py-2.5 rounded-xl hover:bg-white/10 transition-colors text-amber-400 font-semibold"
+              className="w-full text-left px-4 py-3 rounded-xl text-xs text-[#8b8680] hover:text-[#f3efe6]"
             >
-              📟 Clásicos & Vintage Legends
+              Vintage Archive Legends
             </button>
             <button
+              type="button"
               onClick={() => handleNavClick('accessories')}
-              className="w-full text-left px-4 py-2.5 rounded-xl hover:bg-white/10 transition-colors text-cyan-400"
+              className="w-full text-left px-4 py-3 rounded-xl text-xs text-[#8b8680] hover:text-[#f3efe6]"
             >
-              ⚡ Mini-Tienda de Accesorios
+              Accesorios Exclusivos
             </button>
             <button
+              type="button"
               onClick={() => handleNavClick('store_selector')}
-              className="w-full text-left px-4 py-2.5 rounded-xl hover:bg-white/10 transition-colors"
+              className="w-full text-left px-4 py-3 rounded-xl text-xs text-[#8b8680] hover:text-[#f3efe6]"
             >
-              🏬 Directorio de Sucursales
-            </button>
-            <button
-              onClick={() => handleNavClick(isAuthenticated ? 'admin_dashboard' : 'admin_login')}
-              className="w-full text-left px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-emerald-400 font-semibold"
-            >
-              🔒 {isAuthenticated ? 'Mi Panel de Tienda' : 'Acceso Administrador de Tienda'}
+              Boutiques Multi-Tienda
             </button>
           </div>
         )}
       </header>
 
-      {/* Global Search Modal */}
+      {/* Modal de Búsqueda */}
       {showSearchModal && (
-        <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4">
+        <div className="fixed inset-0 z-50 flex items-start justify-center pt-24 px-4 bg-black/85 backdrop-blur-xl">
           <div
             onClick={() => setShowSearchModal(false)}
-            className="fixed inset-0 bg-black/80 backdrop-blur-md"
+            className="fixed inset-0"
           />
-          <div className="relative w-full max-w-xl bg-neutral-950 border border-white/20 rounded-3xl p-5 shadow-2xl text-white z-10">
-            <div className="flex items-center justify-between pb-3 border-b border-white/10">
-              <div className="flex items-center gap-2 text-neutral-400 text-xs font-semibold uppercase">
-                <Search className="w-4 h-4 text-blue-400" />
-                <span>Búsqueda Inteligente de Celulares & Soluciones</span>
-              </div>
-              <button
-                onClick={() => setShowSearchModal(false)}
-                className="p-1 text-neutral-500 hover:text-white"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="mt-4">
+          <div className="relative w-full max-w-2xl bg-[#131316] border border-[rgba(243,239,230,0.16)] rounded-3xl p-6 shadow-2xl z-10 space-y-4">
+            <div className="flex items-center gap-3 border-b border-[rgba(243,239,230,0.08)] pb-4">
+              <Search className="w-5 h-5 text-[#c9a227]" />
               <input
                 type="text"
-                autoFocus
-                placeholder="Ej. iPhone 16, Nokia Snake, Batería 2 días, Cámara 4K..."
+                placeholder="Buscar por modelo, marca (Apple, Samsung, Nokia) o año..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-neutral-900 border border-white/15 rounded-2xl px-4 py-3 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-blue-500"
+                autoFocus
+                className="w-full bg-transparent text-[#f3efe6] placeholder-[#8b8680] text-sm focus:outline-none"
               />
+              <button
+                type="button"
+                onClick={() => setShowSearchModal(false)}
+                className="p-1.5 text-[#8b8680] hover:text-[#f3efe6] cursor-pointer"
+              >
+                ✕
+              </button>
             </div>
-
-            <div className="mt-4 flex flex-wrap gap-2 text-xs">
-              <span className="text-neutral-500 text-[11px] self-center">Populares:</span>
-              <button
-                onClick={() => { setSearchQuery('iPhone 16'); setShowSearchModal(false); }}
-                className="px-2.5 py-1 rounded-full bg-white/5 hover:bg-blue-600 text-neutral-300 hover:text-white transition-colors"
-              >
-                iPhone 16 Pro Max
-              </button>
-              <button
-                onClick={() => { setSearchQuery('Nokia'); setShowSearchModal(false); }}
-                className="px-2.5 py-1 rounded-full bg-white/5 hover:bg-amber-600 text-neutral-300 hover:text-white transition-colors"
-              >
-                Nokia 3310
-              </button>
-              <button
-                onClick={() => { setSearchQuery('RAZR'); setShowSearchModal(false); }}
-                className="px-2.5 py-1 rounded-full bg-white/5 hover:bg-pink-600 text-neutral-300 hover:text-white transition-colors"
-              >
-                Motorola RAZR V3
-              </button>
-              <button
-                onClick={() => { setSearchQuery('MagSafe'); setShowSearchModal(false); }}
-                className="px-2.5 py-1 rounded-full bg-white/5 hover:bg-cyan-600 text-neutral-300 hover:text-white transition-colors"
-              >
-                Cargador MagSafe
-              </button>
+            <div className="flex items-center justify-between text-[10px] tracking-widest uppercase text-[#8b8680]">
+              <span>Presiona Esc para salir</span>
+              <span>Resultados en tiempo real</span>
             </div>
           </div>
         </div>

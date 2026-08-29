@@ -1,24 +1,36 @@
+'use client';
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { api } from '../services/api';
 
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-  const [items, setItems] = useState(() => {
-    try {
-      const saved = localStorage.getItem('celstore_cart');
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
-  });
-
+  const [items, setItems] = useState([]);
+  const [isLoaded, setIsLoaded] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [crossStoreConflict, setCrossStoreConflict] = useState(null); // { pendingProduct, pendingOptions, currentStoreName, newStoreName }
 
   useEffect(() => {
-    localStorage.setItem('celstore_cart', JSON.stringify(items));
-  }, [items]);
+    try {
+      const saved = typeof window !== 'undefined' ? localStorage.getItem('celstore_cart') : null;
+      if (saved) setItems(JSON.parse(saved));
+    } catch {
+      // fallback
+    }
+    setIsLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (isLoaded && typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('celstore_cart', JSON.stringify(items));
+      } catch {
+        // fallback
+      }
+    }
+  }, [items, isLoaded]);
 
   // Current active store in cart
   const cartStoreId = items.length > 0 ? items[0].storeId : null;

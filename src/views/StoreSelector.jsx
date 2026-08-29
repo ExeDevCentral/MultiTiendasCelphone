@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { Store, MapPin, Phone, Star, ArrowRight, ShieldCheck, Sparkles } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
