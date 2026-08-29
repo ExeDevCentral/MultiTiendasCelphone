@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { PRODUCTS_FILE, readData, writeData } from '@/src/lib/dataStore';
+import { parseAuthToken, verifyTenantAccess } from '@/src/lib/authGuard';
 
 const ProductUpdateSchema = z.object({
   name: z.string().min(2).optional(),
@@ -26,6 +27,15 @@ export async function GET(request, { params }) {
     if (!product) {
       return NextResponse.json({ error: 'Producto no encontrado' }, { status: 404 });
     }
+
+    // Protect draft and archived products from unauthenticated public viewing
+    if (product.status && product.status !== 'published') {
+      const auth = parseAuthToken(request);
+      if (!auth || (!auth.isSuperAdmin && auth.storeId !== product.storeId)) {
+        return NextResponse.json({ error: 'Producto no encontrado' }, { status: 404 });
+      }
+    }
+
     return NextResponse.json(product);
   } catch (error) {
     return NextResponse.json({ error: 'Error al obtener producto' }, { status: 500 });
@@ -35,6 +45,20 @@ export async function GET(request, { params }) {
 export async function PUT(request, { params }) {
   try {
     const { id } = params;
+    const products = readData(PRODUCTS_FILE);
+    const index = products.findIndex((p) => p.id === id);
+    if (index === -1) {
+      return NextResponse.json({ error: 'Producto no encontrado' }, { status: 404 });
+    }
+
+    const auth = parseAuthToken(request);
+    if (!auth) {
+      return NextResponse.json({ error: 'No autorizado: Se requiere sesión activa' }, { status: 401 });
+    }
+    if (!verifyTenantAccess(auth, products[index].storeId)) {
+      return NextResponse.json({ error: 'Acceso denegado: No tienes permisos para modificar este producto' }, { status: 403 });
+    }
+
     const body = await request.json();
     const validation = ProductUpdateSchema.safeParse(body);
     if (!validation.success) {
@@ -44,13 +68,10 @@ export async function PUT(request, { params }) {
       );
     }
 
-    const products = readData(PRODUCTS_FILE);
-    const index = products.findIndex((p) => p.id === id);
-    if (index === -1) {
-      return NextResponse.json({ error: 'Producto no encontrado' }, { status: 404 });
-    }
+    // Preserve product immutable fields (id, storeId)
+    const { id: _ignoredId, storeId: _ignoredStoreId, ...safeUpdates } = body;
 
-    products[index] = { ...products[index], ...body, id: products[index].id };
+    products[index] = { ...products[index], ...safeUpdates, id: products[index].id, storeId: products[index].storeId };
     writeData(PRODUCTS_FILE, products);
 
     return NextResponse.json(products[index]);
@@ -66,6 +87,14 @@ export async function DELETE(request, { params }) {
     const index = products.findIndex((p) => p.id === id);
     if (index === -1) {
       return NextResponse.json({ error: 'Producto no encontrado' }, { status: 404 });
+    }
+
+    const auth = parseAuthToken(request);
+    if (!auth) {
+      return NextResponse.json({ error: 'No autorizado: Se requiere sesión activa' }, { status: 401 });
+    }
+    if (!verifyTenantAccess(auth, products[index].storeId)) {
+      return NextResponse.json({ error: 'Acceso denegado: No tienes permisos para eliminar este producto' }, { status: 403 });
     }
 
     products = products.filter((p) => p.id !== id);

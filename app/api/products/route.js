@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { PRODUCTS_FILE, readData, writeData } from '@/src/lib/dataStore';
+import { parseAuthToken, verifyTenantAccess } from '@/src/lib/authGuard';
 
 const ProductSchema = z.object({
   name: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
@@ -28,7 +29,13 @@ export async function GET(request) {
     const includeDrafts = searchParams.get('includeDrafts');
     const q = searchParams.get('q');
 
-    if (includeDrafts !== 'true') {
+    // Only authorized managers or superadmin can see drafts
+    if (includeDrafts === 'true') {
+      const auth = parseAuthToken(request);
+      if (!auth || (!auth.isSuperAdmin && auth.storeId !== storeId)) {
+        products = products.filter((p) => p.status === 'published' || !p.status);
+      }
+    } else {
       products = products.filter((p) => p.status === 'published' || !p.status);
     }
 
@@ -65,6 +72,11 @@ export async function GET(request) {
 
 export async function POST(request) {
   try {
+    const auth = parseAuthToken(request);
+    if (!auth) {
+      return NextResponse.json({ error: 'No autorizado: Se requiere sesión activa para crear productos' }, { status: 401 });
+    }
+
     const body = await request.json();
     const validation = ProductSchema.safeParse(body);
     if (!validation.success) {
@@ -72,6 +84,10 @@ export async function POST(request) {
         { error: 'Datos de producto inválidos', details: validation.error.format() },
         { status: 400 }
       );
+    }
+
+    if (!verifyTenantAccess(auth, body.storeId)) {
+      return NextResponse.json({ error: 'Acceso denegado: No puedes publicar productos en otra boutique' }, { status: 403 });
     }
 
     const products = readData(PRODUCTS_FILE);

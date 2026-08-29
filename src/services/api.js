@@ -1,6 +1,17 @@
 // API Client for MultiTiendas CelPhone Platform
 const API_BASE = '/api';
 
+const getAuthHeaders = () => {
+  const headers = { 'Content-Type': 'application/json' };
+  if (typeof window !== 'undefined') {
+    const token = localStorage.getItem('celstore_auth_token');
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+  }
+  return headers;
+};
+
 export const api = {
   // Store endpoints
   async getStores() {
@@ -30,13 +41,17 @@ export const api = {
     try {
       const res = await fetch(`${API_BASE}/stores/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         body: JSON.stringify(data)
       });
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error || 'Error al actualizar tienda');
+      }
       return await res.json();
     } catch (err) {
       console.error('Update store error:', err);
-      return data;
+      throw err;
     }
   },
 
@@ -44,7 +59,9 @@ export const api = {
   async getProducts(params = {}) {
     try {
       const query = new URLSearchParams(params).toString();
-      const res = await fetch(`${API_BASE}/products?${query}`);
+      const res = await fetch(`${API_BASE}/products?${query}`, {
+        headers: getAuthHeaders()
+      });
       if (!res.ok) throw new Error('Failed to fetch products');
       return await res.json();
     } catch (err) {
@@ -63,7 +80,9 @@ export const api = {
 
   async getProduct(id) {
     try {
-      const res = await fetch(`${API_BASE}/products/${id}`);
+      const res = await fetch(`${API_BASE}/products/${id}`, {
+        headers: getAuthHeaders()
+      });
       if (!res.ok) throw new Error('Product not found');
       return await res.json();
     } catch (err) {
@@ -76,7 +95,7 @@ export const api = {
     try {
       const res = await fetch(`${API_BASE}/products`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         body: JSON.stringify(productData)
       });
       const data = await res.json();
@@ -84,7 +103,7 @@ export const api = {
       return data;
     } catch (err) {
       console.error('Create product error:', err);
-      return { id: `prod-${Date.now()}`, ...productData };
+      throw err;
     }
   },
 
@@ -92,7 +111,7 @@ export const api = {
     try {
       const res = await fetch(`${API_BASE}/products/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         body: JSON.stringify(productData)
       });
       const data = await res.json();
@@ -100,33 +119,37 @@ export const api = {
       return data;
     } catch (err) {
       console.error('Update product error:', err);
-      return productData;
+      throw err;
     }
   },
 
   async duplicateProduct(id) {
     try {
-      const res = await fetch(`${API_BASE}/products/${id}/duplicate`, { method: 'POST' });
-      return await res.json();
+      const res = await fetch(`${API_BASE}/products/${id}/duplicate`, {
+        method: 'POST',
+        headers: getAuthHeaders()
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Error al duplicar producto');
+      return data;
     } catch (err) {
       console.error('Duplicate product error:', err);
-      const original = await this.getProduct(id);
-      return {
-        ...original,
-        id: `prod-${Date.now()}`,
-        name: `[Copia] ${original?.name || 'Producto'}`,
-        status: 'draft'
-      };
+      throw err;
     }
   },
 
   async deleteProduct(id) {
     try {
-      const res = await fetch(`${API_BASE}/products/${id}`, { method: 'DELETE' });
-      return await res.json();
+      const res = await fetch(`${API_BASE}/products/${id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders()
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Error al eliminar producto');
+      return data;
     } catch (err) {
       console.error('Delete product error:', err);
-      return { success: true };
+      throw err;
     }
   },
 
@@ -156,39 +179,23 @@ export const api = {
 
   // Auth endpoint
   async login(email, password) {
-    try {
-      const res = await fetch(`${API_BASE}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Error al iniciar sesión');
-      return data;
-    } catch (err) {
-      const stores = await this.getStores();
-      const store = stores.find(s => s.managerEmail?.toLowerCase() === email.toLowerCase());
-      if (store && password === 'password123') {
-        return {
-          token: `jwt-fallback-${store.id}`,
-          user: {
-            name: `Gerente de ${store.name}`,
-            email: store.managerEmail,
-            role: 'store_manager',
-            storeId: store.id,
-            store
-          }
-        };
-      }
-      throw err;
-    }
+    const res = await fetch(`${API_BASE}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Error al iniciar sesión');
+    return data;
   },
 
   // Orders
   async getOrders(storeId) {
     try {
       const url = storeId ? `${API_BASE}/orders?storeId=${storeId}` : `${API_BASE}/orders`;
-      const res = await fetch(url);
+      const res = await fetch(url, {
+        headers: getAuthHeaders()
+      });
       return await res.json();
     } catch (err) {
       const data = await import('../../server/data/orders.json');

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { MercadoPagoConfig, Preference } from 'mercadopago';
-import { STORES_FILE, readData } from '@/src/lib/dataStore';
+import { STORES_FILE, PRODUCTS_FILE, readData } from '@/src/lib/dataStore';
 
 const mpClient = new MercadoPagoConfig({
   accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN || 'TEST-0000000000000000-000000-00000000000000000000000000000000-000000000'
@@ -8,17 +8,29 @@ const mpClient = new MercadoPagoConfig({
 
 export async function POST(request) {
   try {
-    const { storeId, items, customer } = await request.json();
+    const { storeId, items = [], customer } = await request.json();
     const stores = readData(STORES_FILE);
+    const products = readData(PRODUCTS_FILE);
     const store = stores.find((s) => s.id === storeId);
 
-    const preferenceItems = items.map((item) => ({
-      id: item.productId || item.id,
-      title: `${item.name} - ${store?.name || 'CelStore Atelier'}`,
-      unit_price: Number(item.price),
-      quantity: Number(item.quantity || 1),
-      currency_id: 'USD'
-    }));
+    if (!items.length) {
+      return NextResponse.json({ error: 'No se enviaron productos para checkout' }, { status: 400 });
+    }
+
+    const preferenceItems = items.map((item) => {
+      const prod = products.find((p) => p.id === (item.productId || item.id));
+      const verifiedPrice = prod ? Number(prod.price) : Number(item.price || 0);
+      const itemName = prod ? prod.name : (item.name || 'Producto CelStore');
+      const quantity = Math.max(1, parseInt(item.quantity, 10) || 1);
+
+      return {
+        id: prod ? prod.id : (item.productId || item.id),
+        title: `${itemName} - ${store?.name || 'CelStore Atelier'}`,
+        unit_price: verifiedPrice,
+        quantity,
+        currency_id: 'USD'
+      };
+    });
 
     try {
       const preference = new Preference(mpClient);

@@ -26,26 +26,42 @@ export async function POST(request) {
     }
 
     const products = readData(PRODUCTS_FILE);
+    const sanitizedItems = [];
+    let computedTotal = 0;
 
-    // Validación atómica de stock
+    // 1. Validación y sanitización atómica con precios del servidor
     for (const item of items) {
-      const prod = products.find((p) => p.id === item.productId);
+      const prod = products.find((p) => p.id === (item.productId || item.id));
       if (!prod) {
-        return NextResponse.json({ error: `Producto con ID ${item.productId} no encontrado` }, { status: 404 });
+        return NextResponse.json({ error: `Producto con ID ${item.productId || item.id} no encontrado` }, { status: 404 });
       }
       if (prod.storeId !== storeId && prod.type !== 'accessory') {
         return NextResponse.json({ error: `El producto ${prod.name} no pertenece a esta boutique` }, { status: 400 });
       }
-      if (prod.stock < item.quantity) {
+      const quantity = Math.max(1, parseInt(item.quantity, 10) || 1);
+      if (prod.stock < quantity) {
         return NextResponse.json(
           { error: `Stock insuficiente para ${prod.name}. Disponible: ${prod.stock}` },
           { status: 409 }
         );
       }
+
+      // Security: use authoritative price from database
+      const verifiedPrice = Number(prod.price);
+      computedTotal += verifiedPrice * quantity;
+
+      sanitizedItems.push({
+        productId: prod.id,
+        name: prod.name,
+        color: item.color || (prod.colors && prod.colors[0]?.name) || 'Estándar',
+        storage: item.storage || (prod.storageOptions && prod.storageOptions[0]) || 'Estándar',
+        price: verifiedPrice,
+        quantity
+      });
     }
 
-    // Descuento atómico de stock
-    items.forEach((item) => {
+    // 2. Descuento atómico de stock
+    sanitizedItems.forEach((item) => {
       const pIndex = products.findIndex((p) => p.id === item.productId);
       if (pIndex !== -1) {
         products[pIndex].stock -= item.quantity;
@@ -53,16 +69,19 @@ export async function POST(request) {
     });
     writeData(PRODUCTS_FILE, products);
 
-    // Registro de orden
-    const total = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    // 3. Registro seguro de orden
     const orders = readData(ORDERS_FILE);
     const newOrder = {
       id: `ord-${Date.now()}`,
       storeId,
-      items,
-      customer,
+      items: sanitizedItems,
+      customer: {
+        name: String(customer.name).trim(),
+        email: String(customer.email).trim(),
+        phone: customer.phone ? String(customer.phone).trim() : ''
+      },
       paymentMethod: paymentMethod || 'mercadopago',
-      total,
+      total: computedTotal,
       status: 'completed',
       createdAt: new Date().toISOString()
     };

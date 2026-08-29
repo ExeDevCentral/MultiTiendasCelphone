@@ -17,22 +17,25 @@ INSERT INTO storage.buckets (id, name, public)
 VALUES ('product-media', 'product-media', true)
 ON CONFLICT (id) DO UPDATE SET public = true;
 
--- 4. Políticas de Acceso RLS para Storage de Mapas de Profundidad
+-- 4. Políticas de Acceso RLS Seguras para Storage de Mapas de Profundidad
 CREATE POLICY "Public Depth Maps Access"
 ON storage.objects FOR SELECT
 USING (bucket_id = 'product-media');
 
 CREATE POLICY "Admin Upload Depth Maps"
 ON storage.objects FOR INSERT
-WITH CHECK (bucket_id = 'product-media');
+TO authenticated
+WITH CHECK (bucket_id = 'product-media' AND (auth.role() = 'authenticated' OR auth.jwt() ->> 'role' IN ('store_manager', 'superadmin')));
 
 CREATE POLICY "Admin Update Depth Maps"
 ON storage.objects FOR UPDATE
-USING (bucket_id = 'product-media');
+TO authenticated
+USING (bucket_id = 'product-media' AND (auth.role() = 'authenticated' OR auth.jwt() ->> 'role' IN ('store_manager', 'superadmin')));
 
 CREATE POLICY "Admin Delete Depth Maps"
 ON storage.objects FOR DELETE
-USING (bucket_id = 'product-media');
+TO authenticated
+USING (bucket_id = 'product-media' AND (auth.role() = 'authenticated' OR auth.jwt() ->> 'role' IN ('store_manager', 'superadmin')));
 
 -- 5. Trigger para autollenar photo_url desde images[0] si no está definido
 CREATE OR REPLACE FUNCTION public.handle_product_photo_url_sync()

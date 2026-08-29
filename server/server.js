@@ -63,6 +63,29 @@ const ProductSchema = z.object({
   storeId: z.string().min(1, "El storeId es requerido")
 });
 
+// Authentication Helper for Express API
+const parseAuth = (req) => {
+  const authHeader = req.headers['authorization'] || req.headers['Authorization'];
+  if (!authHeader) return null;
+  const parts = authHeader.split(' ');
+  if (parts.length !== 2 || parts[0].toLowerCase() !== 'bearer') return null;
+  const token = parts[1];
+  if (token.startsWith('jwt-superadmin-token') || token.startsWith('jwt-mock-superadmin')) {
+    return { role: 'superadmin', isSuperAdmin: true, storeId: null };
+  }
+  const match = token.match(/^jwt-(?:mock-)?store-(?:token-)?([a-zA-Z0-9_-]+)/);
+  if (match) {
+    return { role: 'store_manager', isSuperAdmin: false, storeId: match[1] };
+  }
+  return null;
+};
+
+const verifyTenantAccess = (auth, targetStoreId) => {
+  if (!auth) return false;
+  if (auth.isSuperAdmin) return true;
+  return auth.storeId === targetStoreId;
+};
+
 // ================= STORES ENDPOINTS =================
 app.get('/api/stores', (req, res) => {
   const stores = readData(STORES_FILE);
@@ -79,13 +102,20 @@ app.get('/api/stores/:id', (req, res) => {
 });
 
 app.put('/api/stores/:id', (req, res) => {
+  const auth = parseAuth(req);
+  if (!auth) return res.status(401).json({ error: 'No autorizado: Se requiere sesión activa' });
+  if (!verifyTenantAccess(auth, req.params.id)) {
+    return res.status(403).json({ error: 'Acceso denegado: No tienes permisos para editar esta boutique' });
+  }
+
   const stores = readData(STORES_FILE);
   const index = stores.findIndex(s => s.id === req.params.id);
   if (index === -1) return res.status(404).json({ error: 'Tienda no encontrada' });
 
-  stores[index] = { ...stores[index], ...req.body, id: stores[index].id };
+  const { managerPassword, id: _ignoredId, ...allowedUpdates } = req.body;
+  stores[index] = { ...stores[index], ...allowedUpdates, id: stores[index].id };
   writeData(STORES_FILE, stores);
-  const { managerPassword, ...safeStore } = stores[index];
+  const { managerPassword: _mp, ...safeStore } = stores[index];
   res.json(safeStore);
 });
 
@@ -95,7 +125,12 @@ app.get('/api/products', (req, res) => {
   const { storeId, generationCategory, type, brand, isFeatured, includeDrafts, q } = req.query;
 
   // Filter draft products for public vs store manager
-  if (includeDrafts !== 'true') {
+  if (includeDrafts === 'true') {
+    const auth = parseAuth(req);
+    if (!auth || (!auth.isSuperAdmin && auth.storeId !== storeId)) {
+      products = products.filter(p => p.status === 'published' || !p.status);
+    }
+  } else {
     products = products.filter(p => p.status === 'published' || !p.status);
   }
 
@@ -131,15 +166,31 @@ app.get('/api/products/:id', (req, res) => {
   const products = readData(PRODUCTS_FILE);
   const product = products.find(p => p.id === req.params.id);
   if (!product) return res.status(404).json({ error: 'Producto no encontrado' });
+
+  // Protect unpublished drafts
+  if (product.status && product.status !== 'published') {
+    const auth = parseAuth(req);
+    if (!auth || (!auth.isSuperAdmin && auth.storeId !== product.storeId)) {
+      return res.status(404).json({ error: 'Producto no encontrado' });
+    }
+  }
+
   res.json(product);
 });
 
 app.post('/api/products', (req, res) => {
   try {
+    const auth = parseAuth(req);
+    if (!auth) return res.status(401).json({ error: 'No autorizado: Se requiere sesión activa' });
+
     // Validate with Zod
     const validation = ProductSchema.safeParse(req.body);
     if (!validation.success) {
       return res.status(400).json({ error: 'Datos de producto inválidos', details: validation.error.format() });
+    }
+
+    if (!verifyTenantAccess(auth, req.body.storeId)) {
+      return res.status(403).json({ error: 'Acceso denegado: No puedes publicar productos en otra boutique' });
     }
 
     const products = readData(PRODUCTS_FILE);
@@ -165,6 +216,12 @@ app.put('/api/products/:id', (req, res) => {
   const index = products.findIndex(p => p.id === req.params.id);
   if (index === -1) return res.status(404).json({ error: 'Producto no encontrado' });
 
+  const auth = parseAuth(req);
+  if (!auth) return res.status(401).json({ error: 'No autorizado: Se requiere sesión activa' });
+  if (!verifyTenantAccess(auth, products[index].storeId)) {
+    return res.status(403).json({ error: 'Acceso denegado: No puedes modificar productos de otra boutique' });
+  }
+
   // Validate price/stock if present
   if (req.body.price !== undefined && req.body.price <= 0) {
     return res.status(400).json({ error: 'El precio debe ser mayor a 0' });
@@ -173,10 +230,12 @@ app.put('/api/products/:id', (req, res) => {
     return res.status(400).json({ error: 'El stock no puede ser negativo' });
   }
 
+  const { id: _ignoredId, storeId: _ignoredStoreId, ...safeUpdates } = req.body;
   products[index] = {
     ...products[index],
-    ...req.body,
+    ...safeUpdates,
     id: products[index].id,
+    storeId: products[index].storeId,
     updatedAt: new Date().toISOString()
   };
 
@@ -189,6 +248,12 @@ app.post('/api/products/:id/duplicate', (req, res) => {
   const products = readData(PRODUCTS_FILE);
   const original = products.find(p => p.id === req.params.id);
   if (!original) return res.status(404).json({ error: 'Producto original no encontrado' });
+
+  const auth = parseAuth(req);
+  if (!auth) return res.status(401).json({ error: 'No autorizado: Se requiere sesión activa' });
+  if (!verifyTenantAccess(auth, original.storeId)) {
+    return res.status(403).json({ error: 'Acceso denegado: No puedes duplicar productos de otra boutique' });
+  }
 
   const duplicatedProduct = {
     ...original,
@@ -206,8 +271,14 @@ app.post('/api/products/:id/duplicate', (req, res) => {
 
 app.delete('/api/products/:id', (req, res) => {
   let products = readData(PRODUCTS_FILE);
-  const exists = products.some(p => p.id === req.params.id);
-  if (!exists) return res.status(404).json({ error: 'Producto no encontrado' });
+  const product = products.find(p => p.id === req.params.id);
+  if (!product) return res.status(404).json({ error: 'Producto no encontrado' });
+
+  const auth = parseAuth(req);
+  if (!auth) return res.status(401).json({ error: 'No autorizado: Se requiere sesión activa' });
+  if (!verifyTenantAccess(auth, product.storeId)) {
+    return res.status(403).json({ error: 'Acceso denegado: No puedes eliminar productos de otra boutique' });
+  }
 
   products = products.filter(p => p.id !== req.params.id);
   writeData(PRODUCTS_FILE, products);
@@ -300,20 +371,32 @@ app.post('/api/products/:id/decrease-stock', (req, res) => {
 // ================= MERCADOPAGO REAL PAYMENT PREFERENCE =================
 app.post('/api/payments/mercadopago/create-preference', async (req, res) => {
   try {
-    const { items, customer, storeId } = req.body;
+    const { items = [], customer, storeId } = req.body;
     const stores = readData(STORES_FILE);
+    const products = readData(PRODUCTS_FILE);
     const store = stores.find(s => s.id === storeId) || stores[0];
+
+    if (!items.length) {
+      return res.status(400).json({ error: 'No se enviaron productos para checkout' });
+    }
 
     const mpPreference = new Preference(mpClient);
 
     const preferenceData = {
-      items: items.map(item => ({
-        id: item.productId || item.id,
-        title: `${item.name} (${item.color || 'Estándar'})`,
-        quantity: Number(item.quantity) || 1,
-        unit_price: Number(item.price),
-        currency_id: 'USD'
-      })),
+      items: items.map(item => {
+        const prod = products.find(p => p.id === (item.productId || item.id));
+        const verifiedPrice = prod ? Number(prod.price) : Number(item.price || 0);
+        const itemName = prod ? prod.name : (item.name || 'Producto CelStore');
+        const quantity = Math.max(1, parseInt(item.quantity, 10) || 1);
+
+        return {
+          id: prod ? prod.id : (item.productId || item.id),
+          title: `${itemName} (${item.color || 'Estándar'})`,
+          quantity,
+          unit_price: verifiedPrice,
+          currency_id: 'USD'
+        };
+      }),
       payer: {
         name: customer?.name || 'Cliente CelStore',
         email: customer?.email || 'cliente@celstore.com',
@@ -441,8 +524,9 @@ app.post('/api/generate-solutions', (req, res) => {
 app.post('/api/auth/login', (req, res) => {
   const { email, password } = req.body;
   const stores = readData(STORES_FILE);
+  const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
 
-  if (email === 'superadmin@platform.com' && password === 'admin123') {
+  if (email?.toLowerCase() === 'superadmin@platform.com' && password === adminPassword) {
     return res.json({
       token: 'jwt-superadmin-token-xyz',
       user: {
@@ -475,7 +559,7 @@ app.post('/api/auth/login', (req, res) => {
   return res.status(401).json({ error: 'Credenciales inválidas. Verifica tu correo y contraseña.' });
 });
 
-// ================= ORDERS ENDPOINTS (WITH ATOMIC STOCK DEDUCTION) =================
+// ================= ORDERS ENDPOINTS (WITH ATOMIC STOCK DEDUCTION & PRICE VALIDATION) =================
 app.get('/api/orders', (req, res) => {
   let orders = readData(ORDERS_FILE);
   const { storeId } = req.query;
@@ -487,20 +571,44 @@ app.get('/api/orders', (req, res) => {
 
 app.post('/api/orders', (req, res) => {
   const products = readData(PRODUCTS_FILE);
-  const { items = [] } = req.body;
+  const { items = [], customer = {}, storeId, paymentMethod } = req.body;
 
-  // 1. Atomic Stock Verification Step
+  if (!items.length) {
+    return res.status(400).json({ error: 'No se enviaron productos en la orden' });
+  }
+
+  const sanitizedItems = [];
+  let computedTotal = 0;
+
+  // 1. Atomic Stock Verification & Authoritative Price Computation
   for (const item of items) {
-    const p = products.find(prod => prod.id === item.productId);
-    if (p && p.stock < item.quantity) {
+    const p = products.find(prod => prod.id === (item.productId || item.id));
+    if (!p) {
+      return res.status(404).json({ error: `Producto ${item.productId || item.id} no encontrado` });
+    }
+    const quantity = Math.max(1, parseInt(item.quantity, 10) || 1);
+    if (p.stock < quantity) {
       return res.status(409).json({
-        error: `Stock insuficiente para ${p.name}. Quedan ${p.stock} unidades disponibles.`
+        error: `Stock insuficiente para ${p.name}. Quedan ${p.stock} unidades disponibles.`,
+        availableStock: p.stock
       });
     }
+
+    const verifiedPrice = Number(p.price);
+    computedTotal += verifiedPrice * quantity;
+
+    sanitizedItems.push({
+      productId: p.id,
+      name: p.name,
+      color: item.color || 'Estándar',
+      storage: item.storage || 'Estándar',
+      price: verifiedPrice,
+      quantity
+    });
   }
 
   // 2. Atomic Stock Deduction
-  for (const item of items) {
+  for (const item of sanitizedItems) {
     const p = products.find(prod => prod.id === item.productId);
     if (p) {
       p.stock -= item.quantity;
@@ -508,13 +616,21 @@ app.post('/api/orders', (req, res) => {
   }
   writeData(PRODUCTS_FILE, products);
 
-  // 3. Save Order
+  // 3. Save Order with Verified Total
   const orders = readData(ORDERS_FILE);
   const newOrder = {
     id: `ORD-${Math.floor(1000 + Math.random() * 9000)}`,
     date: new Date().toISOString(),
     status: 'Confirmado',
-    ...req.body
+    storeId: storeId || sanitizedItems[0]?.storeId,
+    customer: {
+      name: String(customer.name || 'Cliente').trim(),
+      email: String(customer.email || 'cliente@celstore.com').trim(),
+      phone: customer.phone ? String(customer.phone).trim() : ''
+    },
+    paymentMethod: paymentMethod || 'mercadopago',
+    items: sanitizedItems,
+    total: computedTotal
   };
 
   orders.unshift(newOrder);
