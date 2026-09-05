@@ -1,22 +1,28 @@
 {
   "name": "celstore",
   "private": true,
-  "version": "3.0.0",
+  "version": "3.1.0",
   "type": "module",
+  "description": "CelStore™ Atelier — Plataforma multi-tienda de smartphones con visor 3D, Supabase multi-tenant y stock atómico.",
+  "engines": {
+    "node": ">=20.9.0"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test": "vitest run"
+    "test": "vitest run",
+    "seed": "node scripts/seed.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^9.122.0",
     "@react-three/fiber": "^8.18.0",
     "@supabase/supabase-js": "^2.49.1",
+    "@tsparticles/react": "^4.4.0",
+    "@tsparticles/slim": "^4.4.0",
+    "bcryptjs": "^2.4.3",
     "canvas-confetti": "^1.9.4",
     "clsx": "^2.1.1",
-    "cors": "^2.8.5",
-    "express": "^4.21.2",
     "framer-motion": "^13.1.1",
     "lenis": "^1.3.26",
     "lucide-react": "^1.16.0",
@@ -35,6 +41,7 @@
     "@types/node": "26.4.0",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
+    "dotenv": "^16.4.5",
     "postcss": "^8.5.1",
     "tailwindcss": "^4.0.0",
     "typescript": "7.0.2",

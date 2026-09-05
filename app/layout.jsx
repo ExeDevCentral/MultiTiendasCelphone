@@ -4,6 +4,7 @@ import { StoreProvider } from '@/src/context/StoreContext';
 import { CartProvider } from '@/src/context/CartContext';
 import { AuthProvider } from '@/src/context/AuthContext';
 import { SmoothScroll } from '@/src/components/SmoothScroll';
+import { GoldParticles } from '@/src/components/GoldParticles';
 import { LuxuryToaster } from '@/src/components/LuxuryToaster';
 import { CartDrawer } from '@/src/components/CartDrawer';
 import { CheckoutModal } from '@/src/components/CheckoutModal';
@@ -30,7 +31,8 @@ export default function RootLayout({ children }) {
           <CartProvider>
             <AuthProvider>
               <SmoothScroll>
-                <div className="min-h-screen flex flex-col overflow-x-hidden">
+                <div className="min-h-screen flex flex-col overflow-x-hidden relative">
+                  <GoldParticles />
                   {children}
                   <CartDrawer />
                   <CheckoutModal />
