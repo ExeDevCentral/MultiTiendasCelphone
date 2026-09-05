@@ -1,18 +1,12 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
-import Particles, { initParticlesEngine } from '@tsparticles/react';
+import { useMemo } from 'react';
+import Particles from '@tsparticles/react';
 import { loadSlim } from '@tsparticles/slim';
 
+let loaded = false;
+
 export function GoldParticles() {
-  const [init, setInit] = useState(false);
-
-  useEffect(() => {
-    initParticlesEngine(async (engine) => {
-      await loadSlim(engine);
-    }).then(() => setInit(true));
-  }, []);
-
   const options = useMemo(
     () => ({
       fullScreen: { enable: false, zIndex: 0 },
@@ -82,7 +76,7 @@ export function GoldParticles() {
     []
   );
 
-  if (!init) return null;
+  if (typeof window === 'undefined') return null;
 
   return (
     <div className="fixed inset-0 pointer-events-none z-0">
@@ -90,6 +84,7 @@ export function GoldParticles() {
         id="celstore-gold-particles"
         options={options}
         className="w-full h-full"
+        loaded={() => { loaded = true; }}
       />
     </div>
   );
