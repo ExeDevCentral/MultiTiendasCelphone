@@ -4,8 +4,6 @@ import { useMemo } from 'react';
 import Particles from '@tsparticles/react';
 import { loadSlim } from '@tsparticles/slim';
 
-let loaded = false;
-
 export function GoldParticles() {
   const options = useMemo(
     () => ({
@@ -13,7 +11,7 @@ export function GoldParticles() {
       fpsLimit: 60,
       particles: {
         number: {
-          value: 40,
+          value: 60,
           density: { enable: true, width: 1920, height: 1080 },
         },
         color: {
@@ -21,26 +19,26 @@ export function GoldParticles() {
         },
         shape: { type: 'circle' },
         opacity: {
-          value: { min: 0.03, max: 0.12 },
+          value: { min: 0.15, max: 0.5 },
           animation: {
             enable: true,
-            speed: 0.4,
-            minimumValue: 0.02,
+            speed: 0.6,
+            minimumValue: 0.1,
             sync: false,
           },
         },
         size: {
-          value: { min: 1, max: 3 },
+          value: { min: 1.5, max: 4 },
           animation: {
             enable: true,
-            speed: 1.5,
-            minimumValue: 0.5,
+            speed: 2,
+            minimumValue: 1,
             sync: false,
           },
         },
         move: {
           enable: true,
-          speed: { min: 0.15, max: 0.4 },
+          speed: { min: 0.3, max: 0.8 },
           direction: 'none',
           random: true,
           straight: false,
@@ -48,10 +46,10 @@ export function GoldParticles() {
         },
         links: {
           enable: true,
-          distance: 180,
+          distance: 200,
           color: '#c9a227',
-          opacity: 0.04,
-          width: 0.8,
+          opacity: 0.12,
+          width: 1,
         },
       },
       interactivity: {
@@ -63,9 +61,9 @@ export function GoldParticles() {
         },
         modes: {
           grab: {
-            distance: 160,
+            distance: 200,
             links: {
-              opacity: 0.15,
+              opacity: 0.3,
               color: '#e4c972',
             },
           },
@@ -82,7 +80,6 @@ export function GoldParticles() {
         id="celstore-gold-particles"
         options={options}
         className="w-full h-full"
-        loaded={() => { loaded = true; }}
       />
     </div>
   );

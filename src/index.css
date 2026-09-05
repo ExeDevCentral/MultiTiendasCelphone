@@ -47,14 +47,32 @@
     --font-mono: 'Space Grotesk', monospace;
   }
 
-  body {
-    font-family: var(--font-sans);
-    background-color: var(--obsidian);
-    color: var(--ivory);
-    overflow-x: hidden;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
+body {
+  font-family: var(--font-sans);
+  background-color: var(--obsidian);
+  color: var(--ivory);
+  overflow-x: hidden;
+  min-width: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Ambient gold gradient — always visible behind particles */
+@keyframes ambient-drift {
+  0%, 100% { opacity: 0.04; transform: translate(0, 0) scale(1); }
+  33% { opacity: 0.07; transform: translate(30px, -20px) scale(1.1); }
+  66% { opacity: 0.03; transform: translate(-20px, 15px) scale(0.95); }
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(201,162,39,0.08), transparent 70%);
+  animation: ambient-drift 20s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
 
   /* Scrollbar Minimalista */
   ::-webkit-scrollbar {
