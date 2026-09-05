@@ -1,5 +1,21 @@
 @import "tailwindcss";
 
+@theme {
+  --color-obsidian: #0a0a0c;
+  --color-obsidian-elevated: #0f0f12;
+  --color-obsidian-surface: #131316;
+  --color-obsidian-card: #1b1b1f;
+  --color-ivory: #f3efe6;
+  --color-stone: #8b8680;
+  --color-stone-light: #b0aaa2;
+  --color-gold: #c9a227;
+  --color-gold-soft: #e4c972;
+
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+  --font-mono: 'Space Grotesk', monospace;
+}
+
 :root {
   /* ==========================================================================
      SISTEMA DE DISEÑO DE ALTA COSTURA: REGLA 60-30-10
@@ -132,6 +148,51 @@ body {
   border-color: var(--gold);
   color: var(--gold-soft);
   transform: translateY(-1px);
+}
+
+/* Float Animation — Celular Flotando */
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33% { transform: translateY(-12px) rotate(0.5deg); }
+  66% { transform: translateY(6px) rotate(-0.3deg); }
+}
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes orbit {
+  from { transform: rotate(0deg) translateX(120px) rotate(0deg); }
+  to { transform: rotate(360deg) translateX(120px) rotate(-360deg); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.05); }
+}
+
+.float-phone {
+  animation: float 6s ease-in-out infinite;
+}
+
+.float-slow {
+  animation: float-slow 8s ease-in-out infinite;
+}
+
+.hero-orb {
+  animation: orbit 20s linear infinite;
+}
+
+.wordmark-glow {
+  animation: pulse-glow 4s ease-in-out infinite;
+}
+
+/* Modern premium badge */
+.premium-badge {
+  background: linear-gradient(135deg, rgba(201, 162, 39, 0.15), rgba(201, 162, 39, 0.05));
+  border: 1px solid rgba(201, 162, 39, 0.3);
+  backdrop-filter: blur(12px);
 }
 
 /* Scrollbar Minimalista */

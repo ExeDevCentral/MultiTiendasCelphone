@@ -1,4 +1,4 @@
-// MercadoPago Integration Service for CelStore MultiTiendas
+// MercadoPago Integration Service for CelStore
 export const mercadopagoService = {
   async createPreference(orderPayload) {
     const res = await fetch('/api/payments/mercadopago/create-preference', {

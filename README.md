@@ -1,4 +1,4 @@
-# 📱 MultiTiendas CelPhone 3D — Plataforma E-Commerce de Celulares de Alta Gama
+# 📱 CelStore™ — Tienda Moderna de Celulares de Alta Gama
 
 <div align="center">
 
@@ -11,7 +11,7 @@
 ![Security Hardened](https://img.shields.io/badge/Security-OWASP%20Hardened-purple?style=for-the-badge&logo=auth0)
 
 <p align="center">
-  <b>Ecosistema multi-tienda de telefonía móvil de lujo y coleccionismo con estética <i>iPhone × Gucci Atelier</i>, visor 3D interactivo con Depth Maps acelerados por GPU, arquitectura Next.js 14 App Router, seguridad multi-tenant con Row Level Security (RLS), control de stock atómico anti-concurrencia y pasarelas de pago instantáneas.</b>
+  <b>Tienda premium de smartphones con estética <i>iPhone × Gucci Atelier</i>, visor 3D interactivo con Depth Maps acelerados por GPU, arquitectura Next.js 14 App Router, seguridad multi-tenant con Row Level Security (RLS), control de stock atómico anti-concurrencia y pasarelas de pago instantáneas.</b>
 </p>
 
 [✨ Ver Características](#-características-principales) •
@@ -27,7 +27,7 @@
 
 ## 🌟 Visión del Producto
 
-**MultiTiendas CelPhone** redefine la experiencia de compra de smartphones combinando el minimalismo editorial de Apple con la exclusividad boutique de casas de alta costura:
+**CelStore** redefine la experiencia de compra de smartphones combinando el minimalismo editorial de Apple con la exclusividad boutique de casas de alta costura:
 
 - **Ecosistema Multi-Tenant Aislado:** Múltiples boutiques independientes con catálogo propio, identidad visual y reglas de inventario exclusivas.
 - **Segmentación Generacional Curada:** Navegación por tres grandes eras:
@@ -169,7 +169,7 @@ REPLICATE_API_TOKEN=your-replicate-token
 ```bash
 npm run dev
 ```
-> La aplicación estará disponible en `http://localhost:3000` (Next.js) o `http://localhost:5173` si utilizas el entorno dual.
+> La aplicación estará disponible en `http://localhost:3000`.
 
 ### 4. Compilar para Producción
 ```bash

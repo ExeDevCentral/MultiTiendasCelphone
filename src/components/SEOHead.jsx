@@ -31,7 +31,7 @@ export const SEOHead = ({
     setMetaTag('property', 'og:image', image);
     setMetaTag('property', 'og:url', url);
     setMetaTag('property', 'og:type', type);
-    setMetaTag('property', 'og:site_name', 'CelStore MultiTiendas');
+    setMetaTag('property', 'og:site_name', 'CelStore');
 
     // 4. Twitter Card
     setMetaTag('name', 'twitter:card', 'summary_large_image');

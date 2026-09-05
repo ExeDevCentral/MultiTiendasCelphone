@@ -190,7 +190,10 @@ export const PhoneViewer3D = ({
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     rendererRef.current = renderer;
 
-    mountRef.current.innerHTML = '';
+    const existingCanvas = mountRef.current.querySelector('canvas');
+    if (existingCanvas && existingCanvas.parentNode === mountRef.current) {
+      mountRef.current.removeChild(existingCanvas);
+    }
     mountRef.current.appendChild(renderer.domElement);
 
     // 4. Studio Lighting de Alta Costura
@@ -571,14 +574,13 @@ export const PhoneViewer3D = ({
         ref={mountRef}
         style={{ height }}
         className="w-full cursor-grab active:cursor-grabbing flex items-center justify-center relative"
-      >
-        {loading && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-[#0a0a0c]/90 backdrop-blur-sm z-20">
-            <div className="w-8 h-8 border-2 border-[#c9a227] border-t-transparent rounded-full animate-spin" />
-            <p className="text-xs text-[#8b8680] font-mono">Renderizando modelo 3D PBR...</p>
-          </div>
-        )}
-      </div>
+      />
+      {loading && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-[#0a0a0c]/90 backdrop-blur-sm z-20">
+          <div className="w-8 h-8 border-2 border-[#c9a227] border-t-transparent rounded-full animate-spin" />
+          <p className="text-xs text-[#8b8680] font-mono">Renderizando modelo 3D PBR...</p>
+        </div>
+      )}
 
       {/* Interactive Bottom Control Toolbar */}
       <div className="absolute bottom-4 left-4 right-4 z-10 flex flex-wrap items-center justify-between gap-3 bg-[#0a0a0c]/90 backdrop-blur-xl p-3 rounded-2xl border border-[rgba(243,239,230,0.12)] shadow-lg">

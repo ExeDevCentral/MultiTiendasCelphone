@@ -1,0 +1,42 @@
+
+> multitiendas-celphone@2.0.0 dev
+> next dev -p 5190
+
+[32m✔[0m [33mConsole Ninja[0m extension is connected to [33mNext.js[0m, see [36mhttps://tinyurl.com/2vt8jxzw[0m
+  ▲ Next.js 14.2.23
+  - Local:        http://localhost:5190
+
+ ✓ Starting...
+ ✓ Ready in 6.3s
+ ○ Compiling / ...
+ ✓ Compiled / in 8.7s (2596 modules)
+ GET / 200 in 9018ms
+ ○ Compiling /api/stores ...
+ ✓ Compiled /api/stores in 2.5s (1325 modules)
+ GET /api/stores 200 in 2561ms
+ ✓ Compiled /api/products in 180ms (1338 modules)
+ GET /api/products? 200 in 215ms
+ GET / 200 in 142ms
+ GET /api/stores 200 in 10ms
+ GET /api/products? 200 in 8ms
+ GET / 200 in 52ms
+ GET /api/stores 200 in 7ms
+ GET /api/products? 200 in 6ms
+ GET / 200 in 57ms
+ GET /api/stores 200 in 9ms
+ GET /api/products? 200 in 7ms
+ GET / 200 in 39ms
+ GET /api/stores 200 in 8ms
+ GET /api/products? 200 in 7ms
+ GET / 200 in 68ms
+ GET /api/stores 200 in 8ms
+ GET /api/products? 200 in 8ms
+ GET / 200 in 70ms
+ GET /api/stores 200 in 7ms
+ GET /api/products? 200 in 5ms
+ GET / 200 in 50ms
+ GET /api/stores 200 in 6ms
+ GET /api/products? 200 in 6ms
+ GET / 200 in 63ms
+ GET /api/stores 200 in 11ms
+ GET /api/products? 200 in 8ms

@@ -1,4 +1,4 @@
-// API Client for MultiTiendas CelPhone Platform
+// API Client for CelStore Platform
 const API_BASE = '/api';
 
 const getAuthHeaders = () => {

@@ -1,6 +1,6 @@
-# MultiTiendas CelPhone 3D — Domain Context & Ubiquitous Language
+# CelStore™ — Domain Context & Ubiquitous Language
 
-Documento de contexto de dominio para el ecosistema **MultiTiendas CelPhone 3D**, estableciendo el lenguaje ubicuo, modelos y reglas de negocio.
+Documento de contexto de dominio para el ecosistema **CelStore**, estableciendo el lenguaje ubicuo, modelos y reglas de negocio.
 
 ---
 

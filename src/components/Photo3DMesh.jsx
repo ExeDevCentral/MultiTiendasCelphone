@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { useLoader, useFrame } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import { depthVertexShader, depthFragmentShader } from '../shaders/depthPhotoShader';
+import { subscribeToOrientation } from '../utils/gyroscope';
 
 function createFallbackDepthTexture() {
   const canvas = document.createElement('canvas');

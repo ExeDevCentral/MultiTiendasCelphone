@@ -1,0 +1,9 @@
+
+> multitiendas-celphone@2.0.0 start
+> next start -p 5191
+
+  ▲ Next.js 14.2.23
+  - Local:        http://localhost:5191
+
+ ✓ Starting...
+ ✓ Ready in 416ms

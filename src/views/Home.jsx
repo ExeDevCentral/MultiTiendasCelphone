@@ -8,7 +8,11 @@ import {
   Store,
   Layers,
   Clock,
-  Eye
+  Eye,
+  Circle,
+  Star,
+  Gem,
+  BadgeCheck
 } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 import { GenerationFilter } from '../components/GenerationFilter';
@@ -77,137 +81,165 @@ export const Home = ({ onNavigate, onOpenDetail, onOpen3DModal }) => {
   return (
     <div className="space-y-24 pb-24 overflow-hidden">
       
-      {/* 1. HERO SECTION DE ALTA COSTURA (Centrado perfecto en PC 60-30-10) */}
-      <section className="relative pt-8 sm:pt-14 px-6 sm:px-10 lg:px-12 max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
-          
-          {/* Columna Izquierda: Copy Editorial (6 columnas) */}
-          <div className="lg:col-span-6 space-y-6 text-center lg:text-left z-10">
-            <p className="eyebrow">
-              Atelier Generacional · Edición 3D
-            </p>
+       {/* 1. HERO SECTION — CELSTORE PREMIUM | CELULAR FLOTANDO */}
+       <section className="relative pt-8 sm:pt-14 px-6 sm:px-10 lg:px-12 max-w-7xl mx-auto overflow-hidden">
+         {/* Decorative floating orbs for modernity */}
+         <div className="absolute top-20 left-10 w-64 h-64 rounded-full bg-[#c9a227]/[0.04] blur-[100px] hero-orb pointer-events-none" />
+         <div className="absolute bottom-20 right-10 w-96 h-96 rounded-full bg-[#c9a227]/[0.03] blur-[120px] hero-orb pointer-events-none" style={{ animationDirection: 'reverse' }} />
+         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-[#c9a227]/[0.02] blur-[150px] pointer-events-none" />
 
-            <h1 className="text-4xl sm:text-5xl lg:text-[52px] font-bold text-[#f3efe6] tracking-tight leading-[1.08]">
-              Ingeniería móvil <br />
-              <span className="text-[#e4c972]">elevada a pieza de arte.</span>
-            </h1>
+         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center relative z-10">
+           
+           {/* Columna Izquierda: Copy Editorial con Wordmark */}
+           <div className="lg:col-span-6 space-y-6 text-center lg:text-left z-10">
+             
+             {/* CelStore Wordmark con confianza */}
+             <div className="inline-flex items-center gap-3 premium-badge px-5 py-2.5 rounded-full">
+               <Gem className="w-5 h-5 text-[#c9a227]" />
+               <span className="font-serif italic text-lg text-[#c9a227] tracking-wider font-medium">
+                 CelStore™
+               </span>
+               <BadgeCheck className="w-4 h-4 text-[#e4c972]" />
+             </div>
 
-            <p className="text-[16px] text-[#8b8680] max-w-xl mx-auto lg:mx-0 leading-[1.6]">
-              Desde buques insignia contemporáneos en <strong className="text-[#f3efe6] font-medium">Titanio Grado 5</strong> hasta las <strong className="text-[#e4c972] font-medium">leyendas vintage</strong> restauradas para el detox digital definitivo.
-            </p>
+             <p className="eyebrow pt-2">
+               Atelier Generacional · Edición 3D
+             </p>
 
-            {/* Selector de Estudio 3D en Hero */}
-            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2.5 pt-2">
-              <span className="text-[12px] uppercase text-[#8b8680] font-medium mr-1">Probar 3D:</span>
-              <button
-                type="button"
-                onClick={() => {
-                  playSubtleClick();
-                  setHeroModelType('modern_flagship');
-                  setHeroColor(heroColors[0]);
-                }}
-                className={`px-4 py-1.5 rounded-full text-xs transition-all cursor-pointer ${
-                  heroModelType === 'modern_flagship'
-                    ? 'border border-[#c9a227] text-[#f3efe6] bg-[rgba(201,162,39,0.10)] font-medium'
-                    : 'border border-[rgba(243,239,230,0.16)] text-[#8b8680] hover:text-[#f3efe6]'
-                }`}
-              >
-                Flagship Titanium
-              </button>
+             <h1 className="text-4xl sm:text-5xl lg:text-[56px] font-bold text-[#f3efe6] tracking-tight leading-[1.05]">
+               Celular de <br />
+               <span className="text-[#e4c972]">alta costura digital.</span>
+             </h1>
 
-              <button
-                type="button"
-                onClick={() => {
-                  playSubtleClick();
-                  setHeroModelType('vintage_bar');
-                  setHeroColor(vintageColors[0]);
-                }}
-                className={`px-4 py-1.5 rounded-full text-xs transition-all cursor-pointer ${
-                  heroModelType === 'vintage_bar'
-                    ? 'border border-[#c9a227] text-[#f3efe6] bg-[rgba(201,162,39,0.10)] font-medium'
-                    : 'border border-[rgba(243,239,230,0.16)] text-[#8b8680] hover:text-[#f3efe6]'
-                }`}
-              >
-                Nokia Heritage 3310
-              </button>
+             <p className="text-[16px] text-[#8b8680] max-w-xl mx-auto lg:mx-0 leading-[1.7]">
+               Desde <strong className="text-[#f3efe6] font-medium">flagships en titanio</strong> hasta <strong className="text-[#e4c972] font-medium">leyendas vintage</strong>. Visor 3D interactivo, profundidad real en GPU y diseño que trasciende.
+             </p>
 
-              <button
-                type="button"
-                onClick={() => {
-                  playSubtleClick();
-                  setHeroModelType('vintage_flip');
-                  setHeroColor(vintageColors[1]);
-                }}
-                className={`px-4 py-1.5 rounded-full text-xs transition-all cursor-pointer ${
-                  heroModelType === 'vintage_flip'
-                    ? 'border border-[#c9a227] text-[#f3efe6] bg-[rgba(201,162,39,0.10)] font-medium'
-                    : 'border border-[rgba(243,239,230,0.16)] text-[#8b8680] hover:text-[#f3efe6]'
-                }`}
-              >
-                Archive RAZR V3
-              </button>
-            </div>
+             {/* Selector de Estudio 3D */}
+             <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2.5 pt-2">
+               <span className="text-[12px] uppercase text-[#8b8680] font-medium mr-1">Explorar:</span>
+               <button
+                 type="button"
+                 onClick={() => { playSubtleClick(); setHeroModelType('modern_flagship'); setHeroColor(heroColors[0]); }}
+                 className={`px-4 py-1.5 rounded-full text-xs transition-all cursor-pointer ${
+                   heroModelType === 'modern_flagship'
+                     ? 'border border-[#c9a227] text-[#f3efe6] bg-[rgba(201,162,39,0.10)] font-medium shadow-lg shadow-[#c9a227]/10'
+                     : 'border border-[rgba(243,239,230,0.16)] text-[#8b8680] hover:text-[#f3efe6] hover:border-[#c9a227]/50'
+                 }`}
+               >
+                 <span className="inline-block w-2 h-2 rounded-full bg-[#c9a227] mr-1.5" />
+                 Flagship Titanium
+               </button>
 
-            {/* Botones de Acción Primaria */}
-            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3.5 pt-3">
-              <button
-                type="button"
-                onClick={() => {
-                  playSubtleClick();
-                  setGenerationFilter('last_2_years');
-                  const cat = document.getElementById('catalog-section');
-                  if (cat) cat.scrollIntoView({ behavior: 'smooth' });
-                }}
-                className="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-[#c9a227] hover:bg-[#e4c972] text-[#0a0a0c] text-sm font-bold transition-all shadow-lg cursor-pointer hover:-translate-y-0.5"
-              >
-                Explorar Flagships (2024-2026)
-              </button>
+               <button
+                 type="button"
+                 onClick={() => { playSubtleClick(); setHeroModelType('vintage_bar'); setHeroColor(vintageColors[0]); }}
+                 className={`px-4 py-1.5 rounded-full text-xs transition-all cursor-pointer ${
+                   heroModelType === 'vintage_bar'
+                     ? 'border border-[#c9a227] text-[#f3efe6] bg-[rgba(201,162,39,0.10)] font-medium shadow-lg shadow-[#c9a227]/10'
+                     : 'border border-[rgba(243,239,230,0.16)] text-[#8b8680] hover:text-[#f3efe6] hover:border-[#c9a227]/50'
+                 }`}
+               >
+                 <span className="inline-block w-2 h-2 rounded-full bg-[#8b8680] mr-1.5" />
+                 Nokia Heritage
+               </button>
 
-              <button
-                type="button"
-                onClick={() => {
-                  playSubtleClick();
-                  setGenerationFilter('vintage_classic');
-                  const cat = document.getElementById('catalog-section');
-                  if (cat) cat.scrollIntoView({ behavior: 'smooth' });
-                }}
-                className="w-full sm:w-auto px-6 py-3.5 rounded-xl border border-[rgba(243,239,230,0.16)] hover:border-[#c9a227] text-[#f3efe6] hover:text-[#e4c972] text-sm font-medium transition-all cursor-pointer flex items-center justify-center gap-2"
-              >
-                <History className="w-4 h-4 text-[#c9a227]" />
-                <span>Vintage Archive</span>
-              </button>
-            </div>
-          </div>
+               <button
+                 type="button"
+                 onClick={() => { playSubtleClick(); setHeroModelType('vintage_flip'); setHeroColor(vintageColors[1]); }}
+                 className={`px-4 py-1.5 rounded-full text-xs transition-all cursor-pointer ${
+                   heroModelType === 'vintage_flip'
+                     ? 'border border-[#c9a227] text-[#f3efe6] bg-[rgba(201,162,39,0.10)] font-medium shadow-lg shadow-[#c9a227]/10'
+                     : 'border border-[rgba(243,239,230,0.16)] text-[#8b8680] hover:text-[#f3efe6] hover:border-[#c9a227]/50'
+                 }`}
+               >
+                 <span className="inline-block w-2 h-2 rounded-full bg-[#38bdf8] mr-1.5" />
+                 Archive RAZR V3
+               </button>
+             </div>
 
-          {/* Columna Derecha: Estudio 3D Integrado (6 columnas) */}
-          <div className="lg:col-span-6 w-full relative z-10 flex justify-center">
-            <div className="w-full max-w-[560px] product-stage min-h-[480px] h-[520px] rounded-[28px] overflow-hidden p-3 shadow-2xl">
-              <WebGLErrorBoundary height="500px">
-                <Suspense
-                  fallback={
-                    <div className="h-full w-full flex flex-col items-center justify-center gap-3">
-                      <div className="w-6 h-6 border-2 border-[#c9a227] border-t-transparent rounded-full animate-spin" />
-                      <p className="text-xs text-[#8b8680]">Iniciando estudio 3D...</p>
-                    </div>
-                  }
-                >
-                  <PhoneViewer3D
-                    modelType={heroModelType}
-                    selectedColor={heroColor}
-                    availableColors={heroModelType === 'modern_flagship' ? heroColors : vintageColors}
-                    onColorChange={(c) => {
-                      playSubtleClick();
-                      setHeroColor(c);
-                    }}
-                    phoneName={heroModelType === 'modern_flagship' ? 'iPhone 16 Pro Max 3D' : heroModelType === 'vintage_bar' ? 'Nokia 3310 3D' : 'RAZR V3 3D'}
-                    height="500px"
-                  />
-                </Suspense>
-              </WebGLErrorBoundary>
-            </div>
-          </div>
-        </div>
-      </section>
+             {/* Botones de Acción Primaria */}
+             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3.5 pt-3">
+               <button
+                 type="button"
+                 onClick={() => {
+                   playSubtleClick();
+                   setGenerationFilter('last_2_years');
+                   const cat = document.getElementById('catalog-section');
+                   if (cat) cat.scrollIntoView({ behavior: 'smooth' });
+                 }}
+                 className="w-full sm:w-auto px-8 py-4 rounded-xl bg-[#c9a227] hover:bg-[#e4c972] text-[#0a0a0c] text-sm font-bold transition-all shadow-lg shadow-[#c9a227]/25 cursor-pointer hover:-translate-y-0.5 hover:shadow-[#c9a227]/30 flex items-center justify-center gap-2"
+               >
+                 <Sparkles className="w-4 h-4" />
+                 Explorar Flagships
+               </button>
+
+               <button
+                 type="button"
+                 onClick={() => {
+                   playSubtleClick();
+                   setGenerationFilter('vintage_classic');
+                   const cat = document.getElementById('catalog-section');
+                   if (cat) cat.scrollIntoView({ behavior: 'smooth' });
+                 }}
+                 className="w-full sm:w-auto px-7 py-4 rounded-xl border border-[rgba(243,239,230,0.16)] hover:border-[#c9a227] text-[#f3efe6] hover:text-[#e4c972] text-sm font-medium transition-all cursor-pointer flex items-center justify-center gap-2 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-black/20"
+               >
+                 <History className="w-4 h-4 text-[#c9a227]" />
+                 <span>Vintage Archive</span>
+               </button>
+             </div>
+
+             {/* Trust indicators */}
+             <div className="flex items-center gap-6 pt-4 justify-center lg:justify-start">
+               <div className="flex items-center gap-2">
+                 <div className="flex -space-x-2">
+                   <div className="w-7 h-7 rounded-full bg-[#1b1b1f] border-2 border-[#c9a227] flex items-center justify-center text-[9px] text-[#c9a227] font-bold">★</div>
+                   <div className="w-7 h-7 rounded-full bg-[#1b1b1f] border-2 border-[#1b1b1f] flex items-center justify-center text-[9px] text-[#8b8680]">✓</div>
+                   <div className="w-7 h-7 rounded-full bg-[#1b1b1f] border-2 border-[#1b1b1f] flex items-center justify-center text-[9px] text-[#8b8680]">3D</div>
+                 </div>
+                 <span className="text-[11px] text-[#8b8680]">Garantía + 3D + Premium</span>
+               </div>
+             </div>
+           </div>
+
+           {/* Columna Derecha: Celular Flotando en 3D */}
+           <div className="lg:col-span-6 w-full relative z-10 flex justify-center">
+             <div className="relative w-full max-w-[520px] float-phone">
+               {/* Glow ring behind phone */}
+               <div className="absolute inset-0 rounded-[32px] bg-gradient-to-br from-[#c9a227]/20 via-transparent to-[#c9a227]/10 blur-xl scale-105 pointer-events-none" />
+               <div className="absolute -inset-4 rounded-[36px] border border-[#c9a227]/10 pointer-events-none animate-pulse" style={{ animationDuration: '8s' }} />
+               
+               <div className="product-stage min-h-[480px] h-[520px] rounded-[28px] overflow-hidden p-3 shadow-2xl shadow-[#000]/50 relative">
+                 <WebGLErrorBoundary height="500px">
+                   <Suspense
+                     fallback={
+                       <div className="h-full w-full flex flex-col items-center justify-center gap-3">
+                         <div className="w-6 h-6 border-2 border-[#c9a227] border-t-transparent rounded-full animate-spin" />
+                         <p className="text-xs text-[#8b8680]">Iniciando estudio 3D...</p>
+                       </div>
+                     }
+                   >
+                     <PhoneViewer3D
+                       modelType={heroModelType}
+                       selectedColor={heroColor}
+                       availableColors={heroModelType === 'modern_flagship' ? heroColors : vintageColors}
+                       onColorChange={(c) => { playSubtleClick(); setHeroColor(c); }}
+                       phoneName={heroModelType === 'modern_flagship' ? 'iPhone 16 Pro Max 3D' : heroModelType === 'vintage_bar' ? 'Nokia 3310 3D' : 'RAZR V3 3D'}
+                       height="500px"
+                     />
+                   </Suspense>
+                 </WebGLErrorBoundary>
+               </div>
+
+               {/* Floating badge */}
+               <div className="absolute -top-3 -right-3 premium-badge px-3 py-1.5 rounded-full flex items-center gap-1.5 float-slow">
+                 <Eye className="w-3 h-3 text-[#e4c972]" />
+                 <span className="text-[11px] text-[#e4c972] font-medium">360° Interactive</span>
+               </div>
+             </div>
+           </div>
+         </div>
+       </section>
 
       {/* 2. DIRECTORIO DE BOUTIQUES EXCLUSIVAS */}
       <section className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-12">
