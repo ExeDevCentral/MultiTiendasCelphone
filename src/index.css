@@ -16,141 +16,184 @@
   --font-mono: 'Space Grotesk', monospace;
 }
 
-:root {
+@layer base {
+  :root {
+    /* ==========================================================================
+       SISTEMA DE DISEÑO DE ALTA COSTURA: REGLA 60-30-10
+       ========================================================================== */
+
+    /* 60% DOMINANTE (Base profunda, lienzo Obsidian & espacio negativo) */
+    --obsidian: #0a0a0c;
+    --obsidian-elevated: #0f0f12;
+
+    /* 30% SECUNDARIO (Superficies de titanio, contenedores, bordes & tipografía) */
+    --obsidian-surface: #131316;
+    --obsidian-card: #1b1b1f;
+    --ivory: #f3efe6;
+    --stone: #8b8680;
+    --stone-light: #b0aaa2;
+    --line: rgba(243, 239, 230, 0.08);
+    --line-strong: rgba(243, 239, 230, 0.16);
+
+    /* 10% ACENTO FOCAL (Oro Champagne satinado para acciones y puntos clave) */
+    --gold: #c9a227;
+    --gold-soft: #e4c972;
+    --gold-glow: rgba(201, 162, 39, 0.10);
+    --gold-subtle: rgba(201, 162, 39, 0.06);
+
+    /* Tipografías Editoriales */
+    --font-serif: 'Cormorant Garamond', Georgia, serif;
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+    --font-mono: 'Space Grotesk', monospace;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--obsidian);
+    color: var(--ivory);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Scrollbar Minimalista */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--obsidian);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(243, 239, 230, 0.12);
+    border-radius: 9999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--gold);
+  }
+}
+
+@layer components {
   /* ==========================================================================
-     SISTEMA DE DISEÑO DE ALTA COSTURA: REGLA 60-30-10
+     TIPOGRAFÍA Y PROPORCIONES
      ========================================================================== */
-  
-  /* 60% DOMINANTE (Base profunda, lienzo Obsidian & espacio negativo) */
-  --obsidian: #0a0a0c;
-  --obsidian-elevated: #0f0f12;
-  
-  /* 30% SECUNDARIO (Superficies de titanio, contenedores, bordes & tipografía) */
-  --obsidian-surface: #131316;
-  --obsidian-card: #1b1b1f;
-  --ivory: #f3efe6;
-  --stone: #8b8680;
-  --stone-light: #b0aaa2;
-  --line: rgba(243, 239, 230, 0.08);
-  --line-strong: rgba(243, 239, 230, 0.16);
+  .wordmark {
+    font-family: var(--font-serif);
+    font-style: italic;
+    letter-spacing: 0.02em;
+  }
 
-  /* 10% ACENTO FOCAL (Oro Champagne satinado para acciones y puntos clave) */
-  --gold: #c9a227;
-  --gold-soft: #e4c972;
-  --gold-glow: rgba(201, 162, 39, 0.10);
-  --gold-subtle: rgba(201, 162, 39, 0.06);
+  .eyebrow {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 15px;
+    color: var(--gold-soft);
+    letter-spacing: 0.06em;
+    margin: 0 0 14px;
+  }
 
-  /* Tipografías Editoriales */
-  --font-serif: 'Cormorant Garamond', Georgia, serif;
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
-  --font-mono: 'Space Grotesk', monospace;
-}
+  /* ==========================================================================
+     SUPERFICIES Y CONTENEDORES (30% SECUNDARIO)
+     ========================================================================== */
+  .product-stage {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    border-radius: 28px;
+    background:
+      radial-gradient(circle at 50% 38%, var(--gold-glow), transparent 60%),
+      linear-gradient(180deg, var(--obsidian-card), var(--obsidian-surface));
+    border: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+  .glass-panel {
+    background: rgba(19, 19, 22, 0.85);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--line);
+  }
 
-body {
-  font-family: var(--font-sans);
-  background-color: var(--obsidian);
-  color: var(--ivory);
-  overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  .glass-panel-hover {
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .glass-panel-hover:hover {
+    background: rgba(27, 27, 31, 0.95);
+    border-color: var(--line-strong);
+    transform: translateY(-2px);
+    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.8);
+  }
+
+  /* ==========================================================================
+     BOTONES Y ACCIONES FOCALES (10% ACENTO)
+     ========================================================================== */
+  .btn-gold {
+    background: var(--gold);
+    color: var(--obsidian);
+    font-weight: 700;
+    font-size: 15px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 20px rgba(201, 162, 39, 0.25);
+  }
+
+  .btn-gold:hover, .btn-gold:focus-visible {
+    background: var(--gold-soft);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 25px rgba(201, 162, 39, 0.35);
+  }
+
+  .btn-outline-luxury {
+    border: 1px solid var(--line-strong);
+    color: var(--ivory);
+    background: transparent;
+    font-size: 14px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-outline-luxury:hover, .btn-outline-luxury:focus-visible {
+    border-color: var(--gold);
+    color: var(--gold-soft);
+    transform: translateY(-1px);
+  }
+
+  /* Float Animation — Celular Flotando */
+  .float-phone {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .float-slow {
+    animation: float-slow 8s ease-in-out infinite;
+  }
+
+  .hero-orb {
+    animation: orbit 20s linear infinite;
+  }
+
+  .wordmark-glow {
+    animation: pulse-glow 4s ease-in-out infinite;
+  }
+
+  /* Modern premium badge */
+  .premium-badge {
+    background: linear-gradient(135deg, rgba(201, 162, 39, 0.15), rgba(201, 162, 39, 0.05));
+    border: 1px solid rgba(201, 162, 39, 0.3);
+    backdrop-filter: blur(12px);
+  }
 }
 
 /* ==========================================================================
-   TIPOGRAFÍA Y PROPORCIONES
+   KEYFRAMES (fuera de capas: no participan en la cascada CSS)
    ========================================================================== */
-.wordmark {
-  font-family: var(--font-serif);
-  font-style: italic;
-  letter-spacing: 0.02em;
-}
-
-.eyebrow {
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-size: 15px;
-  color: var(--gold-soft);
-  letter-spacing: 0.06em;
-  margin: 0 0 14px;
-}
-
-/* ==========================================================================
-   SUPERFICIES Y CONTENEDORES (30% SECUNDARIO)
-   ========================================================================== */
-.product-stage {
-  position: relative;
-  aspect-ratio: 1 / 1;
-  border-radius: 28px;
-  background:
-    radial-gradient(circle at 50% 38%, var(--gold-glow), transparent 60%),
-    linear-gradient(180deg, var(--obsidian-card), var(--obsidian-surface));
-  border: 1px solid var(--line);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.glass-panel {
-  background: rgba(19, 19, 22, 0.85);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid var(--line);
-}
-
-.glass-panel-hover {
-  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.glass-panel-hover:hover {
-  background: rgba(27, 27, 31, 0.95);
-  border-color: var(--line-strong);
-  transform: translateY(-2px);
-  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.8);
-}
-
-/* ==========================================================================
-   BOTONES Y ACCIONES FOCALES (10% ACENTO)
-   ========================================================================== */
-.btn-gold {
-  background: var(--gold);
-  color: var(--obsidian);
-  font-weight: 700;
-  font-size: 15px;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
-  box-shadow: 0 4px 20px rgba(201, 162, 39, 0.25);
-}
-
-.btn-gold:hover, .btn-gold:focus-visible {
-  background: var(--gold-soft);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 25px rgba(201, 162, 39, 0.35);
-}
-
-.btn-outline-luxury {
-  border: 1px solid var(--line-strong);
-  color: var(--ivory);
-  background: transparent;
-  font-size: 14px;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.btn-outline-luxury:hover, .btn-outline-luxury:focus-visible {
-  border-color: var(--gold);
-  color: var(--gold-soft);
-  transform: translateY(-1px);
-}
-
-/* Float Animation — Celular Flotando */
 @keyframes float {
   0%, 100% { transform: translateY(0px) rotate(0deg); }
   33% { transform: translateY(-12px) rotate(0.5deg); }
@@ -170,46 +213,4 @@ body {
 @keyframes pulse-glow {
   0%, 100% { opacity: 0.4; transform: scale(1); }
   50% { opacity: 0.8; transform: scale(1.05); }
-}
-
-.float-phone {
-  animation: float 6s ease-in-out infinite;
-}
-
-.float-slow {
-  animation: float-slow 8s ease-in-out infinite;
-}
-
-.hero-orb {
-  animation: orbit 20s linear infinite;
-}
-
-.wordmark-glow {
-  animation: pulse-glow 4s ease-in-out infinite;
-}
-
-/* Modern premium badge */
-.premium-badge {
-  background: linear-gradient(135deg, rgba(201, 162, 39, 0.15), rgba(201, 162, 39, 0.05));
-  border: 1px solid rgba(201, 162, 39, 0.3);
-  backdrop-filter: blur(12px);
-}
-
-/* Scrollbar Minimalista */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--obsidian);
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(243, 239, 230, 0.12);
-  border-radius: 9999px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--gold);
 }

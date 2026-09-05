@@ -82,16 +82,16 @@ export const Home = ({ onNavigate, onOpenDetail, onOpen3DModal }) => {
     <div className="space-y-24 pb-24 overflow-hidden">
       
        {/* 1. HERO SECTION — CELSTORE PREMIUM | CELULAR FLOTANDO */}
-       <section className="relative pt-8 sm:pt-14 px-6 sm:px-10 lg:px-12 max-w-7xl mx-auto overflow-hidden">
-         {/* Decorative floating orbs for modernity */}
-         <div className="absolute top-20 left-10 w-64 h-64 rounded-full bg-[#c9a227]/[0.04] blur-[100px] hero-orb pointer-events-none" />
-         <div className="absolute bottom-20 right-10 w-96 h-96 rounded-full bg-[#c9a227]/[0.03] blur-[120px] hero-orb pointer-events-none" style={{ animationDirection: 'reverse' }} />
-         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-[#c9a227]/[0.02] blur-[150px] pointer-events-none" />
+       <section className="relative pt-8 sm:pt-14 px-6 sm:px-10 lg:px-12 max-w-7xl mx-auto">
+         {/* Decorative floating orbs for modernity (clipped by overflow-hidden on parent) */}
+         <div className="absolute top-1/4 -left-20 w-40 h-40 sm:w-56 sm:h-56 rounded-full bg-[#c9a227]/[0.04] blur-[80px] hero-orb pointer-events-none" />
+         <div className="absolute bottom-1/4 -right-20 w-40 h-40 sm:w-56 sm:h-56 rounded-full bg-[#c9a227]/[0.03] blur-[90px] hero-orb pointer-events-none" style={{ animationDirection: 'reverse' }} />
+         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] sm:w-[400px] sm:h-[400px] rounded-full bg-[#c9a227]/[0.02] blur-[120px] pointer-events-none" />
 
-         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center relative z-10">
+         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center relative z-10">
            
            {/* Columna Izquierda: Copy Editorial con Wordmark */}
-           <div className="lg:col-span-6 space-y-6 text-center lg:text-left z-10">
+           <div className="space-y-6 text-center lg:text-left z-10">
              
              {/* CelStore Wordmark con confianza */}
              <div className="inline-flex items-center gap-3 premium-badge px-5 py-2.5 rounded-full">
@@ -203,13 +203,13 @@ export const Home = ({ onNavigate, onOpenDetail, onOpen3DModal }) => {
            </div>
 
            {/* Columna Derecha: Celular Flotando en 3D */}
-           <div className="lg:col-span-6 w-full relative z-10 flex justify-center">
-             <div className="relative w-full max-w-[520px] float-phone">
+           <div className="w-full relative z-10 flex justify-center">
+             <div className="relative w-full max-w-[480px] float-phone">
                {/* Glow ring behind phone */}
                <div className="absolute inset-0 rounded-[32px] bg-gradient-to-br from-[#c9a227]/20 via-transparent to-[#c9a227]/10 blur-xl scale-105 pointer-events-none" />
                <div className="absolute -inset-4 rounded-[36px] border border-[#c9a227]/10 pointer-events-none animate-pulse" style={{ animationDuration: '8s' }} />
                
-               <div className="product-stage min-h-[480px] h-[520px] rounded-[28px] overflow-hidden p-3 shadow-2xl shadow-[#000]/50 relative">
+               <div className="relative w-full h-[480px] sm:h-[520px] rounded-[28px] overflow-hidden bg-gradient-to-b from-[#1b1b1f] to-[#131316] border border-[rgba(243,239,230,0.08)] shadow-2xl shadow-[#000]/50">
                  <WebGLErrorBoundary height="500px">
                    <Suspense
                      fallback={
@@ -346,7 +346,7 @@ export const Home = ({ onNavigate, onOpenDetail, onOpen3DModal }) => {
       </section>
 
       {/* 5. CATÁLOGO PRINCIPAL CON VISOR 3D */}
-      <section id="catalog-section" className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-12 pt-10">
+      <section id="catalog-section" className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-12">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8 border-b border-[rgba(243,239,230,0.08)] pb-8">
           <div>
             <p className="eyebrow mb-1!">
@@ -402,7 +402,7 @@ export const Home = ({ onNavigate, onOpenDetail, onOpen3DModal }) => {
       </section>
 
       {/* 6. BANNER DE ACCESORIOS */}
-      <section id="accessories-section" className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-12 pt-4">
+      <section id="accessories-section" className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-12">
         <div className="p-10 sm:p-12 rounded-[28px] bg-gradient-to-br from-[#1b1b1f] via-[#131316] to-[#0a0a0c] border border-[rgba(243,239,230,0.12)] relative overflow-hidden shadow-2xl">
           <div className="max-w-2xl space-y-4 relative z-10">
             <span className="px-3.5 py-1 rounded-full text-xs font-medium bg-[rgba(201,162,39,0.15)] text-[#e4c972] border border-[#c9a227]/30 inline-block">

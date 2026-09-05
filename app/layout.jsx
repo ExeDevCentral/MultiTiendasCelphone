@@ -30,7 +30,7 @@ export default function RootLayout({ children }) {
           <CartProvider>
             <AuthProvider>
               <SmoothScroll>
-                <div className="min-h-screen flex flex-col">
+                <div className="min-h-screen flex flex-col overflow-x-hidden">
                   {children}
                   <CartDrawer />
                   <CheckoutModal />
