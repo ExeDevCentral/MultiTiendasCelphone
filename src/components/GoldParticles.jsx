@@ -76,8 +76,6 @@ export function GoldParticles() {
     []
   );
 
-  if (typeof window === 'undefined') return null;
-
   return (
     <div className="fixed inset-0 pointer-events-none z-0">
       <Particles
