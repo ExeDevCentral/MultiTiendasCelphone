@@ -18,7 +18,7 @@ export const StoreSelector = ({ onNavigate }) => {
       <div className="text-center max-w-3xl mx-auto space-y-4">
         <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-semibold uppercase tracking-wider">
           <Store className="w-3.5 h-3.5" />
-          Directorio Oficial Multi-Tiendas
+          Directorio de Boutiques CelStore™
         </div>
         <h1 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
           Nuestras Sucursales Especializadas

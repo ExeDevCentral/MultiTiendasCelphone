@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { parseAuthToken, verifyTenantAccess } from '../src/lib/authGuard';
+import { signToken } from '../src/lib/tokenSigner';
 
 describe('Security Audit & Penetration Hardening Suite', () => {
   describe('OWASP A04: Anti Price Parameter Tampering', () => {
@@ -59,20 +60,35 @@ describe('Security Audit & Penetration Hardening Suite', () => {
   });
 
   describe('OWASP A07: Token Verification & Backdoor Prevention', () => {
-    it('should parse valid bearer tokens correctly from headers', () => {
+    it('should parse valid signed tokens correctly from headers', () => {
+      const superAdminToken = signToken({
+        sub: 'super-admin-01',
+        role: 'superadmin',
+        name: 'Director General CelStore',
+        email: 'superadmin@platform.com',
+      });
+
       const mockSuperAdminReq = {
         headers: new Headers({
-          'Authorization': 'Bearer jwt-mock-superadmin-1700000000'
-        })
+          Authorization: `Bearer ${superAdminToken}`,
+        }),
       };
       const authSuper = parseAuthToken(mockSuperAdminReq);
       expect(authSuper).not.toBeNull();
       expect(authSuper.isSuperAdmin).toBe(true);
 
+      const managerToken = signToken({
+        sub: 'mgr-store-retromobile',
+        role: 'store_manager',
+        storeId: 'store-retromobile',
+        name: 'Gerente RetroMobile Vault',
+        email: 'admin@retromobile.com',
+      });
+
       const mockManagerReq = {
         headers: new Headers({
-          'Authorization': 'Bearer jwt-mock-store-store-retromobile-1700000000'
-        })
+          Authorization: `Bearer ${managerToken}`,
+        }),
       };
       const authManager = parseAuthToken(mockManagerReq);
       expect(authManager).not.toBeNull();
@@ -80,16 +96,24 @@ describe('Security Audit & Penetration Hardening Suite', () => {
       expect(authManager.storeId).toBe('store-retromobile');
     });
 
-    it('should reject invalid or missing authorization tokens', () => {
+    it('should reject invalid, forged or missing authorization tokens', () => {
       const invalidReq = {
         headers: new Headers({
-          'Authorization': 'Basic invalid-token'
-        })
+          Authorization: 'Basic invalid-token',
+        }),
       };
       expect(parseAuthToken(invalidReq)).toBeNull();
 
+      // Legacy static mock tokens without signature must be rejected
+      const forgedReq = {
+        headers: new Headers({
+          Authorization: 'Bearer jwt-mock-superadmin-1700000000',
+        }),
+      };
+      expect(parseAuthToken(forgedReq)).toBeNull();
+
       const emptyReq = {
-        headers: new Headers({})
+        headers: new Headers({}),
       };
       expect(parseAuthToken(emptyReq)).toBeNull();
     });

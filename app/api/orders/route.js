@@ -1,17 +1,26 @@
 import { NextResponse } from 'next/server';
-import { ORDERS_FILE, PRODUCTS_FILE, readData, writeData } from '@/src/lib/dataStore';
+import { createSupabaseClient } from '@/src/lib/supabase';
+import { toOrderRow, toOrderJS } from '@/src/lib/supabaseMappers';
+import { parseAuthToken } from '@/src/lib/authGuard';
 
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
     const storeId = searchParams.get('storeId');
-    let orders = readData(ORDERS_FILE);
+
+    const supabase = createSupabaseClient();
+    let query = supabase.from('orders').select('*').order('created_at', { ascending: false });
 
     if (storeId) {
-      orders = orders.filter((o) => o.storeId === storeId);
+      query = query.eq('store_id', storeId);
     }
-    return NextResponse.json(orders);
+
+    const { data, error } = await query;
+    if (error) throw error;
+
+    return NextResponse.json(data.map(toOrderJS));
   } catch (error) {
+    console.error('GET /api/orders:', error);
     return NextResponse.json({ error: 'Error al consultar pedidos' }, { status: 500 });
   }
 }
@@ -25,19 +34,29 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Datos de pedido incompletos' }, { status: 400 });
     }
 
-    const products = readData(PRODUCTS_FILE);
+    const supabase = createSupabaseClient();
     const sanitizedItems = [];
     let computedTotal = 0;
 
-    // 1. Validación y sanitización atómica con precios del servidor
+    // 1. Validación y sanitización con precios autoritativos del servidor
     for (const item of items) {
-      const prod = products.find((p) => p.id === (item.productId || item.id));
+      const productId = item.productId || item.id;
+      const { data: prod, error: prodError } = await supabase
+        .from('products')
+        .select('id, store_id, name, price, stock, colors, storage_options, type')
+        .eq('id', productId)
+        .maybeSingle();
+      if (prodError) throw prodError;
       if (!prod) {
-        return NextResponse.json({ error: `Producto con ID ${item.productId || item.id} no encontrado` }, { status: 404 });
+        return NextResponse.json({ error: `Producto con ID ${productId} no encontrado` }, { status: 404 });
       }
-      if (prod.storeId !== storeId && prod.type !== 'accessory') {
-        return NextResponse.json({ error: `El producto ${prod.name} no pertenece a esta boutique` }, { status: 400 });
+      if (prod.store_id !== storeId && prod.type !== 'accessory') {
+        return NextResponse.json(
+          { error: `El producto ${prod.name} no pertenece a esta boutique` },
+          { status: 400 }
+        );
       }
+
       const quantity = Math.max(1, parseInt(item.quantity, 10) || 1);
       if (prod.stock < quantity) {
         return NextResponse.json(
@@ -46,51 +65,56 @@ export async function POST(request) {
         );
       }
 
-      // Security: use authoritative price from database
       const verifiedPrice = Number(prod.price);
       computedTotal += verifiedPrice * quantity;
 
       sanitizedItems.push({
         productId: prod.id,
         name: prod.name,
-        color: item.color || (prod.colors && prod.colors[0]?.name) || 'Estándar',
-        storage: item.storage || (prod.storageOptions && prod.storageOptions[0]) || 'Estándar',
+        color: item.color || prod.colors?.[0]?.name || 'Estándar',
+        storage: item.storage || prod.storage_options?.[0] || 'Estándar',
         price: verifiedPrice,
-        quantity
+        quantity,
       });
     }
 
-    // 2. Descuento atómico de stock
-    sanitizedItems.forEach((item) => {
-      const pIndex = products.findIndex((p) => p.id === item.productId);
-      if (pIndex !== -1) {
-        products[pIndex].stock -= item.quantity;
+    // 2. Descuento atómico de stock por producto
+    for (const sItem of sanitizedItems) {
+      const { data: result, error: rpcError } = await supabase.rpc('decrease_stock_atomic', {
+        p_product_id: sItem.productId,
+        p_quantity: sItem.quantity,
+      });
+      if (rpcError) throw rpcError;
+      if (!result?.success) {
+        return NextResponse.json(
+          { error: result?.error || 'Stock insuficiente para completar la orden' },
+          { status: 409 }
+        );
       }
-    });
-    writeData(PRODUCTS_FILE, products);
+    }
 
-    // 3. Registro seguro de orden
-    const orders = readData(ORDERS_FILE);
-    const newOrder = {
-      id: `ord-${Date.now()}`,
+    // 3. Registro seguro de la orden
+    const order = toOrderRow({
+      id: `ORD-${Math.floor(1000 + Math.random() * 9000)}`,
       storeId,
-      items: sanitizedItems,
       customer: {
         name: String(customer.name).trim(),
         email: String(customer.email).trim(),
-        phone: customer.phone ? String(customer.phone).trim() : ''
+        phone: customer.phone ? String(customer.phone).trim() : '',
+        address: customer.address ? String(customer.address).trim() : '',
       },
-      paymentMethod: paymentMethod || 'mercadopago',
+      items: sanitizedItems,
       total: computedTotal,
-      status: 'completed',
-      createdAt: new Date().toISOString()
-    };
+      status: 'Confirmado',
+      paymentMethod: paymentMethod || 'mercadopago',
+    });
 
-    orders.unshift(newOrder);
-    writeData(ORDERS_FILE, orders);
+    const { data, error } = await supabase.from('orders').insert(order).select().single();
+    if (error) throw error;
 
-    return NextResponse.json(newOrder, { status: 201 });
+    return NextResponse.json(toOrderJS(data), { status: 201 });
   } catch (error) {
+    console.error('POST /api/orders:', error);
     return NextResponse.json({ error: 'Error al procesar la orden' }, { status: 500 });
   }
 }

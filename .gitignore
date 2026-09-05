@@ -12,7 +12,7 @@ node_modules
 dist
 dist-ssr
 .next
-*.local
+out
 
 # Editor directories and files
 .vscode/*

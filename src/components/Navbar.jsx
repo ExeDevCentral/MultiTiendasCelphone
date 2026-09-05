@@ -295,7 +295,7 @@ export const Navbar = ({ currentView, onNavigate }) => {
               onClick={() => handleNavClick('store_selector')}
               className="w-full text-left px-4 py-3 rounded-xl text-xs text-[#8b8680] hover:text-[#f3efe6]"
             >
-              Boutiques Multi-Tienda
+              Boutiques CelStore™
             </button>
           </div>
         )}

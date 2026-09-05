@@ -49,18 +49,17 @@ flowchart TB
         UI_ADMIN["Panel Admin Modular (ProductList, BulkEditor, Uploader)"]
     end
 
-    subgraph API_GATEWAY["API Gateway & Seguridad (Next.js Server & Express)"]
-        AUTH_GUARD["AuthGuard (Bearer JWT & RBAC Multi-Tenant)"]
+    subgraph API_GATEWAY["API Gateway & Seguridad (Next.js API Routes — Serverless)"]
+        AUTH_GUARD["AuthGuard (Tokens firmados AES-256-GCM & RBAC Multi-Tenant)"]
         PRICE_VERIF["Motor de Cálculo Canónico de Precios (Anti-Tampering)"]
         STOCK_CONCUR["Control Atómico de Stock Anti Race-Conditions"]
         MP_INTEG["MercadoPago SDK v2 + WhatsApp 1-Click Checkout"]
     end
 
     subgraph STORAGE_LAYER["Persistencia y Base de Datos"]
-        DB_POSTGRES[("PostgreSQL Multi-Tenant")]
+        DB_POSTGRES[("PostgreSQL Multi-Tenant (Supabase)")]
         SUPABASE_RLS["Supabase Row Level Security (RLS)"]
-        STORAGE_BUCKET["Supabase Storage (product-media con Auth RLS)"]
-        LOCAL_CACHE["Motor de Datos Local (server/data/*.json)"]
+        ATOMIC_FN["decrease_stock_atomic (FOR UPDATE lock)"]
     end
 
     CLIENT --> AUTH_GUARD
@@ -69,9 +68,8 @@ flowchart TB
     STOCK_CONCUR --> MP_INTEG
     
     STOCK_CONCUR --> DB_POSTGRES
+    STOCK_CONCUR --> ATOMIC_FN
     DB_POSTGRES --> SUPABASE_RLS
-    CLIENT --> STORAGE_BUCKET
-    STOCK_CONCUR --> LOCAL_CACHE
 ```
 
 ---
@@ -143,39 +141,63 @@ npm test
 ## 🚀 Puesta en Marcha
 
 ### Prerrequisitos
-- Node.js 18+ o superior
-- npm 9+ o superior
+- Node.js 20.9+ o superior
+- npm 10+ o superior
+- Una cuenta en [Supabase](https://supabase.com) y [Vercel](https://vercel.com)
 
-### 1. Clonar e Instalar
+### 1. Crear el proyecto Supabase
+
+1. Entrá a [app.supabase.com](https://app.supabase.com) → **New project** (región `South America (São Paulo)` recomendada).
+2. Guardá la **Database Password**.
+3. Una vez creado, en **SQL Editor** pegá el contenido de [`supabase/migrations/20260828_init_multitenant.sql`](supabase/migrations/20260828_init_multitenant.sql) y ejecutalo. Esto crea las tablas `stores`, `products`, `orders`, habilita RLS y la función `decrease_stock_atomic`.
+4. En **Project Settings → API**, copiá:
+   - `Project URL` → `SUPABASE_URL`
+   - `anon public` → `SUPABASE_ANON_KEY`
+   - `service_role (secret)` → `SUPABASE_SERVICE_ROLE_KEY`
+
+### 2. Configurar variables e instalar
+
 ```bash
 git clone https://github.com/ExeDevCentral/MultiTiendasCelphone.git
 cd MultiTiendasCelphone
 npm install
+cp .env.example .env.local
 ```
 
-### 2. Variables de Entorno (Opcional para servicios en la nube)
-Crea un archivo `.env.local` en la raíz:
-```env
-PORT=5000
-ADMIN_PASSWORD=admin123
-MERCADOPAGO_ACCESS_TOKEN=TEST-0000000000000000-000000-00000000000000000000000000000000-000000000
-SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_ANON_KEY=your-anon-key
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
-REPLICATE_API_TOKEN=your-replicate-token
+Completá `.env.local` con los valores de Supabase obtenidos antes. Luego cargá el catálogo demo:
+
+```bash
+npm run seed
 ```
+
+> El seed inserta las 3 boutiques, los productos y las órdenes de demostración, y crea los hashes de contraseña para los managers.
 
 ### 3. Ejecutar en Desarrollo
+
 ```bash
 npm run dev
 ```
 > La aplicación estará disponible en `http://localhost:3000`.
 
-### 4. Compilar para Producción
-```bash
-npm run build
-npm start
-```
+### 4. Deploy en Vercel
+
+1. Subí el repositorio a GitHub (ya apuntás a `ExeDevCentral/MultiTiendasCelphone`).
+2. En [vercel.com](https://vercel.com) → **Add New → Project** → importá el repo.
+3. El preset `Next.js` se detecta automáticamente. No toques el build command.
+4. En **Environment Variables**, agregá (las mismas de `.env.local`):
+   ```
+   SUPABASE_URL
+   SUPABASE_SERVICE_ROLE_KEY
+   SUPABASE_ANON_KEY
+   AUTH_SECRET
+   ADMIN_PASSWORD
+   NEXT_PUBLIC_APP_URL
+   MERCADOPAGO_ACCESS_TOKEN   (opcional)
+   REPLICATE_API_TOKEN         (opcional)
+   ```
+5. **Deploy**. Cada push a `main` redeploya automáticamente.
+
+> En Vercel no es necesario correr el seed: los datos ya viven en Supabase. El proyecto no escribe al filesystem en producción.
 
 ---
 

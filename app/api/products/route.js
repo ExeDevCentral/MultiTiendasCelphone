@@ -1,26 +1,26 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { PRODUCTS_FILE, readData, writeData } from '@/src/lib/dataStore';
+import { createSupabaseClient } from '@/src/lib/supabase';
+import { toProductRow, toProductJS } from '@/src/lib/supabaseMappers';
 import { parseAuthToken, verifyTenantAccess } from '@/src/lib/authGuard';
 
 const ProductSchema = z.object({
-  name: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
-  brand: z.string().min(1, "La marca es requerida"),
-  type: z.enum(["phone", "accessory"]).default("phone"),
+  name: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
+  brand: z.string().min(1, 'La marca es requerida'),
+  type: z.enum(['phone', 'accessory']).default('phone'),
+  category: z.string().optional(),
   modelYear: z.number().int().min(1990).max(2030),
-  generationCategory: z.enum(["last_2_years", "recent_gen", "vintage_classic"]),
-  price: z.number().positive("El precio debe ser mayor a 0"),
+  generationCategory: z.enum(['last_2_years', 'recent_gen', 'vintage_classic']),
+  price: z.number().positive('El precio debe ser mayor a 0'),
   originalPrice: z.number().nonnegative().optional(),
-  stock: z.number().int().nonnegative("El stock no puede ser negativo"),
-  status: z.enum(["published", "draft", "archived"]).default("published"),
-  storeId: z.string().min(1, "El storeId es requerido")
+  stock: z.number().int().nonnegative('El stock no puede ser negativo'),
+  status: z.enum(['published', 'draft', 'archived']).default('published'),
+  storeId: z.string().min(1, 'El storeId es requerido'),
 });
 
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
-    let products = readData(PRODUCTS_FILE);
-
     const storeId = searchParams.get('storeId');
     const generationCategory = searchParams.get('generationCategory');
     const type = searchParams.get('type');
@@ -29,43 +29,54 @@ export async function GET(request) {
     const includeDrafts = searchParams.get('includeDrafts');
     const q = searchParams.get('q');
 
-    // Only authorized managers or superadmin can see drafts
+    const supabase = createSupabaseClient();
+    let query = supabase
+      .from('products')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    // Public catalog only sees published products.
+    // Un gerente autenticado ve published + drafts únicamente de su propia tienda.
     if (includeDrafts === 'true') {
       const auth = parseAuthToken(request);
-      if (!auth || (!auth.isSuperAdmin && auth.storeId !== storeId)) {
-        products = products.filter((p) => p.status === 'published' || !p.status);
+      if (auth?.isSuperAdmin) {
+        // Superadmin: catálogo completo de todas las boutiques
+      } else if (auth?.storeId) {
+        // Store manager: published + drafts de su propia tienda
+        query = query.eq('store_id', auth.storeId);
+      } else {
+        // Público: solo published
+        query = query.eq('status', 'published');
       }
     } else {
-      products = products.filter((p) => p.status === 'published' || !p.status);
+      query = query.eq('status', 'published');
     }
 
     if (storeId) {
-      products = products.filter((p) => p.storeId === storeId);
+      query = query.eq('store_id', storeId);
     }
     if (generationCategory) {
-      products = products.filter((p) => p.generationCategory === generationCategory);
+      query = query.eq('generation_category', generationCategory);
     }
     if (type) {
-      products = products.filter((p) => p.type === type);
+      query = query.eq('type', type);
     }
     if (brand) {
-      products = products.filter((p) => p.brand.toLowerCase() === brand.toLowerCase());
+      query = query.ilike('brand', brand);
     }
     if (isFeatured === 'true') {
-      products = products.filter((p) => p.isFeatured === true);
+      query = query.eq('is_featured', true);
     }
     if (q) {
-      const query = q.toLowerCase();
-      products = products.filter((p) =>
-        p.name.toLowerCase().includes(query) ||
-        (p.brand && p.brand.toLowerCase().includes(query)) ||
-        (p.tagline && p.tagline.toLowerCase().includes(query)) ||
-        (p.tags && p.tags.some((t) => t.toLowerCase().includes(query)))
-      );
+      query = query.or(`name.ilike.%${q}%,brand.ilike.%${q}%,tagline.ilike.%${q}%`);
     }
 
-    return NextResponse.json(products);
+    const { data, error } = await query;
+    if (error) throw error;
+
+    return NextResponse.json(data.map(toProductJS));
   } catch (error) {
+    console.error('GET /api/products:', error);
     return NextResponse.json({ error: 'Error al consultar productos' }, { status: 500 });
   }
 }
@@ -74,7 +85,10 @@ export async function POST(request) {
   try {
     const auth = parseAuthToken(request);
     if (!auth) {
-      return NextResponse.json({ error: 'No autorizado: Se requiere sesión activa para crear productos' }, { status: 401 });
+      return NextResponse.json(
+        { error: 'No autorizado: Se requiere sesión activa para crear productos' },
+        { status: 401 }
+      );
     }
 
     const body = await request.json();
@@ -87,23 +101,28 @@ export async function POST(request) {
     }
 
     if (!verifyTenantAccess(auth, body.storeId)) {
-      return NextResponse.json({ error: 'Acceso denegado: No puedes publicar productos en otra boutique' }, { status: 403 });
+      return NextResponse.json(
+        { error: 'Acceso denegado: No puedes publicar productos en otra boutique' },
+        { status: 403 }
+      );
     }
 
-    const products = readData(PRODUCTS_FILE);
+    const supabase = createSupabaseClient();
     const newProduct = {
+      ...body,
       id: `prod-${Date.now()}`,
       createdAt: new Date().toISOString(),
       rating: 5.0,
       reviewCount: 1,
-      ...body,
     };
 
-    products.push(newProduct);
-    writeData(PRODUCTS_FILE, products);
+    const row = toProductRow(newProduct);
+    const { data, error } = await supabase.from('products').insert(row).select().single();
+    if (error) throw error;
 
-    return NextResponse.json(newProduct, { status: 201 });
+    return NextResponse.json(toProductJS(data), { status: 201 });
   } catch (error) {
+    console.error('POST /api/products:', error);
     return NextResponse.json({ error: 'Error al crear producto' }, { status: 500 });
   }
 }
