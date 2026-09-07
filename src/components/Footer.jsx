@@ -211,16 +211,16 @@ export const Footer = ({ onNavigate }) => {
 
 {/* Bottom copyright */}
         <div className="pt-8 border-t border-[rgba(243,239,230,0.08)] flex items-center justify-center text-xs text-[#8b8680]">
-          <p>Ac 2026 CelStore �?" Atelier Generacional</p>
+          <p>© 2026 CelStore — Atelier Generacional</p>
         </div>
       </div>
 
       <style>{`
-        :where(.xepw-crafted){--xepw-bg:#162330;--xepw-ink:rgba(250,248,245,.6);--xepw-ink-hover:rgba(250,248,245,.95);--xepw-accent:#C88A6E;--xepw-accent-soft:#E8BFAC;--xepw-line:rgba(200,138,110,.18);--xepw-badge:rgba(255,255,255,.03);--xepw-border:rgba(200,138,110,.12);--xepw-border-hover:rgba(200,138,110,.3);--xepw-glow:rgba(200,138,110,.2);position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:1.15rem 1rem;background:var(--xepw-bg);border-top:1px solid var(--xepw-line);width:100%}
+        :where(.xepw-crafted){--xepw-bg:#060608;--xepw-ink:rgba(243,239,230,.6);--xepw-ink-hover:rgba(243,239,230,.95);--xepw-accent:#c9a227;--xepw-accent-soft:#e4c972;--xepw-line:rgba(201,162,39,.12);--xepw-badge:rgba(255,255,255,.03);--xepw-border:rgba(201,162,39,.15);--xepw-border-hover:rgba(201,162,39,.35);--xepw-glow:rgba(201,162,39,.2);position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:1.15rem 1rem;background:var(--xepw-bg);border-top:1px solid var(--xepw-line);width:100%}
         :where(.xepw-crafted)::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:280px;height:1px;background:linear-gradient(90deg,transparent,var(--xepw-accent),transparent)}
-        :where(.xepw-crafted) .xepw-sig-glow{position:absolute;inset:50% auto auto 50%;transform:translate(-50%,-50%);width:340px;height:340px;border-radius:50%;background:radial-gradient(circle,rgba(200,138,110,.18) 0%,transparent 70%);pointer-events:none;animation:xepw-sig-pulse 4s ease-in-out infinite}
+        :where(.xepw-crafted) .xepw-sig-glow{position:absolute;inset:50% auto auto 50%;transform:translate(-50%,-50%);width:340px;height:340px;border-radius:50%;background:radial-gradient(circle,rgba(201,162,39,.12) 0%,transparent 70%);pointer-events:none;animation:xepw-sig-pulse 4s ease-in-out infinite}
         :where(.xepw-crafted) .xepw-sig-link{position:relative;z-index:1;display:inline-flex;align-items:center;gap:.6rem;padding:.45rem 1.1rem;border-radius:9999px;text-decoration:none;background:var(--xepw-badge);border:1px solid var(--xepw-border);font-family:'Plus Jakarta Sans','Inter',system-ui,-apple-system,sans-serif;font-size:.75rem;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--xepw-ink);transition:color .4s cubic-bezier(.16,1,.3,1),background .4s ease,border-color .4s ease,box-shadow .4s ease,transform .4s cubic-bezier(.16,1,.3,1)}
-        :where(.xepw-crafted) .xepw-sig-link:hover{color:var(--xepw-ink-hover);background:rgba(200,138,110,.08);border-color:var(--xepw-border-hover);box-shadow:0 0 25px var(--xepw-glow),0 0 60px rgba(200,138,110,.08);transform:translateY(-2px)}
+        :where(.xepw-crafted) .xepw-sig-link:hover{color:var(--xepw-ink-hover);background:rgba(201,162,39,.08);border-color:var(--xepw-border-hover);box-shadow:0 0 25px var(--xepw-glow),0 0 60px rgba(201,162,39,.08);transform:translateY(-2px)}
         :where(.xepw-crafted) .xepw-sig-shimmer{position:absolute;inset:0;border-radius:inherit;overflow:hidden;pointer-events:none}
         :where(.xepw-crafted) .xepw-sig-shimmer::after{content:'';position:absolute;top:0;left:0;width:60%;height:100%;background:linear-gradient(110deg,transparent,rgba(255,255,255,.14),transparent);transform:translateX(-120%);transition:transform .9s cubic-bezier(.16,1,.3,1)}
         :where(.xepw-crafted) .xepw-sig-link:hover .xepw-sig-shimmer::after{transform:translateX(260%)}
@@ -236,16 +236,16 @@ export const Footer = ({ onNavigate }) => {
         className="xepw-crafted"
         role="contentinfo"
         style={{
-          '--xepw-bg': '#162330',
-          '--xepw-ink': 'rgba(250,248,245,.6)',
-          '--xepw-ink-hover': 'rgba(250,248,245,.95)',
-          '--xepw-accent': '#C88A6E',
-          '--xepw-accent-soft': '#E8BFAC',
-          '--xepw-line': 'rgba(200,138,110,.18)',
+          '--xepw-bg': '#060608',
+          '--xepw-ink': 'rgba(243,239,230,.6)',
+          '--xepw-ink-hover': 'rgba(243,239,230,.95)',
+          '--xepw-accent': '#c9a227',
+          '--xepw-accent-soft': '#e4c972',
+          '--xepw-line': 'rgba(201,162,39,.12)',
           '--xepw-badge': 'rgba(255,255,255,.03)',
-          '--xepw-border': 'rgba(200,138,110,.12)',
-          '--xepw-border-hover': 'rgba(200,138,110,.3)',
-          '--xepw-glow': 'rgba(200,138,110,.2)',
+          '--xepw-border': 'rgba(201,162,39,.15)',
+          '--xepw-border-hover': 'rgba(201,162,39,.35)',
+          '--xepw-glow': 'rgba(201,162,39,.2)',
         }}
       >
         <div className="xepw-sig-glow" aria-hidden="true"></div>
