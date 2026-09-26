@@ -7,7 +7,8 @@ import {
   Phone,
   Star,
   ShoppingBag,
-  Truck
+  Truck,
+  ChevronDown
 } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 import { GenerationFilter } from '../components/GenerationFilter';
@@ -75,28 +76,44 @@ export const Home = ({ onNavigate, onOpenDetail, onOpen3DModal }) => {
            2. HERO — LIMPIO, PROFESIONAL, EUROPEO
            ═══════════════════════════════════════════════════════════════════ */}
        <section className="relative pt-12 sm:pt-20 pb-16 sm:pb-24 px-6 sm:px-10 lg:px-12 max-w-7xl mx-auto">
+         <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+           <div className="hero-grid-bg absolute -inset-x-24 -top-24 bottom-0" />
+           <div
+             className="absolute -top-32 -left-32 w-[560px] h-[560px] rounded-full opacity-[0.08] blur-[130px]"
+             style={{ background: 'radial-gradient(circle, #c9a227, transparent 70%)' }}
+           />
+           <div
+             className="absolute top-1/4 -right-40 w-[520px] h-[520px] rounded-full opacity-[0.07] blur-[120px]"
+             style={{ background: 'radial-gradient(circle, #e4c972, transparent 70%)' }}
+           />
+           <div
+             className="absolute bottom-[-20%] left-1/3 w-[600px] h-[300px] rounded-full opacity-[0.05] blur-[140px]"
+             style={{ background: 'radial-gradient(ellipse, #d4af37, transparent 70%)' }}
+           />
+         </div>
+
          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
            
            {/* Texto */}
            <div className="space-y-8 text-center lg:text-left">
              <div className="space-y-4">
-               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[rgba(201,162,39,0.08)] border border-[rgba(201,162,39,0.2)]">
+               <div className="animate-fade-up stagger-1 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[rgba(201,162,39,0.08)] border border-[rgba(201,162,39,0.2)]">
                  <span className="w-1.5 h-1.5 rounded-full bg-[#c9a227] animate-pulse" />
                  <span className="text-[11px] font-medium text-[#c9a227] tracking-wider uppercase">Nuevo 2026</span>
                </div>
 
-               <h1 className="text-4xl sm:text-5xl lg:text-[48px] font-bold text-[#f3efe6] tracking-tight leading-[1.1]">
+               <h1 className="animate-fade-up stagger-2 text-4xl sm:text-5xl lg:text-[48px] font-bold text-[#f3efe6] tracking-tight leading-[1.1]">
                  Smartphones premium.{' '}
-                 <span className="text-[#c9a227]">Precios reales.</span>
+                 <span className="text-gradient-gold">Precios reales.</span>
                </h1>
 
-               <p className="text-[15px] text-[#8b8680] max-w-lg mx-auto lg:mx-0 leading-[1.7]">
+               <p className="animate-fade-up stagger-3 text-[15px] text-[#8b8680] max-w-lg mx-auto lg:mx-0 leading-[1.7]">
                  Apple, Samsung, Xiaomi y más. Últimos modelos con garantía oficial, envío en 24h y atención personalizada.
                </p>
              </div>
 
              {/* CTA principal */}
-             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3">
+             <div className="animate-fade-up stagger-4 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3">
                <button
                  type="button"
                  onClick={() => {
@@ -104,7 +121,7 @@ export const Home = ({ onNavigate, onOpenDetail, onOpen3DModal }) => {
                    const cat = document.getElementById('catalog-section');
                    if (cat) cat.scrollIntoView({ behavior: 'smooth' });
                  }}
-                 className="w-full sm:w-auto px-8 py-3.5 rounded-lg bg-[#c9a227] hover:bg-[#d4b03a] text-[#0a0a0c] text-sm font-semibold transition-all cursor-pointer flex items-center justify-center gap-2"
+                 className="btn-shine w-full sm:w-auto px-8 py-3.5 rounded-lg bg-[#c9a227] hover:bg-[#d4b03a] text-[#0a0a0c] text-sm font-semibold transition-all duration-300 cursor-pointer flex items-center justify-center gap-2 hover:-translate-y-0.5 hover:shadow-[0_12px_40px_-12px_rgba(201,162,39,0.55)] active:translate-y-0"
                >
                  <ShoppingBag className="w-4 h-4" />
                  Ver catálogo completo
@@ -115,17 +132,18 @@ export const Home = ({ onNavigate, onOpenDetail, onOpen3DModal }) => {
                    playSubtleClick();
                    onNavigate('accessories');
                  }}
-                 className="w-full sm:w-auto px-8 py-3.5 rounded-lg border border-[rgba(243,239,230,0.15)] hover:border-[#c9a227] text-[#f3efe6] hover:text-[#c9a227] text-sm font-medium transition-all cursor-pointer"
+                 className="group w-full sm:w-auto px-8 py-3.5 rounded-lg border border-[rgba(243,239,230,0.15)] hover:border-[#c9a227] text-[#f3efe6] hover:text-[#c9a227] text-sm font-medium transition-all duration-300 cursor-pointer flex items-center justify-center gap-2 hover:-translate-y-0.5"
                >
                  Accesorios
+                 <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
                </button>
              </div>
 
              {/* Social proof */}
-             <div className="flex items-center gap-4 justify-center lg:justify-start pt-2">
+             <div className="animate-fade-up stagger-5 flex items-center gap-4 justify-center lg:justify-start pt-2">
                <div className="flex -space-x-2">
                  {[1,2,3,4].map(i => (
-                   <div key={i} className="w-8 h-8 rounded-full bg-[#1b1b1f] border-2 border-[#0a0a0c] flex items-center justify-center text-[10px] text-[#8b8680]">
+                   <div key={i} className="w-8 h-8 rounded-full bg-[#1b1b1f] border-2 border-[#0a0a0c] flex items-center justify-center text-[10px] text-[#8b8680] font-semibold">
                      {['A','M','L','S'][i-1]}
                    </div>
                  ))}
@@ -139,12 +157,24 @@ export const Home = ({ onNavigate, onOpenDetail, onOpen3DModal }) => {
                  <span className="text-[11px] text-[#8b8680]">+2.400 clientes satisfechos</span>
                </div>
              </div>
+
+             {/* Marcas */}
+             <div className="animate-fade-up stagger-6 flex flex-wrap items-center justify-center lg:justify-start gap-x-6 gap-y-2 pt-4 border-t border-[rgba(243,239,230,0.06)]">
+               {['Apple', 'Samsung', 'Xiaomi', 'Google', 'OnePlus', 'Nokia'].map((b) => (
+                 <span
+                   key={b}
+                   className="text-[11px] uppercase tracking-[0.18em] text-[#8b8680]/70 hover:text-[#e4c972] transition-colors cursor-default font-medium"
+                 >
+                   {b}
+                 </span>
+               ))}
+             </div>
            </div>
 
            {/* Visor 3D */}
-           <div className="w-full flex justify-center">
+           <div className="animate-fade-up stagger-3 w-full flex justify-center">
              <div className="w-full max-w-[460px]">
-               <div className="relative rounded-2xl overflow-hidden bg-[#131316] border border-[rgba(243,239,230,0.08)] shadow-2xl">
+               <div className="group/visor relative rounded-2xl overflow-hidden bg-[#131316] border border-[rgba(243,239,230,0.08)] shadow-2xl transition-all duration-500 hover:-translate-y-1.5 hover:shadow-[0_30px_80px_-20px_rgba(0,0,0,0.9),0_0_60px_-20px_rgba(201,162,39,0.35)]">
                  <WebGLErrorBoundary height="480px">
                    <Suspense
                      fallback={
@@ -166,8 +196,8 @@ export const Home = ({ onNavigate, onOpenDetail, onOpen3DModal }) => {
                  </WebGLErrorBoundary>
                </div>
 
-               {/* Selector de modelo debajo del visor */}
-               <div className="flex items-center justify-center gap-2 mt-4">
+{/* Selector de modelo debajo del visor */}
+                <div className="animate-fade-up stagger-4 flex items-center justify-center gap-2 mt-4">
                  {[
                    { key: 'modern_flagship', label: 'Flagship', color: '#c9a227' },
                    { key: 'vintage_bar', label: 'Nokia', color: '#8b8680' },
@@ -194,6 +224,10 @@ export const Home = ({ onNavigate, onOpenDetail, onOpen3DModal }) => {
              </div>
            </div>
 
+           <div className="hidden lg:flex items-center justify-center gap-2 mt-14 text-[11px] uppercase tracking-[0.2em] text-[#8b8680]/60">
+             <span>Desliza para explorar</span>
+             <ChevronDown className="w-3.5 h-3.5 text-[#c9a227] scroll-hint" />
+           </div>
          </div>
        </section>
 
