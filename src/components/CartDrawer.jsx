@@ -53,7 +53,7 @@ export const CartDrawer = () => {
 
     const firstStoreId = items[0].storeId;
     const storeInfo = stores.find((s) => s.id === firstStoreId) || stores[0];
-    const phone = storeInfo?.phoneWhatsApp || '5491145239900';
+    const phone = storeInfo?.phoneWhatsApp || '5493416874786';
 
     let message = `🛒 *SOLICITUD DE PEDIDO // CELSTORE HARDWARE*\n`;
     message += `🏬 *Boutique:* ${storeInfo?.name || 'CelStore'}\n`;

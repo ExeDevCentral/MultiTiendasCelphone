@@ -49,7 +49,7 @@ export const PrecisionProductCard: React.FC<PrecisionProductCardProps> = ({
   const handleWhatsAppInquiry = (e: React.MouseEvent) => {
     e.stopPropagation();
     playSubtleClick();
-    const phone = '5491145239900';
+    const phone = '5493416874786';
     const message = encodeURIComponent(
       `¡Hola! Estoy interesado en el *${product.name}* (Ref: ${product.model || product.name}, $${product.price} USD). ¿Tienen disponibilidad inmediata para despacho?`
     );

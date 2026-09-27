@@ -84,7 +84,7 @@ export const ProductDetail = ({ product, onBack, onNavigate, onOpen3DModal }) =>
 
   const handleWhatsApp = () => {
     playSubtleClick();
-    const phone = storeInfo?.phoneWhatsApp || '5491145239900';
+    const phone = storeInfo?.phoneWhatsApp || '5493416874786';
     const message = encodeURIComponent(
       `¡Hola! Me interesa comprar el *${product.name}*:\n` +
       `• Acabado: ${selectedColor.name}\n` +

@@ -45,7 +45,7 @@ export const AccessoriesShop = ({ onNavigate }) => {
   const handleWhatsAppInquiry = (acc) => {
     playSubtleClick();
     const storeInfo = stores.find((s) => s.id === acc.storeId) || stores[0];
-    const phone = (storeInfo?.phoneWhatsApp || '5491100000000').replace(/[^0-9]/g, '');
+    const phone = (storeInfo?.phoneWhatsApp || '5493416874786').replace(/[^0-9]/g, '');
     const text = encodeURIComponent(
       `[CELSTORE // TERMINAL INQUIRY] Hola, deseo consultar disponibilidad y especificaciones del accesorio *${acc.name}* ($${acc.price} USD).`
     );

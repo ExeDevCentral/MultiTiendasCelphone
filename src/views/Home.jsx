@@ -91,7 +91,7 @@ export const Home = ({ onNavigate, onOpenDetail, onOpen3DModal }) => {
           </p>
           <div className="pt-2">
             <a
-              href="https://wa.me/5491145239900?text=Hola%2C%20quisiera%20consultar%20por%20un%20celular%20en%20CelStore"
+              href="https://wa.me/5493416874786?text=Hola%2C%20quisiera%20consultar%20por%20un%20celular%20en%20CelStore"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-6 py-3 bg-[#0066FF] hover:bg-[#0052cc] text-[#F5F5F7] font-mono font-bold text-xs uppercase transition-all shadow-sm cursor-pointer"
