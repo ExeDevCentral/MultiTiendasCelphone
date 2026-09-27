@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { createSupabaseClient } from '@/src/lib/supabase';
 import { toStoreRow, toStoreJS } from '@/src/lib/supabaseMappers';
 import { parseAuthToken } from '@/src/lib/authGuard';
+import defaultStores from '@/data/stores.json';
 
 const StoreSchema = z.object({
   name: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
@@ -19,8 +20,8 @@ export async function GET() {
     if (error) throw error;
     return NextResponse.json(data.map(toStoreJS));
   } catch (error) {
-    console.error('GET /api/stores:', error);
-    return NextResponse.json({ error: 'Error al consultar tiendas' }, { status: 500 });
+    console.warn('GET /api/stores fallback to data/stores.json:', error.message);
+    return NextResponse.json(defaultStores);
   }
 }
 

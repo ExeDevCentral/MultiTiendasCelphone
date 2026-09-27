@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ShieldCheck, Truck, Sparkles, MessageSquare } from 'lucide-react';
+import { ShieldCheck, Truck, Sparkles, Lock, Terminal, Activity } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 import { playSubtleClick } from '../utils/audioHaptics';
 
@@ -25,87 +25,93 @@ export const Footer = ({ onNavigate }) => {
   const valueProps = [
     {
       icon: ShieldCheck,
-      title: 'Garantía Certificada',
-      text: '12 meses en piezas de titanio y 6 meses en modelos de colección restaurados.',
+      code: 'CERT-24M',
+      title: 'GARANTÍA CERTIFICADA 24M',
+      text: 'Garantía oficial completa en chasis de titanio con protocolo de reemplazo exprés.',
     },
     {
       icon: Truck,
-      title: 'Despacho Blindado Express',
-      text: 'Entrega prioritaria asegurada en packaging hermético de alta resistencia.',
+      code: 'LOG-EXPR',
+      title: 'DESPACHO BLINDADO EXPRÉS',
+      text: 'Packaging hermético de polímero de alta densidad con seguro total ante pérdida.',
     },
     {
       icon: Sparkles,
-      title: 'Visor Espacial 3D',
-      text: 'Inspección volumétrica por mapa de profundidad con respuesta a giroscopio.',
+      code: 'GPU-3D',
+      title: 'RENDER 3D VOLUMÉTRICO',
+      text: 'Inspección de hardware con mapa de profundidad acelerado por GPU local.',
     },
     {
-      icon: MessageSquare,
-      title: 'Concierge 1-a-1',
-      text: 'Atención directa con los directores de cada boutique asociada.',
+      icon: Lock,
+      code: 'RLS-ATOMIC',
+      title: 'STOCK ATÓMICO FOR UPDATE',
+      text: 'Transacciones con bloqueo transaccional a prueba de concurrencia y fraude.',
     },
   ];
 
   return (
-    <footer className="w-full mt-10 bg-[#060608] border-t border-[rgba(243,239,230,0.06)]">
-      <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-12 pt-14 sm:pt-16">
+    <footer className="w-full mt-10 bg-[#07080a] border-t-2 border-[#242733] font-mono select-none">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10">
 
-        {/* Value Proposition Highlights de Lujo */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 pb-12 sm:pb-14 border-b border-[rgba(243,239,230,0.06)]">
+        {/* Industrial Highlights Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pb-10 border-b border-[#222530]">
           {valueProps.map((item) => (
-            <div key={item.title} className="flex items-start gap-4">
-              <div className="p-3 rounded-2xl bg-[rgba(201,162,39,0.06)] text-[#c9a227] border border-[rgba(201,162,39,0.15)] shrink-0">
-                <item.icon className="w-4 h-4" />
+            <div key={item.title} className="p-4 bg-[#0e1015] border border-[#232633] has-crosshairs">
+              <div className="flex items-center justify-between mb-2">
+                <item.icon className="w-4 h-4 text-[#ff4800]" />
+                <span className="text-[9px] text-zinc-500 font-bold">[{item.code}]</span>
               </div>
-              <div>
-                <h4 className="font-serif text-base font-light text-[#f3efe6] mb-1">
-                  {item.title}
-                </h4>
-                <p className="text-xs text-[#8b8680]/80 font-light leading-relaxed">
-                  {item.text}
-                </p>
-              </div>
+              <h4 className="text-xs font-bold text-[#f0f0eb] mb-1 uppercase">
+                {item.title}
+              </h4>
+              <p className="text-[11px] text-zinc-500 leading-relaxed font-sans">
+                {item.text}
+              </p>
             </div>
           ))}
         </div>
 
-        {/* Directory Columns */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-10 py-12 sm:py-14">
-          {/* Col 1: Brand Info */}
-          <div className="col-span-2 lg:col-span-1 space-y-3">
-            <span className="font-serif italic text-lg font-light text-[#f3efe6] tracking-[0.02em] block">
-              CelStore <span className="text-[#e4c972] text-xs font-sans not-italic tracking-widest uppercase">Atelier</span>
-            </span>
-            <p className="text-xs text-[#8b8680]/80 font-light leading-relaxed max-w-xs">
-              Plataforma generacional de alta costura móvil que fusiona ingeniería contemporánea de titanio con leyendas históricas de diseño.
+        {/* Directory Matrix */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 py-10 text-xs">
+          {/* Col 1 */}
+          <div className="col-span-2 lg:col-span-1 space-y-2">
+            <div className="flex items-center gap-2">
+              <span className="px-1.5 py-0.5 bg-[#ff4800] text-black font-black text-xs">
+                CELSTORE
+              </span>
+              <span className="text-[10px] text-zinc-500 font-bold">TE-2026 // HARDWARE</span>
+            </div>
+            <p className="text-[11px] text-zinc-500 font-sans leading-relaxed">
+              Terminal y repositorio multi-tenant de hardware móvil avanzado, componentes de titanio y archivo histórico con bloqueo transaccional en tiempo real.
             </p>
           </div>
 
-          {/* Col 2: Generaciones */}
-          <div className="space-y-3">
-            <h5 className="text-[10px] font-medium text-[#c9a227] uppercase tracking-[0.3em]">Colecciones</h5>
-            <ul className="space-y-2.5 text-xs font-light text-[#8b8680]">
+          {/* Col 2 */}
+          <div className="space-y-2">
+            <h5 className="text-[10px] font-bold text-[#ff4800] uppercase tracking-wider">// HARDWARE ERA</h5>
+            <ul className="space-y-2 text-zinc-400 text-[11px]">
               <li>
                 <button
                   onClick={() => handleGenClick('last_2_years')}
-                  className="hover:text-[#f3efe6] transition-colors cursor-pointer"
+                  className="hover:text-white transition-colors cursor-pointer"
                 >
-                  Flagships (2024 - 2026)
+                  [01] Flagships (2024 - 2026)
                 </button>
               </li>
               <li>
                 <button
                   onClick={() => handleGenClick('recent_gen')}
-                  className="hover:text-[#f3efe6] transition-colors cursor-pointer"
+                  className="hover:text-white transition-colors cursor-pointer"
                 >
-                  Series 2020 - 2023
+                  [02] Series (2020 - 2023)
                 </button>
               </li>
               <li>
                 <button
                   onClick={() => handleGenClick('vintage_classic')}
-                  className="hover:text-[#f3efe6] transition-colors cursor-pointer"
+                  className="hover:text-white transition-colors cursor-pointer"
                 >
-                  Vintage Archive Legends
+                  [03] Vintage Archive Legends
                 </button>
               </li>
               <li>
@@ -115,25 +121,25 @@ export const Footer = ({ onNavigate }) => {
                     onNavigate('accessories');
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }}
-                  className="hover:text-[#f3efe6] transition-colors cursor-pointer"
+                  className="hover:text-white transition-colors cursor-pointer"
                 >
-                  Complementos & MagSafe
+                  [04] Machined Accessories
                 </button>
               </li>
             </ul>
           </div>
 
-          {/* Col 3: Sucursales Afiliadas */}
-          <div className="space-y-3">
-            <h5 className="text-[10px] font-medium text-[#c9a227] uppercase tracking-[0.3em]">Boutiques</h5>
-            <ul className="space-y-2.5 text-xs font-light text-[#8b8680]">
-              {stores.map((store) => (
+          {/* Col 3 */}
+          <div className="space-y-2">
+            <h5 className="text-[10px] font-bold text-[#ff4800] uppercase tracking-wider">// AFFILIATED NODES</h5>
+            <ul className="space-y-2 text-zinc-400 text-[11px]">
+              {stores.map((store, i) => (
                 <li key={store.id}>
                   <button
                     onClick={() => handleStoreClick(store)}
-                    className="hover:text-[#f3efe6] transition-colors text-left cursor-pointer"
+                    className="hover:text-white transition-colors text-left cursor-pointer"
                   >
-                    {store.name}
+                    [{String(i + 1).padStart(2, '0')}] {store.name}
                   </button>
                 </li>
               ))}
@@ -144,18 +150,18 @@ export const Footer = ({ onNavigate }) => {
                     onNavigate('store_selector');
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }}
-                  className="text-[#e4c972] hover:text-[#f3efe6] transition-colors text-[11px] tracking-wider uppercase cursor-pointer"
+                  className="text-[#ff4800] hover:underline font-bold text-[10px] cursor-pointer"
                 >
-                  Ver red de tiendas →
+                  VIEW NODE REGISTRY →
                 </button>
               </li>
             </ul>
           </div>
 
-          {/* Col 4: Portal */}
-          <div className="space-y-3">
-            <h5 className="text-[10px] font-medium text-[#c9a227] uppercase tracking-[0.3em]">Comerciantes</h5>
-            <ul className="space-y-2.5 text-xs font-light text-[#8b8680]">
+          {/* Col 4 */}
+          <div className="space-y-2">
+            <h5 className="text-[10px] font-bold text-[#ff4800] uppercase tracking-wider">// OPERATOR ACCESS</h5>
+            <ul className="space-y-2 text-zinc-400 text-[11px]">
               <li>
                 <button
                   onClick={() => {
@@ -163,34 +169,37 @@ export const Footer = ({ onNavigate }) => {
                     onNavigate('admin_login');
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }}
-                  className="text-[#e4c972] hover:text-[#f3efe6] font-light tracking-wider uppercase text-[11px] transition-colors cursor-pointer"
+                  className="text-white hover:text-[#ff4800] font-bold transition-colors cursor-pointer flex items-center gap-1"
                 >
-                  Portal de Gestión de Tienda
+                  [ROOT CONSOLE LOGIN] →
                 </button>
               </li>
               <li>
-                <span className="text-[#8b8680]/70 text-[11px] font-light leading-relaxed block">
-                  Administración de catálogo, control de stock atómico y activación de fotos 3D con IA.
+                <span className="text-zinc-600 text-[10px] block leading-relaxed font-sans">
+                  Gestión de inventario con RLS, auditoría de precios y activación de relieve GPU.
                 </span>
               </li>
             </ul>
           </div>
         </div>
 
+        {/* Barcode Strip */}
+        <div className="w-full h-2 barcode-strip opacity-25 my-4" />
+
         {/* Bottom bar */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-6 pb-8 border-t border-[rgba(243,239,230,0.08)]">
-          <p className="text-xs text-[#8b8680]">© 2026 CelStore — Atelier Generacional</p>
-          <p className="text-[11px] text-[#8b8680] flex items-center gap-1.5">
-            Crafted with precision by{' '}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-2 py-4 border-t border-[#1e2029] text-[10px] text-zinc-500">
+          <p>© 2026 CELSTORE INDUSTRIAL // ALL HARDWARE RIGHTS RESERVED</p>
+          <p className="flex items-center gap-1.5">
+            ENGINEERED BY{' '}
             <a
               href="https://exepaginasweb.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="font-medium text-[#e4c972] hover:text-[#f3efe6] transition-colors"
+              className="font-bold text-[#ff4800] hover:text-white transition-colors"
             >
-              Exepaginasweb.com
+              EXEPAGINASWEB.COM
             </a>
-            <span className="text-[#c9a227]" aria-hidden="true">✦</span>
+            <span className="text-[#ff4800]" aria-hidden="true">■</span>
           </p>
         </div>
       </div>

@@ -2,14 +2,16 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { api } from '../services/api';
+import defaultStores from '@/data/stores.json';
+import defaultProducts from '@/data/products.json';
 
 const StoreContext = createContext();
 
 export const StoreProvider = ({ children }) => {
-  const [stores, setStores] = useState([]);
+  const [stores, setStores] = useState(defaultStores || []);
   const [activeStore, setActiveStore] = useState(null); // null = All stores hub
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState(defaultProducts || []);
+  const [loading, setLoading] = useState(false);
   const [generationFilter, setGenerationFilter] = useState('all'); // 'all', 'last_2_years', 'recent_gen', 'vintage_classic'
   const [typeFilter, setTypeFilter] = useState('all'); // 'all', 'phone', 'accessory'
   const [searchQuery, setSearchQuery] = useState('');
@@ -18,17 +20,22 @@ export const StoreProvider = ({ children }) => {
 
   // Load stores and products
   const loadData = async () => {
-    setLoading(true);
     try {
       const storesData = await api.getStores();
-      setStores(storesData);
-      
-      const productsData = await api.getProducts();
-      setProducts(productsData);
+      if (Array.isArray(storesData) && storesData.length > 0) {
+        setStores(storesData);
+      }
     } catch (err) {
-      console.error('Error loading initial data:', err);
-    } finally {
-      setLoading(false);
+      console.warn('Stores fallback to local data:', err.message);
+    }
+
+    try {
+      const productsData = await api.getProducts();
+      if (Array.isArray(productsData) && productsData.length > 0) {
+        setProducts(productsData);
+      }
+    } catch (err) {
+      console.warn('Products fallback to local data:', err.message);
     }
   };
 
@@ -103,7 +110,7 @@ export const StoreProvider = ({ children }) => {
         removeCompare,
         clearCompare,
         isCompareOpen,
-        setIsCompareOpen
+        setIsCompareOpen,
       }}
     >
       {children}
@@ -113,6 +120,8 @@ export const StoreProvider = ({ children }) => {
 
 export const useStore = () => {
   const context = useContext(StoreContext);
-  if (!context) throw new Error('useStore must be used within StoreProvider');
+  if (!context) {
+    throw new Error('useStore must be used within a StoreProvider');
+  }
   return context;
 };

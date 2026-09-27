@@ -1,42 +1,41 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ShoppingBag, Scale, Check, History, Sparkles, MessageSquare } from 'lucide-react';
+import { ShoppingBag, Scale, Check, History, Sparkles, MessageSquare, Box } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useStore } from '../context/StoreContext';
 import { playSubtleClick, playCartSuccess, playSpatialOpen } from '../utils/audioHaptics';
 import { showLuxuryNotification } from './LuxuryToaster';
 
 export const ProductCard = ({ product, onOpenDetail, onOpen3DModal, onPrefetch3D }) => {
-  const { addToCart } = useCart();
+  const { addToCart, setIsCartOpen } = useCart();
   const { comparedProducts, toggleCompare, stores } = useStore();
   const [selectedColor, setSelectedColor] = useState(product.colors?.[0] || null);
 
   const isCompared = comparedProducts.some((p) => p.id === product.id);
   const storeInfo = stores.find((s) => s.id === product.storeId);
 
-  // 60-30-10 Badges Editoriales
+  // Technical Generation Badges
   const getGenerationBadge = () => {
     if (product.generationCategory === 'last_2_years') {
       return (
-        <span className="px-2.5 py-0.5 rounded-full text-[10px] tracking-[0.1em] uppercase font-medium bg-[rgba(201,162,39,0.10)] border border-[rgba(243,239,230,0.16)] text-[#f3efe6] flex items-center gap-1.5 shadow-sm">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#c9a227] animate-pulse" />
-          Flagship • {product.modelYear}
+        <span className="px-2 py-0.5 text-[9px] font-mono font-bold uppercase tracking-wider bg-[#1f222c] border border-[#ff4800] text-[#ff4800] flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 bg-[#ff4800] animate-pulse" />
+          FLAGSHIP // {product.modelYear}
         </span>
       );
     }
     if (product.generationCategory === 'vintage_classic') {
       return (
-        <span className="px-2.5 py-0.5 rounded-full text-[10px] tracking-[0.1em] uppercase font-medium bg-[rgba(201,162,39,0.15)] border border-[#c9a227] text-[#e4c972] flex items-center gap-1.5 shadow-sm">
-          <History className="w-3 h-3 text-[#c9a227]" />
-          Vintage Archive • {product.modelYear}
+        <span className="px-2 py-0.5 text-[9px] font-mono font-bold uppercase tracking-wider bg-[#1b2216] border border-[#ccff00] text-[#ccff00] flex items-center gap-1.5">
+          <History className="w-3 h-3 text-[#ccff00]" />
+          VINTAGE // {product.modelYear}
         </span>
       );
     }
     return (
-      <span className="px-2.5 py-0.5 rounded-full text-[10px] tracking-[0.1em] uppercase font-medium bg-[rgba(243,239,230,0.04)] border border-[rgba(243,239,230,0.08)] text-[#8b8680] flex items-center gap-1.5 shadow-sm">
-        <Sparkles className="w-3 h-3 text-[#8b8680]" />
-        Series {product.modelYear}
+      <span className="px-2 py-0.5 text-[9px] font-mono font-bold uppercase tracking-wider bg-[#1a1c24] border border-[#343847] text-zinc-400 flex items-center gap-1">
+        SERIES // {product.modelYear}
       </span>
     );
   };
@@ -51,18 +50,20 @@ export const ProductCard = ({ product, onOpenDetail, onOpen3DModal, onPrefetch3D
     playSubtleClick();
     const phone = storeInfo?.phoneWhatsApp || '+5491145239900';
     const text = encodeURIComponent(
-      `¡Hola! Me interesa adquirir el *${product.name}* (${selectedColor?.name || 'Estándar'}) en *${storeInfo?.name || 'CelStore'}*. ¿Cuentan con disponibilidad?`
+      `[ORDEN DE CONSULTA] Me interesa adquirir: ${product.name} (${selectedColor?.name || 'Estándar'}) en la boutique ${storeInfo?.name || 'CelStore'}. ¿Confirmar disponibilidad?`
     );
     window.open(`https://wa.me/${phone.replace(/\D/g, '')}?text=${text}`, '_blank');
   };
 
   const handleAddToCart = (e) => {
     e.stopPropagation();
+    playCartSuccess();
     addToCart(product, { color: selectedColor?.name });
     showLuxuryNotification(
-      'Pieza Añadida a la Bolsa',
-      `${product.name} (${selectedColor?.name || 'Estándar'}) • $${product.price} USD`
+      'HARDWARE ALLOCATED TO CART',
+      `${product.name} // [${selectedColor?.name || 'Estándar'}] — $${product.price} USD`
     );
+    setIsCartOpen(true);
   };
 
   const handleToggleCompare = (e) => {
@@ -70,7 +71,7 @@ export const ProductCard = ({ product, onOpenDetail, onOpen3DModal, onPrefetch3D
     playSubtleClick();
     toggleCompare(product);
     showLuxuryNotification(
-      isCompared ? 'Removido del Comparador' : 'Añadido al Comparador',
+      isCompared ? 'REMOVED FROM COMPARISON' : 'ADDED TO COMPARISON RIG',
       product.name
     );
   };
@@ -80,94 +81,91 @@ export const ProductCard = ({ product, onOpenDetail, onOpen3DModal, onPrefetch3D
       onClick={() => onOpenDetail && onOpenDetail(product)}
       onMouseEnter={() => onPrefetch3D && onPrefetch3D(product)}
       onTouchStart={() => onPrefetch3D && onPrefetch3D(product)}
-      className="group relative rounded-[20px] p-5 flex flex-col justify-between cursor-pointer border border-[rgba(243,239,230,0.08)] hover:border-[#c9a227] overflow-hidden transition-all duration-350 bg-[#131316] hover:bg-[#1b1b1f] shadow-lg hover:shadow-[0_20px_40px_rgba(0,0,0,0.8)]"
+      className="group relative bg-[#13151b] border-2 border-[#242733] hover:border-[#ff4800] p-4 flex flex-col justify-between cursor-pointer transition-all duration-150 select-none font-mono has-crosshairs"
     >
-      {/* Top Header: 60-30-10 Badge & Compare */}
-      <div className="flex items-center justify-between gap-2 mb-2 z-10">
-        <div className="flex items-center gap-1.5 flex-wrap">
-          {product.type === 'phone' ? (
-            getGenerationBadge()
-          ) : (
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] uppercase tracking-[0.1em] bg-[rgba(243,239,230,0.04)] text-[#8b8680] border border-[rgba(243,239,230,0.08)]">
-              Accessory
-            </span>
-          )}
-          {discountPercent > 0 && (
-            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[rgba(201,162,39,0.15)] text-[#e4c972] border border-[#c9a227]/40">
-              -{discountPercent}%
-            </span>
+      {/* Module Header */}
+      <div>
+        <div className="flex items-center justify-between gap-1 mb-2">
+          <div className="flex items-center gap-1.5 flex-wrap">
+            {product.type === 'phone' ? (
+              getGenerationBadge()
+            ) : (
+              <span className="px-2 py-0.5 text-[9px] uppercase font-bold tracking-wider bg-[#1a1c24] text-zinc-400 border border-[#343847]">
+                ACCESSORY
+              </span>
+            )}
+            {discountPercent > 0 && (
+              <span className="px-1.5 py-0.5 text-[9px] font-black bg-[#ff4800] text-black">
+                -{discountPercent}%
+              </span>
+            )}
+          </div>
+
+          {product.type === 'phone' && (
+            <button
+              type="button"
+              onClick={handleToggleCompare}
+              className={`px-1.5 py-0.5 text-[10px] border font-bold transition-all cursor-pointer ${
+                isCompared
+                  ? 'bg-[#ff4800] border-[#ff4800] text-black'
+                  : 'bg-[#181a22] border-[#2e3240] text-zinc-400 hover:text-white'
+              }`}
+              title="Comparar hardware"
+            >
+              {isCompared ? '[COMPARED]' : '[COMP]'}
+            </button>
           )}
         </div>
 
-        {product.type === 'phone' && (
-          <button
-            type="button"
-            onClick={handleToggleCompare}
-            className={`p-1.5 rounded-full border transition-all text-xs flex items-center justify-center cursor-pointer ${
-              isCompared
-                ? 'bg-[#c9a227] border-[#c9a227] text-[#0a0a0c]'
-                : 'bg-[#0a0a0c]/60 border-[rgba(243,239,230,0.16)] text-[#8b8680] hover:text-[#f3efe6]'
-            }`}
-            title="Comparar modelo"
-          >
-            {isCompared ? <Check className="w-3 h-3" /> : <Scale className="w-3 h-3" />}
-          </button>
-        )}
-      </div>
+        {/* Product Image Stage */}
+        <div className="relative w-full h-44 flex items-center justify-center my-2 bg-[#0e1015] border border-[#21242e] p-3 overflow-hidden">
+          <img
+            src={product.images?.[0] || 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=500&auto=format&fit=crop&q=80'}
+            alt={product.name}
+            className="max-h-full max-w-full object-contain filter drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)] group-hover:scale-105 transition-transform duration-200"
+            loading="lazy"
+          />
 
-      {/* Product Image Stage (30% Secondary Container) */}
-      <div className="relative w-full h-48 sm:h-52 flex items-center justify-center my-3 overflow-hidden rounded-[16px] bg-[#1b1b1f] p-4 border border-[rgba(243,239,230,0.06)]">
-        <img
-          src={product.images?.[0] || 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=500&auto=format&fit=crop&q=80'}
-          alt={product.name}
-          className="max-h-full max-w-full object-contain filter drop-shadow-[0_20px_30px_rgba(0,0,0,0.6)] group-hover:scale-105 transition-transform duration-500 ease-out"
-          loading="lazy"
-        />
+          {/* 3D Trigger */}
+          {product.type === 'phone' && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                playSpatialOpen();
+                onOpen3DModal && onOpen3DModal(product, selectedColor);
+              }}
+              className="absolute bottom-1.5 right-1.5 px-2 py-0.5 bg-[#171a23] hover:bg-[#ff4800] border border-[#303545] hover:border-[#ff4800] text-[9px] font-bold text-zinc-300 hover:text-black flex items-center gap-1 transition-all cursor-pointer"
+            >
+              <Box className="w-2.5 h-2.5" />
+              <span>[3D]</span>
+            </button>
+          )}
+        </div>
 
-        {/* 3D Model Quick Trigger */}
-        {product.type === 'phone' && (
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              playSpatialOpen();
-              onOpen3DModal && onOpen3DModal(product, selectedColor);
-            }}
-            className="absolute bottom-2.5 right-2.5 px-3 py-1.5 rounded-full bg-[#0a0a0c]/85 hover:bg-[#1b1b1f] border border-[rgba(243,239,230,0.16)] text-[11px] tracking-wide text-[#f3efe6] hover:text-[#e4c972] hover:border-[#c9a227] backdrop-blur-md flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-[#c9a227]" />
-            <span>3D View</span>
-          </button>
-        )}
-      </div>
-
-      {/* Middle Content */}
-      <div className="mt-1 flex-1 flex flex-col justify-between">
-        <div>
-          <div className="flex items-center justify-between text-[11px] tracking-wide uppercase text-[#8b8680] font-medium mb-1">
-            <span>{product.brand}</span>
-            <span className="text-[#8b8680] truncate max-w-[130px]" title={storeInfo?.name}>
-              {storeInfo?.name || 'CelStore'}
+        {/* Technical Data Content */}
+        <div className="mt-2">
+          <div className="flex items-center justify-between text-[10px] text-zinc-500 font-bold uppercase mb-1">
+            <span className="text-[#ff4800]">{product.brand}</span>
+            <span className="truncate max-w-[120px]" title={storeInfo?.name}>
+              {storeInfo?.name || 'CENTRAL'}
             </span>
           </div>
 
-          <h4 className="text-[17px] font-semibold text-[#f3efe6] group-hover:text-[#e4c972] transition-colors line-clamp-1">
+          <h4 className="text-sm font-black text-[#f0f0eb] group-hover:text-[#ff4800] transition-colors truncate font-sans uppercase">
             {product.name}
           </h4>
 
           {product.solutions?.[0] && (
-            <div className="my-2 p-2 rounded-xl bg-[rgba(243,239,230,0.02)] border border-[rgba(243,239,230,0.06)] flex items-start gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#c9a227] mt-1.5 shrink-0" />
-              <p className="text-[11px] text-[#8b8680] line-clamp-2 leading-relaxed">
-                <strong className="text-[#f3efe6] font-medium">{product.solutions[0].badge}:</strong> {product.solutions[0].title}
-              </p>
-            </div>
+            <p className="mt-1 text-[10px] text-zinc-400 line-clamp-1">
+              // {product.solutions[0].badge}: {product.solutions[0].title}
+            </p>
           )}
         </div>
 
-        {/* Color Palette Selector */}
+        {/* Color Switcher Swatches */}
         {product.colors && product.colors.length > 0 && (
-          <div className="flex items-center gap-1.5 my-2">
+          <div className="flex items-center gap-1.5 my-2.5">
             {product.colors.map((col) => (
               <button
                 type="button"
@@ -177,57 +175,56 @@ export const ProductCard = ({ product, onOpenDetail, onOpen3DModal, onPrefetch3D
                   playSubtleClick();
                   setSelectedColor(col);
                 }}
-                className={`w-4 h-4 rounded-full border transition-all cursor-pointer ${
+                className={`w-3.5 h-3.5 border transition-all cursor-pointer ${
                   selectedColor?.name === col.name
-                    ? 'border-[#c9a227] scale-125 shadow-md ring-1 ring-white/30'
-                    : 'border-transparent opacity-70 hover:opacity-100'
+                    ? 'border-[#ff4800] ring-1 ring-[#ff4800] scale-110'
+                    : 'border-black opacity-70 hover:opacity-100'
                 }`}
                 style={{ backgroundColor: col.hex }}
                 title={col.name}
               />
             ))}
-            <span className="text-[10px] tracking-wide text-[#8b8680] ml-1.5 truncate max-w-[90px]">
+            <span className="text-[9px] text-zinc-500 ml-1 truncate max-w-[90px]">
               {selectedColor?.name}
             </span>
           </div>
         )}
+      </div>
 
-        {/* Bottom Price & Actions (10% Accent Gold) */}
-        <div className="pt-3 border-t border-[rgba(243,239,230,0.08)] flex items-center justify-between gap-2 mt-2">
-          <div>
-            <div className="flex items-baseline gap-1">
-              <span className="text-xl font-bold text-[#f3efe6] font-mono tracking-tight">
-                ${product.price}
-              </span>
-              <span className="text-[11px] text-[#8b8680] uppercase">USD</span>
-            </div>
-            {product.originalPrice && product.originalPrice > product.price && (
-              <span className="text-[11px] text-[#8b8680]/60 line-through font-mono">
-                ${product.originalPrice}
-              </span>
-            )}
+      {/* Module Pricing & Physical Action Bar */}
+      <div className="pt-2 border-t border-[#222530] flex items-center justify-between gap-1.5 mt-2">
+        <div>
+          <div className="flex items-baseline gap-1">
+            <span className="text-base font-black text-[#f0f0eb] font-mono tracking-tight">
+              ${product.price.toLocaleString()}
+            </span>
+            <span className="text-[9px] text-zinc-500">USD</span>
           </div>
+          {product.originalPrice && product.originalPrice > product.price && (
+            <span className="text-[9px] text-zinc-600 line-through">
+              ${product.originalPrice.toLocaleString()}
+            </span>
+          )}
+        </div>
 
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={handleQuickWhatsApp}
-              className="p-2.5 rounded-xl bg-[rgba(243,239,230,0.04)] hover:bg-[#1b1b1f] border border-[rgba(243,239,230,0.10)] hover:border-[#c9a227] text-[#8b8680] hover:text-[#f3efe6] transition-colors cursor-pointer"
-              title="Consultar por WhatsApp"
-            >
-              <MessageSquare className="w-4 h-4" />
-            </button>
+        <div className="flex items-center gap-1.5">
+          <button
+            type="button"
+            onClick={handleQuickWhatsApp}
+            className="p-1.5 bg-[#171922] border border-[#2b2f3e] hover:border-[#25D366] text-zinc-400 hover:text-[#25D366] transition-all cursor-pointer"
+            title="Consultar por WhatsApp"
+          >
+            <MessageSquare className="w-3.5 h-3.5" />
+          </button>
 
-            <button
-              type="button"
-              onClick={handleAddToCart}
-              className="px-4 py-2 rounded-xl bg-[#c9a227] hover:bg-[#e4c972] text-[#0a0a0c] font-bold text-xs tracking-wide flex items-center gap-1.5 transition-all shadow-md cursor-pointer hover:-translate-y-0.5"
-              title="Añadir a la Bolsa"
-            >
-              <ShoppingBag className="w-3.5 h-3.5" />
-              <span>Comprar</span>
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={handleAddToCart}
+            className="btn-industrial-primary text-[10px] py-1.5 px-3"
+            title="Añadir al inventario"
+          >
+            <span>+ BUY</span>
+          </button>
         </div>
       </div>
     </div>

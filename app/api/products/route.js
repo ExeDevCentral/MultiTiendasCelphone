@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { createSupabaseClient } from '@/src/lib/supabase';
 import { toProductRow, toProductJS } from '@/src/lib/supabaseMappers';
 import { parseAuthToken, verifyTenantAccess } from '@/src/lib/authGuard';
+import defaultProducts from '@/data/products.json';
 
 const ProductSchema = z.object({
   name: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
@@ -19,65 +20,51 @@ const ProductSchema = z.object({
 });
 
 export async function GET(request) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const storeId = searchParams.get('storeId');
-    const generationCategory = searchParams.get('generationCategory');
-    const type = searchParams.get('type');
-    const brand = searchParams.get('brand');
-    const isFeatured = searchParams.get('isFeatured');
-    const includeDrafts = searchParams.get('includeDrafts');
-    const q = searchParams.get('q');
+  const { searchParams } = new URL(request.url);
+  const storeId = searchParams.get('storeId');
+  const generationCategory = searchParams.get('generationCategory');
+  const type = searchParams.get('type');
+  const brand = searchParams.get('brand');
+  const isFeatured = searchParams.get('isFeatured');
+  const q = searchParams.get('q');
 
+  try {
     const supabase = createSupabaseClient();
     let query = supabase
       .from('products')
       .select('*')
       .order('created_at', { ascending: false });
 
-    // Public catalog only sees published products.
-    // Un gerente autenticado ve published + drafts únicamente de su propia tienda.
-    if (includeDrafts === 'true') {
-      const auth = parseAuthToken(request);
-      if (auth?.isSuperAdmin) {
-        // Superadmin: catálogo completo de todas las boutiques
-      } else if (auth?.storeId) {
-        // Store manager: published + drafts de su propia tienda
-        query = query.eq('store_id', auth.storeId);
-      } else {
-        // Público: solo published
-        query = query.eq('status', 'published');
-      }
-    } else {
-      query = query.eq('status', 'published');
-    }
+    query = query.eq('status', 'published');
 
-    if (storeId) {
-      query = query.eq('store_id', storeId);
-    }
-    if (generationCategory) {
-      query = query.eq('generation_category', generationCategory);
-    }
-    if (type) {
-      query = query.eq('type', type);
-    }
-    if (brand) {
-      query = query.ilike('brand', brand);
-    }
-    if (isFeatured === 'true') {
-      query = query.eq('is_featured', true);
-    }
-    if (q) {
-      query = query.or(`name.ilike.%${q}%,brand.ilike.%${q}%,tagline.ilike.%${q}%`);
-    }
+    if (storeId) query = query.eq('store_id', storeId);
+    if (generationCategory) query = query.eq('generation_category', generationCategory);
+    if (type) query = query.eq('type', type);
+    if (brand) query = query.ilike('brand', brand);
+    if (isFeatured === 'true') query = query.eq('is_featured', true);
+    if (q) query = query.or(`name.ilike.%${q}%,brand.ilike.%${q}%,tagline.ilike.%${q}%`);
 
     const { data, error } = await query;
     if (error) throw error;
 
     return NextResponse.json(data.map(toProductJS));
   } catch (error) {
-    console.error('GET /api/products:', error);
-    return NextResponse.json({ error: 'Error al consultar productos' }, { status: 500 });
+    console.warn('GET /api/products fallback to local data/products.json:', error.message);
+    let filtered = defaultProducts.filter(p => p.status !== 'draft');
+    if (storeId) filtered = filtered.filter(p => p.storeId === storeId);
+    if (generationCategory) filtered = filtered.filter(p => p.generationCategory === generationCategory);
+    if (type) filtered = filtered.filter(p => p.type === type);
+    if (brand) filtered = filtered.filter(p => p.brand?.toLowerCase() === brand.toLowerCase());
+    if (isFeatured === 'true') filtered = filtered.filter(p => p.isFeatured);
+    if (q) {
+      const qLower = q.toLowerCase();
+      filtered = filtered.filter(p => 
+        p.name?.toLowerCase().includes(qLower) || 
+        p.brand?.toLowerCase().includes(qLower) || 
+        p.tagline?.toLowerCase().includes(qLower)
+      );
+    }
+    return NextResponse.json(filtered);
   }
 }
 

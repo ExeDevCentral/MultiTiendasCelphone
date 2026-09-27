@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Sparkles, Zap, History, Layers, ShieldCheck } from 'lucide-react';
+import { Layers, Zap, ShieldCheck, History, Terminal } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 import { playSubtleClick } from '../utils/audioHaptics';
 
@@ -20,50 +20,53 @@ export const GenerationFilter = ({ showTitle = true }) => {
   const categories = [
     {
       id: 'all',
-      label: 'Colección Completa',
+      code: '01',
+      label: 'ALL HARDWARE',
       icon: Layers,
       count: countAll,
     },
     {
       id: 'last_2_years',
-      label: 'Flagships (2024 - 2026)',
+      code: '02',
+      label: 'FLAGSHIP 2024-26',
       icon: Zap,
       count: countLast2Years,
     },
     {
       id: 'recent_gen',
-      label: 'Series 2020 - 2023',
+      code: '03',
+      label: 'SERIES 2020-23',
       icon: ShieldCheck,
       count: countRecent,
     },
     {
       id: 'vintage_classic',
-      label: 'Vintage Archive Legends',
+      code: '04',
+      label: 'VINTAGE ARCHIVE',
       icon: History,
       count: countVintage,
     },
   ];
 
   return (
-    <div className="w-full py-2">
+    <div className="w-full py-2 font-mono">
       {showTitle && (
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-1 mb-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-1 mb-3">
           <div>
-            <p className="eyebrow !mb-1 flex items-center gap-2">
-              <Sparkles className="w-3.5 h-3.5 text-[#e4c972]" />
-              Segmentación Cronológica
-            </p>
-            <p className="text-xs text-[#8b8680]">
-              Filtra entre ingeniería contemporánea de titanio y leyendas de colección
+            <span className="text-[10px] font-bold text-[#ff4800] uppercase tracking-wider flex items-center gap-1.5">
+              <Terminal className="w-3 h-3" />
+              CHRONO-SEGMENTATION FILTER
+            </span>
+            <p className="text-[11px] text-zinc-500">
+              Filter between contemporary titanium architecture and restored historical collector hardware.
             </p>
           </div>
         </div>
       )}
 
-      {/* Tabs Container de Alta Costura 60-30-10 */}
-      <div className="flex items-center gap-2.5 overflow-x-auto pb-2 scrollbar-none no-scrollbar">
+      {/* Industrial Segmented Selector */}
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-2 scrollbar-none no-scrollbar">
         {categories.map((cat) => {
-          const Icon = cat.icon;
           const isActive = generationFilter === cat.id;
 
           return (
@@ -74,17 +77,19 @@ export const GenerationFilter = ({ showTitle = true }) => {
                 playSubtleClick();
                 setGenerationFilter(cat.id);
               }}
-              className={`flex items-center gap-2.5 px-4 py-2 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-200 cursor-pointer ${
+              className={`flex items-center gap-2 px-3 py-1.5 text-xs font-bold whitespace-nowrap border transition-all cursor-pointer ${
                 isActive
-                  ? 'bg-[rgba(201,162,39,0.10)] text-[#f3efe6] border border-[#c9a227] shadow-sm'
-                  : 'bg-[#131316] text-[#8b8680] hover:text-[#f3efe6] border border-[rgba(243,239,230,0.16)]'
+                  ? 'bg-[#ff4800] text-black border-[#ff4800] shadow-[2px_2px_0px_#000000]'
+                  : 'bg-[#14161c] text-zinc-400 hover:text-[#f0f0eb] border-[#292d3b] hover:border-zinc-500'
               }`}
             >
-              <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-[#e4c972]' : 'text-[#8b8680]'}`} />
+              <span className={`text-[10px] ${isActive ? 'text-black' : 'text-zinc-500'}`}>
+                [{cat.code}]
+              </span>
               <span>{cat.label}</span>
               <span
-                className={`px-2 py-0.5 rounded-full text-[10px] font-mono ${
-                  isActive ? 'bg-[rgba(201,162,39,0.20)] text-[#e4c972]' : 'bg-[rgba(243,239,230,0.06)] text-[#8b8680]'
+                className={`px-1 py-0.2 text-[10px] ${
+                  isActive ? 'bg-black text-[#ff4800]' : 'bg-[#1e212b] text-zinc-400'
                 }`}
               >
                 {cat.count}

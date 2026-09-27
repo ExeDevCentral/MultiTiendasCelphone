@@ -16,8 +16,8 @@ const GoldParticles = dynamic(
 );
 
 export const metadata = {
-  title: 'CelStore — Atelier Generacional & 3D Studio',
-  description: 'Plataforma multi-tienda de smartphones de alta gama y leyendas vintage en 3D interactivo.',
+  title: 'CELSTORE // INDUSTRIAL HARDWARE TERMINAL',
+  description: 'Catálogo de hardware móvil, ingeniería en titanio forjado y archivo vintage en terminal interactiva.',
 };
 
 export default function RootLayout({ children }) {
@@ -27,11 +27,11 @@ export default function RootLayout({ children }) {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400;1,600&family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600&display=swap"
+          href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap"
           rel="stylesheet"
         />
       </head>
-      <body className="bg-[#0a0a0c] text-[#f3efe6] antialiased selection:bg-[#c9a227] selection:text-black">
+      <body className="bg-[#0c0d10] text-[#f0f0eb] antialiased selection:bg-[#ff4800] selection:text-black">
         <StoreProvider>
           <CartProvider>
             <AuthProvider>
