@@ -12,11 +12,16 @@ import {
   DollarSign,
   Layers,
   Sparkles,
-  SlidersHorizontal
+  SlidersHorizontal,
+  Terminal,
+  Activity,
+  ShieldCheck,
+  RefreshCw
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useStore } from '../../context/StoreContext';
 import { api } from '../../services/api';
+import { playSubtleClick } from '../../utils/audioHaptics';
 
 // Modular Subcomponents
 import { ProductList } from './components/ProductList';
@@ -30,26 +35,30 @@ export const AdminDashboard = ({ onNavigate }) => {
   const { stores, products, refreshData } = useStore();
 
   const [activeTab, setActiveTab] = useState('products'); // 'products' | 'bulk_editor' | 'store_settings' | 'orders'
-  const [selectedStoreId, setSelectedStoreId] = useState(user?.storeId || stores[0]?.id);
+  const [selectedStoreId, setSelectedStoreId] = useState(user?.storeId || stores[0]?.id || 'store-celstore-premium');
   const [storeOrders, setStoreOrders] = useState([]);
   const [allStoreProducts, setAllStoreProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Modal State
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
 
-  const currentStore = stores.find(s => s.id === selectedStoreId) || stores[0];
+  const currentStore = stores.find((s) => s.id === selectedStoreId) || stores[0];
 
   const loadStoreData = async (sId) => {
+    setIsLoading(true);
     try {
       const [ordersData, prodsData] = await Promise.all([
         api.getOrders(sId),
         api.getProducts({ storeId: sId, includeDrafts: 'true' })
       ]);
-      setStoreOrders(ordersData);
-      setAllStoreProducts(prodsData);
+      setStoreOrders(ordersData || []);
+      setAllStoreProducts(prodsData || []);
     } catch (err) {
       console.error('Error loading store dashboard data:', err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -61,11 +70,13 @@ export const AdminDashboard = ({ onNavigate }) => {
 
   // Product Actions
   const handleOpenNew = () => {
+    playSubtleClick();
     setEditingProduct(null);
     setIsProductModalOpen(true);
   };
 
   const handleOpenEdit = (prod) => {
+    playSubtleClick();
     setEditingProduct(prod);
     setIsProductModalOpen(true);
   };
@@ -86,6 +97,7 @@ export const AdminDashboard = ({ onNavigate }) => {
   };
 
   const handleDuplicateProduct = async (prodId) => {
+    playSubtleClick();
     try {
       await api.duplicateProduct(prodId);
       await refreshData();
@@ -96,7 +108,8 @@ export const AdminDashboard = ({ onNavigate }) => {
   };
 
   const handleDeleteProduct = async (prodId) => {
-    if (!window.confirm('¿Deseas eliminar este producto del catálogo de tu tienda?')) return;
+    playSubtleClick();
+    if (!window.confirm('¿Confirmas eliminar este elemento del inventario?')) return;
     try {
       await api.deleteProduct(prodId);
       await refreshData();
@@ -106,150 +119,187 @@ export const AdminDashboard = ({ onNavigate }) => {
     }
   };
 
-  // Metrics
-  const totalStock = allStoreProducts.reduce((acc, p) => acc + (p.stock || 0), 0);
-  const totalRevenue = storeOrders.reduce((acc, o) => acc + (o.total || 0), 0);
+  // Metrics (Tabular calculation)
+  const totalStock = allStoreProducts.reduce((acc, p) => acc + (Number(p.stock) || 0), 0);
+  const totalRevenue = storeOrders.reduce((acc, o) => acc + (Number(o.total) || 0), 0);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-8">
-      {/* Top Header & Store Selector */}
-      <div className="p-6 rounded-3xl glass-panel border border-white/10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xl">
-        <div className="flex items-center gap-4">
-          <img
-            src={currentStore?.logo || 'https://images.unsplash.com/photo-1616469829941-c7200edec809?w=150'}
-            alt="Logo"
-            className="w-14 h-14 rounded-2xl object-cover border border-white/20 bg-neutral-900 shadow-md"
-          />
-          <div>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-6 font-mono">
+      {/* Precision Hardware Console Header */}
+      <div className="bg-[#0E0E10] border border-[#1A1A1D] p-5 sm:p-6 space-y-4">
+        {/* Top Status & Telemetry Bar */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#1A1A1D] pb-4">
+          <div className="flex items-center gap-3">
+            <div className="w-2.5 h-2.5 bg-[#0066FF] animate-pulse" />
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/30">
-                Panel de Administración
+              <span className="text-xs font-bold text-[#F5F5F7] tracking-wider uppercase">
+                TERMINAL // CENTRO DE CONTROL
               </span>
-              {isSuperAdmin && (
-                <span className="text-[10px] font-bold uppercase tracking-wider text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded-full border border-purple-500/30">
-                  SuperAdmin
-                </span>
-              )}
+              <span className="text-[10px] px-2 py-0.5 bg-[#141416] border border-[#0066FF] text-[#0066FF] font-bold">
+                MODO PRUEBA // 0 QUOTA SUPABASE
+              </span>
             </div>
-            <h2 className="text-xl font-bold text-white mt-0.5">{currentStore?.name}</h2>
-            <p className="text-xs text-neutral-400">{user?.email}</p>
+          </div>
+
+          <div className="flex items-center gap-2 text-[10px] text-[#71717A]">
+            <span>SESIÓN: <strong className="text-[#F5F5F7]">{user?.email || 'admin@celstore.com'}</strong></span>
+            <span>[{user?.role === 'superadmin' ? 'SUPERADMIN' : 'GERENTE'}]</span>
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2.5">
-          {isSuperAdmin && (
-            <select
-              value={selectedStoreId}
-              onChange={(e) => setSelectedStoreId(e.target.value)}
-              className="bg-neutral-900 border border-white/20 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500 font-semibold"
+        {/* Store Title & Quick Operation Rack */}
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pt-1">
+          <div>
+            <h1 className="text-xl sm:text-2xl font-bold font-sans tracking-tight text-[#F5F5F7]">
+              {currentStore?.name || 'CelStore Central'}
+            </h1>
+            <p className="text-xs text-[#71717A] mt-0.5">
+              Gestión atómica de stock, catálogo técnico y pedidos de sucursal.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            {isSuperAdmin && (
+              <select
+                value={selectedStoreId}
+                onChange={(e) => setSelectedStoreId(e.target.value)}
+                className="bg-[#141416] border border-[#1A1A1D] text-[#F5F5F7] text-xs px-3 py-1.5 outline-none font-bold cursor-pointer hover:border-[#0066FF] transition-colors"
+              >
+                {stores.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    SUCURSAL: {s.name.toUpperCase()}
+                  </option>
+                ))}
+              </select>
+            )}
+
+            <button
+              type="button"
+              onClick={() => onNavigate('store_catalog', { storeId: selectedStoreId })}
+              className="px-3 py-1.5 bg-[#141416] hover:bg-[#1E1E22] border border-[#1A1A1D] hover:border-[#0066FF] text-[#F5F5F7] text-xs flex items-center gap-1.5 cursor-pointer transition-all"
             >
-              {stores.map(s => (
-                <option key={s.id} value={s.id}>🏬 {s.name}</option>
-              ))}
-            </select>
-          )}
+              <Eye className="w-3.5 h-3.5 text-[#0066FF]" />
+              <span>[ VER TIENDA EN VIVO ]</span>
+            </button>
 
-          <button
-            onClick={() => onNavigate('store_catalog', { storeId: selectedStoreId })}
-            className="px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-neutral-300 text-xs font-semibold flex items-center gap-1.5 border border-white/10 transition-colors"
-          >
-            <Eye className="w-3.5 h-3.5" />
-            <span>Ver Tienda en Vivo</span>
-          </button>
-
-          <button
-            onClick={() => {
-              logout();
-              onNavigate('home');
-            }}
-            className="px-3.5 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 text-xs font-semibold flex items-center gap-1.5 border border-rose-500/20 transition-colors"
-          >
-            <LogOut className="w-3.5 h-3.5" />
-            <span>Cerrar Sesión</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Metrics Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="p-5 rounded-2xl glass-panel border border-white/10 flex items-center justify-between">
-          <div>
-            <span className="text-xs text-neutral-400">Modelos en Catálogo</span>
-            <div className="text-2xl font-extrabold text-white mt-1">{allStoreProducts.length}</div>
-          </div>
-          <div className="p-3 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20">
-            <Smartphone className="w-5 h-5" />
-          </div>
-        </div>
-
-        <div className="p-5 rounded-2xl glass-panel border border-white/10 flex items-center justify-between">
-          <div>
-            <span className="text-xs text-neutral-400">Stock Total</span>
-            <div className="text-2xl font-extrabold text-emerald-400 mt-1">{totalStock}</div>
-          </div>
-          <div className="p-3 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-            <Package className="w-5 h-5" />
-          </div>
-        </div>
-
-        <div className="p-5 rounded-2xl glass-panel border border-white/10 flex items-center justify-between">
-          <div>
-            <span className="text-xs text-neutral-400">Pedidos Totales</span>
-            <div className="text-2xl font-extrabold text-amber-400 mt-1">{storeOrders.length}</div>
-          </div>
-          <div className="p-3 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20">
-            <ShoppingBag className="w-5 h-5" />
-          </div>
-        </div>
-
-        <div className="p-5 rounded-2xl glass-panel border border-white/10 flex items-center justify-between">
-          <div>
-            <span className="text-xs text-neutral-400">Ingresos Totales</span>
-            <div className="text-2xl font-extrabold text-blue-400 mt-1">${totalRevenue} USD</div>
-          </div>
-          <div className="p-3 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20">
-            <DollarSign className="w-5 h-5" />
+            <button
+              type="button"
+              onClick={() => {
+                logout();
+                onNavigate('home');
+              }}
+              className="px-3 py-1.5 bg-[#141416] hover:bg-[#251010] border border-[#1A1A1D] hover:border-[#FF3B30] text-[#FF3B30] text-xs flex items-center gap-1.5 cursor-pointer transition-all"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span>[ SALIR ]</span>
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Tabs Navigation */}
-      <div className="flex items-center gap-2 border-b border-white/10 pb-3 overflow-x-auto scrollbar-none">
+      {/* Metrics Grid (Tabular-nums) */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="bg-[#0E0E10] border border-[#1A1A1D] p-4 flex flex-col justify-between">
+          <span className="text-[10px] text-[#71717A] uppercase tracking-wider font-bold">
+            MODELOS EN CATÁLOGO
+          </span>
+          <div className="text-2xl font-bold font-mono text-[#F5F5F7] tabular-nums mt-2">
+            {String(allStoreProducts.length).padStart(2, '0')}
+          </div>
+          <span className="text-[9px] text-[#71717A] mt-1">// DISPONIBLES EN SISTEMA</span>
+        </div>
+
+        <div className="bg-[#0E0E10] border border-[#1A1A1D] p-4 flex flex-col justify-between">
+          <span className="text-[10px] text-[#71717A] uppercase tracking-wider font-bold">
+            INVENTARIO FÍSICO
+          </span>
+          <div className="text-2xl font-bold font-mono text-[#0066FF] tabular-nums mt-2">
+            {totalStock} <span className="text-xs text-[#71717A]">U</span>
+          </div>
+          <span className="text-[9px] text-[#71717A] mt-1">// CONTROL ATÓMICO ACTIVO</span>
+        </div>
+
+        <div className="bg-[#0E0E10] border border-[#1A1A1D] p-4 flex flex-col justify-between">
+          <span className="text-[10px] text-[#71717A] uppercase tracking-wider font-bold">
+            PEDIDOS REGISTRADOS
+          </span>
+          <div className="text-2xl font-bold font-mono text-[#F5F5F7] tabular-nums mt-2">
+            {String(storeOrders.length).padStart(2, '0')}
+          </div>
+          <span className="text-[9px] text-[#71717A] mt-1">// HISTORIAL COMPLETO</span>
+        </div>
+
+        <div className="bg-[#0E0E10] border border-[#1A1A1D] p-4 flex flex-col justify-between">
+          <span className="text-[10px] text-[#71717A] uppercase tracking-wider font-bold">
+            VOLUMEN ESTIMADO
+          </span>
+          <div className="text-2xl font-bold font-mono text-[#F5F5F7] tabular-nums mt-2">
+            ${totalRevenue.toLocaleString()} <span className="text-xs text-[#71717A]">USD</span>
+          </div>
+          <span className="text-[9px] text-[#71717A] mt-1">// SIMULACIÓN DE VENTAS</span>
+        </div>
+      </div>
+
+      {/* Tabs Navigation Rack */}
+      <div className="flex items-center gap-1.5 border-b border-[#1A1A1D] pb-3 overflow-x-auto scrollbar-none">
         <button
-          onClick={() => setActiveTab('products')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
-            activeTab === 'products' ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30' : 'text-neutral-400 hover:text-white hover:bg-white/5'
+          type="button"
+          onClick={() => {
+            playSubtleClick();
+            setActiveTab('products');
+          }}
+          className={`px-3 py-1.5 text-xs font-bold whitespace-nowrap cursor-pointer transition-all ${
+            activeTab === 'products'
+              ? 'bg-[#0066FF] text-[#F5F5F7]'
+              : 'bg-[#141416] text-[#71717A] hover:text-[#F5F5F7] hover:bg-[#1E1E22] border border-[#1A1A1D]'
           }`}
         >
-          📦 Catálogo & Productos ({allStoreProducts.length})
+          [ 01: CATÁLOGO ({allStoreProducts.length}) ]
         </button>
 
         <button
-          onClick={() => setActiveTab('bulk_editor')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${
-            activeTab === 'bulk_editor' ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30' : 'text-neutral-400 hover:text-white hover:bg-white/5'
+          type="button"
+          onClick={() => {
+            playSubtleClick();
+            setActiveTab('bulk_editor');
+          }}
+          className={`px-3 py-1.5 text-xs font-bold whitespace-nowrap cursor-pointer transition-all ${
+            activeTab === 'bulk_editor'
+              ? 'bg-[#0066FF] text-[#F5F5F7]'
+              : 'bg-[#141416] text-[#71717A] hover:text-[#F5F5F7] hover:bg-[#1E1E22] border border-[#1A1A1D]'
           }`}
         >
-          <SlidersHorizontal className="w-3.5 h-3.5" />
-          <span>Editor Rápido de Stock</span>
+          [ 02: EDITOR DE STOCK ]
         </button>
 
         <button
-          onClick={() => setActiveTab('store_settings')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
-            activeTab === 'store_settings' ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30' : 'text-neutral-400 hover:text-white hover:bg-white/5'
+          type="button"
+          onClick={() => {
+            playSubtleClick();
+            setActiveTab('orders');
+          }}
+          className={`px-3 py-1.5 text-xs font-bold whitespace-nowrap cursor-pointer transition-all ${
+            activeTab === 'orders'
+              ? 'bg-[#0066FF] text-[#F5F5F7]'
+              : 'bg-[#141416] text-[#71717A] hover:text-[#F5F5F7] hover:bg-[#1E1E22] border border-[#1A1A1D]'
           }`}
         >
-          🏬 Personalizar Sucursal & WhatsApp
+          [ 03: PEDIDOS ({storeOrders.length}) ]
         </button>
 
         <button
-          onClick={() => setActiveTab('orders')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
-            activeTab === 'orders' ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30' : 'text-neutral-400 hover:text-white hover:bg-white/5'
+          type="button"
+          onClick={() => {
+            playSubtleClick();
+            setActiveTab('store_settings');
+          }}
+          className={`px-3 py-1.5 text-xs font-bold whitespace-nowrap cursor-pointer transition-all ${
+            activeTab === 'store_settings'
+              ? 'bg-[#0066FF] text-[#F5F5F7]'
+              : 'bg-[#141416] text-[#71717A] hover:text-[#F5F5F7] hover:bg-[#1E1E22] border border-[#1A1A1D]'
           }`}
         >
-          📋 Pedidos Recibidos ({storeOrders.length})
+          [ 04: DATOS SUCURSAL & WHATSAPP ]
         </button>
       </div>
 
@@ -271,6 +321,10 @@ export const AdminDashboard = ({ onNavigate }) => {
         />
       )}
 
+      {activeTab === 'orders' && (
+        <OrdersTracker orders={storeOrders} />
+      )}
+
       {activeTab === 'store_settings' && (
         <StoreSettingsForm
           store={currentStore}
@@ -281,11 +335,7 @@ export const AdminDashboard = ({ onNavigate }) => {
         />
       )}
 
-      {activeTab === 'orders' && (
-        <OrdersTracker orders={storeOrders} />
-      )}
-
-      {/* Product Form Modal (Decomposed) */}
+      {/* Product Form Modal */}
       <ProductFormModal
         isOpen={isProductModalOpen}
         onClose={() => setIsProductModalOpen(false)}

@@ -1,5 +1,8 @@
+'use client';
+
 import React, { useState } from 'react';
-import { Plus, Edit2, Copy, Trash2, Search, Zap, History, ShieldCheck, Eye, Layers } from 'lucide-react';
+import { Plus, Edit2, Copy, Trash2, Search, ArrowUpRight } from 'lucide-react';
+import { playSubtleClick } from '../../../utils/audioHaptics';
 
 export const ProductList = ({
   products = [],
@@ -12,7 +15,7 @@ export const ProductList = ({
   const [statusFilter, setStatusFilter] = useState('all');
   const [genFilter, setGenFilter] = useState('all');
 
-  const filtered = products.filter(p => {
+  const filtered = products.filter((p) => {
     if (statusFilter !== 'all' && (p.status || 'published') !== statusFilter) return false;
     if (genFilter !== 'all' && p.generationCategory !== genFilter) return false;
     if (search.trim() !== '') {
@@ -25,146 +28,140 @@ export const ProductList = ({
   });
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 font-mono text-xs">
       {/* Search & Actions Bar */}
-      <div className="flex flex-col md:flex-row items-center justify-between gap-3">
-        <div className="flex items-center gap-2.5 w-full md:w-auto flex-1">
-          <div className="relative w-full sm:w-64">
-            <Search className="w-3.5 h-3.5 text-neutral-400 absolute left-3 top-1/2 -translate-y-1/2" />
+      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 bg-[#0E0E10] border border-[#1A1A1D] p-3">
+        <div className="flex flex-wrap items-center gap-2 flex-1">
+          <div className="relative flex-1 min-w-[200px]">
+            <Search className="w-3.5 h-3.5 text-[#71717A] absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               placeholder="Buscar por modelo o marca..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-neutral-900 border border-white/10 rounded-xl pl-8 pr-3 py-2 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-blue-500"
+              className="w-full bg-[#141416] border border-[#1A1A1D] pl-8 pr-3 py-1.5 text-xs text-[#F5F5F7] placeholder-[#71717A] outline-none focus:border-[#0066FF] transition-colors"
             />
           </div>
 
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="bg-neutral-900 border border-white/10 rounded-xl px-3 py-2 text-xs text-neutral-200 focus:outline-none focus:border-blue-500"
+            className="bg-[#141416] border border-[#1A1A1D] px-2.5 py-1.5 text-xs text-[#F5F5F7] outline-none focus:border-[#0066FF] cursor-pointer"
           >
-            <option value="all">Todos los Estados</option>
-            <option value="published">🟢 Solo Publicados</option>
-            <option value="draft">🟡 Solo Borradores</option>
+            <option value="all">TODOS LOS ESTADOS</option>
+            <option value="published">● PUBLICADOS</option>
+            <option value="draft">○ BORRADORES</option>
           </select>
 
           <select
             value={genFilter}
             onChange={(e) => setGenFilter(e.target.value)}
-            className="bg-neutral-900 border border-white/10 rounded-xl px-3 py-2 text-xs text-neutral-200 focus:outline-none focus:border-blue-500 hidden sm:inline-block"
+            className="bg-[#141416] border border-[#1A1A1D] px-2.5 py-1.5 text-xs text-[#F5F5F7] outline-none focus:border-[#0066FF] cursor-pointer hidden sm:inline-block"
           >
-            <option value="all">Todas las Épocas</option>
-            <option value="last_2_years">🚀 Últimos 2 Años</option>
-            <option value="recent_gen">⏳ Recientes</option>
-            <option value="vintage_classic">📟 Clásicos Vintage</option>
+            <option value="all">TODAS LAS CATEGORÍAS</option>
+            <option value="last_2_years">FLAGSHIPS (ÚLTIMOS 2 AÑOS)</option>
+            <option value="recent_gen">RECIENTES</option>
+            <option value="vintage_classic">VINTAGE CLÁSICOS</option>
           </select>
         </div>
 
         <button
-          onClick={onOpenNew}
-          className="w-full md:w-auto px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-lg shadow-blue-600/30 transition-all hover:scale-105 shrink-0"
+          type="button"
+          onClick={() => {
+            playSubtleClick();
+            onOpenNew();
+          }}
+          className="px-3.5 py-2 bg-[#0066FF] hover:bg-[#0052cc] text-[#F5F5F7] text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer transition-all uppercase tracking-wider shrink-0 active:translate-y-[1px]"
         >
-          <Plus className="w-4 h-4" />
-          <span>Cargar Nuevo Producto</span>
+          <Plus className="w-3.5 h-3.5" />
+          <span>[ + NUEVO MODELO ]</span>
         </button>
       </div>
 
-      {/* Table */}
-      <div className="rounded-2xl glass-panel border border-white/10 overflow-x-auto">
-        <table className="w-full text-left text-xs text-neutral-300">
-          <thead className="bg-white/5 text-[11px] uppercase tracking-wider text-neutral-400 border-b border-white/10 font-bold">
+      {/* Precision Datasheet Table */}
+      <div className="bg-[#0E0E10] border border-[#1A1A1D] overflow-x-auto">
+        <table className="w-full text-left text-xs">
+          <thead className="bg-[#141416] text-[10px] uppercase tracking-wider text-[#71717A] border-b border-[#1A1A1D] font-bold">
             <tr>
-              <th className="p-4">Producto</th>
-              <th className="p-4">Generación / Año</th>
-              <th className="p-4">Estado</th>
-              <th className="p-4">Precio</th>
-              <th className="p-4">Stock</th>
-              <th className="p-4 text-right">Acciones</th>
+              <th className="p-3">IDENTIFICADOR / PRODUCTO</th>
+              <th className="p-3">AÑO / TIPO</th>
+              <th className="p-3">ESTADO</th>
+              <th className="p-3">PRECIO</th>
+              <th className="p-3">STOCK</th>
+              <th className="p-3 text-right">ACCIONES</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/5">
+          <tbody className="divide-y divide-[#1A1A1D]">
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan="6" className="text-center py-10 text-neutral-500">
-                  No se encontraron productos con los filtros aplicados.
+                <td colSpan="6" className="text-center py-10 text-[#71717A]">
+                  // No se encontraron elementos en el inventario actual.
                 </td>
               </tr>
             ) : (
               filtered.map((p) => (
-                <tr key={p.id} className="hover:bg-white/[0.02] transition-colors">
-                  <td className="p-4">
+                <tr key={p.id} className="hover:bg-[#141416] transition-colors">
+                  <td className="p-3">
                     <div className="flex items-center gap-3">
                       <img
                         src={p.images?.[0] || 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=100'}
                         alt={p.name}
-                        className="w-10 h-10 rounded-lg object-contain bg-neutral-900 p-1 shrink-0"
+                        className="w-9 h-9 object-contain bg-[#141416] border border-[#1A1A1D] p-1 shrink-0"
                       />
-                      <div>
-                        <span className="font-bold text-white block truncate max-w-xs">{p.name}</span>
-                        <span className="text-[11px] text-neutral-400">{p.brand}</span>
+                      <div className="min-w-0">
+                        <span className="font-bold text-[#F5F5F7] block truncate max-w-xs">{p.name}</span>
+                        <span className="text-[10px] text-[#71717A] font-mono uppercase">{p.brand} // {p.id}</span>
                       </div>
                     </div>
                   </td>
-                  <td className="p-4">
-                    {p.generationCategory === 'last_2_years' ? (
-                      <span className="badge-last-2-years px-2 py-0.5 rounded-full text-[10px] font-bold">
-                        🚀 {p.modelYear}
-                      </span>
-                    ) : p.generationCategory === 'vintage_classic' ? (
-                      <span className="badge-vintage px-2 py-0.5 rounded-full text-[10px] font-bold">
-                        📟 {p.modelYear}
-                      </span>
-                    ) : (
-                      <span className="badge-recent px-2 py-0.5 rounded-full text-[10px] font-bold">
-                        ⏳ {p.modelYear}
-                      </span>
-                    )}
-                  </td>
-                  <td className="p-4">
-                    {p.status === 'draft' ? (
-                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                        Borrador (Draft)
-                      </span>
-                    ) : (
-                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                        Publicado
-                      </span>
-                    )}
-                  </td>
-                  <td className="p-4 font-bold text-white">${p.price} USD</td>
-                  <td className="p-4">
-                    <span className={`font-semibold ${p.stock < 3 ? 'text-rose-400' : 'text-emerald-400'}`}>
-                      {p.stock} un.
+                  <td className="p-3">
+                    <span className="text-[10px] text-[#71717A] px-2 py-0.5 bg-[#141416] border border-[#1A1A1D]">
+                      {p.modelYear || 2024} // {p.type === 'accessory' ? 'ACCESORIO' : 'PHONE'}
                     </span>
                   </td>
-                  <td className="p-4 text-right space-x-1.5">
-                    {/* Duplicate button */}
+                  <td className="p-3">
+                    {p.status === 'draft' ? (
+                      <span className="px-2 py-0.5 text-[9px] font-bold bg-[#141416] border border-[#FF9500] text-[#FF9500]">
+                        BORRADOR
+                      </span>
+                    ) : (
+                      <span className="px-2 py-0.5 text-[9px] font-bold bg-[#141416] border border-[#0066FF] text-[#0066FF]">
+                        PUBLICADO
+                      </span>
+                    )}
+                  </td>
+                  <td className="p-3 font-bold text-[#F5F5F7] tabular-nums">
+                    ${Number(p.price).toLocaleString()} <span className="text-[10px] text-[#71717A] font-normal">USD</span>
+                  </td>
+                  <td className="p-3">
+                    <span className={`tabular-nums font-bold ${p.stock < 3 ? 'text-[#FF3B30]' : 'text-[#30D158]'}`}>
+                      {p.stock} <span className="text-[10px] text-[#71717A] font-normal">un.</span>
+                    </span>
+                  </td>
+                  <td className="p-3 text-right space-x-1">
                     <button
+                      type="button"
                       onClick={() => onDuplicate(p.id)}
-                      className="p-1.5 rounded-lg bg-white/5 hover:bg-emerald-600 text-neutral-300 hover:text-white transition-colors"
-                      title="Duplicar producto (1-clic)"
+                      className="px-2 py-1 bg-[#141416] hover:bg-[#1E1E22] border border-[#1A1A1D] hover:border-[#0066FF] text-[#71717A] hover:text-[#F5F5F7] text-[10px] transition-colors cursor-pointer"
+                      title="Duplicar elemento"
                     >
-                      <Copy className="w-3.5 h-3.5" />
+                      [CLON]
                     </button>
-
-                    {/* Edit button */}
                     <button
+                      type="button"
                       onClick={() => onOpenEdit(p)}
-                      className="p-1.5 rounded-lg bg-white/5 hover:bg-blue-600 text-neutral-300 hover:text-white transition-colors"
-                      title="Editar producto"
+                      className="px-2 py-1 bg-[#141416] hover:bg-[#1E1E22] border border-[#1A1A1D] hover:border-[#0066FF] text-[#0066FF] text-[10px] transition-colors cursor-pointer font-bold"
+                      title="Editar ficha"
                     >
-                      <Edit2 className="w-3.5 h-3.5" />
+                      [EDIT]
                     </button>
-
-                    {/* Delete button */}
                     <button
+                      type="button"
                       onClick={() => onDelete(p.id)}
-                      className="p-1.5 rounded-lg bg-white/5 hover:bg-rose-600 text-neutral-300 hover:text-white transition-colors"
-                      title="Eliminar producto"
+                      className="px-2 py-1 bg-[#141416] hover:bg-[#251010] border border-[#1A1A1D] hover:border-[#FF3B30] text-[#FF3B30] text-[10px] transition-colors cursor-pointer"
+                      title="Eliminar del catálogo"
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
+                      [DEL]
                     </button>
                   </td>
                 </tr>

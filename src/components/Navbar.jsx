@@ -10,9 +10,7 @@ import {
   Shield,
   X,
   Menu,
-  Terminal,
-  Activity,
-  Cpu
+  Terminal
 } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 import { useCart } from '../context/CartContext';
@@ -83,7 +81,7 @@ export const Navbar = ({ currentView, onNavigate }) => {
               </div>
               <div className="flex items-center gap-1.5 text-[9px] font-mono text-[#71717A]">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#0066FF] animate-pulse" />
-                <span>ONLINE // SYNC OK</span>
+                <span>MODO PRUEBA // 0 QUOTA</span>
               </div>
             </div>
           </div>

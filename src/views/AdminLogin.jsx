@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ShieldCheck, Lock, Mail, ArrowRight, Store, KeyRound, AlertCircle } from 'lucide-react';
+import { ShieldCheck, Lock, Mail, ArrowRight, Store, KeyRound, AlertCircle, Terminal, Zap, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { playSubtleClick } from '../utils/audioHaptics';
 
 export const AdminLogin = ({ onNavigate }) => {
   const { login, loading } = useAuth();
@@ -11,7 +12,8 @@ export const AdminLogin = ({ onNavigate }) => {
   const [error, setError] = useState(null);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
+    playSubtleClick();
     setError(null);
     try {
       await login(email, password);
@@ -21,28 +23,88 @@ export const AdminLogin = ({ onNavigate }) => {
     }
   };
 
-  const fillCredentials = (storeEmail, storePassword) => {
-    setEmail(storeEmail);
-    setPassword(storePassword);
+  const handleInstantDemoLogin = async (demoEmail, demoPass) => {
+    playSubtleClick();
+    setEmail(demoEmail);
+    setPassword(demoPass);
     setError(null);
+    try {
+      await login(demoEmail, demoPass);
+      onNavigate('admin_dashboard');
+    } catch (err) {
+      setError(err.message || 'Error en inicio demo');
+    }
   };
 
   return (
-    <div className="max-w-md mx-auto px-4 py-16">
-      <div className="rounded-3xl glass-panel border border-white/15 p-8 shadow-2xl space-y-6">
-        {/* Header */}
-        <div className="text-center space-y-2">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-400 p-0.5 mx-auto shadow-lg shadow-emerald-600/30 flex items-center justify-center">
-            <Lock className="w-7 h-7 text-white" />
+    <div className="max-w-xl mx-auto px-4 py-16 font-mono">
+      {/* Precision Hardware Console Container */}
+      <div className="bg-[#0E0E10] border border-[#1A1A1D] p-6 sm:p-8 space-y-6 relative shadow-2xl">
+        
+        {/* Terminal Header Telemetry */}
+        <div className="flex items-center justify-between border-b border-[#1A1A1D] pb-4">
+          <div className="flex items-center gap-2.5">
+            <div className="w-2.5 h-2.5 bg-[#0066FF] animate-pulse" />
+            <span className="text-xs font-bold uppercase tracking-wider text-[#F5F5F7]">
+              TERMINAL // ACCESO ADMINISTRATIVO
+            </span>
           </div>
-          <h2 className="text-2xl font-extrabold text-white">Portal de Tiendas & Admin</h2>
-          <p className="text-xs text-neutral-400">
-            Inicia sesión para gestionar el catálogo, precios, textos de soluciones y stock de tu sucursal.
-          </p>
+          <span className="text-[10px] text-[#71717A] bg-[#141416] px-2 py-0.5 border border-[#1A1A1D]">
+            MODO PRUEBA (0 QUOTA)
+          </span>
+        </div>
+
+        {/* Security / Test Mode Notice */}
+        <div className="p-3 bg-[#141416] border border-[#1A1A1D] flex items-start gap-3">
+          <Terminal className="w-4 h-4 text-[#0066FF] shrink-0 mt-0.5" />
+          <div className="text-[11px] leading-relaxed text-[#71717A]">
+            <strong className="text-[#F5F5F7]">AMBIENTE DE SIMULACIÓN ACTIVO:</strong> Podés acceder directamente con 1 clic para inspeccionar catálogo, pedidos y stock sin requerir conexión a base de datos de producción.
+          </div>
+        </div>
+
+        {/* Quick Demo Instant Access Buttons */}
+        <div className="space-y-2">
+          <div className="text-[10px] uppercase tracking-widest text-[#71717A] font-bold">
+            // ACCESO RÁPIDO 1-CLIC (MODO DEMOSTRACIÓN)
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={() => handleInstantDemoLogin('admin@celstore.com', 'admin123')}
+              className="p-3 bg-[#141416] hover:bg-[#1E1E22] border border-[#1A1A1D] hover:border-[#0066FF] text-left transition-all cursor-pointer group"
+            >
+              <div className="flex items-center justify-between text-xs font-bold text-[#F5F5F7]">
+                <span>[ 01: SUPERADMIN ]</span>
+                <Zap className="w-3.5 h-3.5 text-[#0066FF] group-hover:scale-110 transition-transform" />
+              </div>
+              <div className="text-[10px] text-[#71717A] mt-1">Control maestro de todas las boutiques</div>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleInstantDemoLogin('palermo@celstore.com', 'admin123')}
+              className="p-3 bg-[#141416] hover:bg-[#1E1E22] border border-[#1A1A1D] hover:border-[#0066FF] text-left transition-all cursor-pointer group"
+            >
+              <div className="flex items-center justify-between text-xs font-bold text-[#F5F5F7]">
+                <span>[ 02: GERENTE SUCURSAL ]</span>
+                <Store className="w-3.5 h-3.5 text-[#0066FF] group-hover:scale-110 transition-transform" />
+              </div>
+              <div className="text-[10px] text-[#71717A] mt-1">Boutique Palermo Flagship</div>
+            </button>
+          </div>
+        </div>
+
+        <div className="relative flex items-center justify-center">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-[#1A1A1D]" />
+          </div>
+          <span className="relative bg-[#0E0E10] px-3 text-[10px] uppercase text-[#71717A]">
+            O INGRESO MANUAL CON CREDENCIALES
+          </span>
         </div>
 
         {error && (
-          <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
+          <div className="p-3 bg-[#141416] border border-[#FF3B30] text-[#FF3B30] text-xs flex items-center gap-2">
             <AlertCircle className="w-4 h-4 shrink-0" />
             <span>{error}</span>
           </div>
@@ -50,34 +112,32 @@ export const AdminLogin = ({ onNavigate }) => {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="text-xs text-neutral-400 font-semibold block mb-1.5">
-              Correo del Administrador
+            <label className="text-[10px] text-[#71717A] uppercase font-bold block mb-1">
+              [USUARIO / CORREO]
             </label>
             <div className="relative">
-              <Mail className="w-4 h-4 text-neutral-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-neutral-900 border border-white/10 rounded-xl pl-10 pr-3 py-2.5 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-blue-500"
-                placeholder="admin@tienda.com"
+                className="w-full bg-[#141416] border border-[#1A1A1D] focus:border-[#0066FF] px-3 py-2.5 text-xs text-[#F5F5F7] placeholder-[#71717A] outline-none transition-colors"
+                placeholder="admin@celstore.com"
               />
             </div>
           </div>
 
           <div>
-            <label className="text-xs text-neutral-400 font-semibold block mb-1.5">
-              Contraseña de Acceso
+            <label className="text-[10px] text-[#71717A] uppercase font-bold block mb-1">
+              [CONTRASEÑA DE TERMINAL]
             </label>
             <div className="relative">
-              <KeyRound className="w-4 h-4 text-neutral-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-neutral-900 border border-white/10 rounded-xl pl-10 pr-3 py-2.5 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-blue-500"
+                className="w-full bg-[#141416] border border-[#1A1A1D] focus:border-[#0066FF] px-3 py-2.5 text-xs text-[#F5F5F7] placeholder-[#71717A] outline-none transition-colors"
                 placeholder="••••••••"
               />
             </div>
@@ -86,57 +146,27 @@ export const AdminLogin = ({ onNavigate }) => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/30 transition-all hover:scale-[1.02]"
+            className="w-full py-3 bg-[#0066FF] hover:bg-[#0052cc] text-[#F5F5F7] font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer transition-all active:translate-y-[1px]"
           >
             {loading ? (
-              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              <span className="animate-pulse">[ AUTENTICANDO CONSOLA... ]</span>
             ) : (
               <>
-                <span>Ingresar al Panel de Tienda</span>
-                <ArrowRight className="w-4 h-4" />
+                <span>[ INICIAR SESIÓN EN TERMINAL ]</span>
+                <ArrowRight className="w-3.5 h-3.5" />
               </>
             )}
           </button>
         </form>
 
-        {/* 1-Click Fast Credentials for Demo Testing */}
-        <div className="pt-4 border-t border-white/10 space-y-2">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-400 block text-center">
-            🚀 Cuentas de Demostración (1 Clic):
-          </span>
-          <div className="space-y-1.5 text-[11px]">
-            <button
-              onClick={() => fillCredentials('admin@celstore.com', 'password123')}
-              className="w-full text-left p-2 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 flex items-center justify-between text-neutral-300 transition-colors"
-            >
-              <span>📱 Tienda 1: <strong>CelStore Flagships</strong></span>
-              <span className="text-blue-400 font-mono">Usar</span>
-            </button>
-
-            <button
-              onClick={() => fillCredentials('admin@retromobile.com', 'password123')}
-              className="w-full text-left p-2 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 flex items-center justify-between text-neutral-300 transition-colors"
-            >
-              <span>📟 Tienda 2: <strong>RetroMobile Vault</strong></span>
-              <span className="text-amber-400 font-mono">Usar</span>
-            </button>
-
-            <button
-              onClick={() => fillCredentials('admin@technova.com', 'password123')}
-              className="w-full text-left p-2 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 flex items-center justify-between text-neutral-300 transition-colors"
-            >
-              <span>⚡ Tienda 3: <strong>TechNova MegaStore</strong></span>
-              <span className="text-emerald-400 font-mono">Usar</span>
-            </button>
-
-            <button
-              onClick={() => fillCredentials('superadmin@platform.com', 'admin123')}
-              className="w-full text-left p-2 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 flex items-center justify-between text-neutral-300 transition-colors"
-            >
-              <span>👑 SuperAdmin Global (Todas las tiendas)</span>
-              <span className="text-purple-400 font-mono">Usar</span>
-            </button>
-          </div>
+        <div className="border-t border-[#1A1A1D] pt-3 text-center">
+          <button
+            type="button"
+            onClick={() => onNavigate('home')}
+            className="text-[10px] text-[#71717A] hover:text-[#F5F5F7] underline transition-colors cursor-pointer"
+          >
+            ← VOLVER AL CATÁLOGO PÚBLICO
+          </button>
         </div>
       </div>
     </div>
