@@ -17,6 +17,17 @@ export const StoreProvider = ({ children }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [comparedProducts, setComparedProducts] = useState([]);
   const [isCompareOpen, setIsCompareOpen] = useState(false);
+  const [selected3DProduct, setSelected3DProduct] = useState(null);
+  const [is3DModalOpen, setIs3DModalOpen] = useState(false);
+
+  const open3DModal = (product) => {
+    setSelected3DProduct(product);
+    setIs3DModalOpen(true);
+  };
+
+  const close3DModal = () => {
+    setIs3DModalOpen(false);
+  };
 
   // Load stores and products
   const loadData = async () => {
@@ -111,6 +122,10 @@ export const StoreProvider = ({ children }) => {
         clearCompare,
         isCompareOpen,
         setIsCompareOpen,
+        selected3DProduct,
+        is3DModalOpen,
+        open3DModal,
+        close3DModal,
       }}
     >
       {children}

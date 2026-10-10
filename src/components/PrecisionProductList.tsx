@@ -42,15 +42,12 @@ export const PrecisionProductList: React.FC<PrecisionProductListProps> = ({
   const filteredProducts = useMemo(() => {
     return safeProducts
       .filter((p) => {
-        // Brand filter
         if (selectedBrand !== 'all' && p.brand?.toLowerCase() !== selectedBrand.toLowerCase()) {
           return false;
         }
-        // Storage filter
         if (selectedStorage !== 'all' && !p.specs?.almacenamiento?.includes(selectedStorage.replace(' ', ''))) {
           return false;
         }
-        // Search query
         if (searchQuery.trim() !== '') {
           const q = searchQuery.toLowerCase();
           const matchName = p.name?.toLowerCase().includes(q);
@@ -69,94 +66,95 @@ export const PrecisionProductList: React.FC<PrecisionProductListProps> = ({
   }, [safeProducts, selectedBrand, selectedStorage, searchQuery, sortBy]);
 
   return (
-    <section id="catalog" className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      {/* Specs Control Panel Header */}
-      <div className="border-b border-[#1A1A1D] pb-6 mb-8">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
-          <div>
-            <span className="text-[11px] font-mono text-[#0066FF] font-bold tracking-widest uppercase block mb-1">
-              // HARDWARE INDEX & SPECS SHEET
-            </span>
-            <h2
-              className="text-2xl sm:text-3xl font-bold text-[#F5F5F7] tracking-tight uppercase"
-              style={{ fontFamily: "'Space Grotesk', sans-serif" }}
-            >
-              Catálogo de Precisión
-            </h2>
-          </div>
-
-          <div className="text-xs font-mono text-[#71717A] tabular-nums">
-            REGISTRO: {filteredProducts.length.toString().padStart(2, '0')} / {safeProducts.length.toString().padStart(2, '0')} MODELOS DISPONIBLES
-          </div>
+    <section id="catalog" className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+      {/* Apple-style Catalog Header */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 mb-8 border-b border-black/5 dark:border-white/10">
+        <div>
+          <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wider block mb-1">
+            COLECCIÓN 2026
+          </span>
+          <h2
+            className="text-3xl sm:text-4xl font-bold tracking-tight text-black dark:text-white"
+            style={{ fontFamily: "'Space Grotesk', -apple-system, sans-serif" }}
+          >
+            Catálogo de Smartphones
+          </h2>
+          <p className="mt-1 text-sm sm:text-base text-zinc-500 dark:text-zinc-400">
+            Encontrá el dispositivo perfecto con garantía oficial y entrega prioritaria.
+          </p>
         </div>
 
-        {/* Filter Controls Bar */}
-        <div className="flex flex-col lg:flex-row gap-3 pt-2">
-          {/* Search Box */}
-          <div className="relative flex-1 bg-[#0E0E10] border border-[#1A1A1D] flex items-center px-3 py-2">
-            <Search className="w-4 h-4 text-[#71717A] mr-2 shrink-0" />
-            <input
-              type="text"
-              placeholder="Buscar por modelo, procesador (A18, Snapdragon), o RAM..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-transparent text-[#F5F5F7] placeholder-[#71717A] text-xs font-mono focus:outline-none"
-            />
-            {searchQuery && (
-              <button
-                type="button"
-                onClick={() => setSearchQuery('')}
-                className="text-[#71717A] hover:text-[#F5F5F7] p-0.5 cursor-pointer"
-              >
-                <X className="w-3.5 h-3.5" />
-              </button>
-            )}
-          </div>
-
-          {/* Brand Filter Pills */}
-          <div className="flex items-center gap-1 overflow-x-auto pb-1 scrollbar-none font-mono text-xs">
-            {brands.map((b) => {
-              const active = selectedBrand === b;
-              return (
-                <button
-                  key={b}
-                  type="button"
-                  onClick={() => {
-                    playSubtleClick();
-                    setSelectedBrand(b);
-                  }}
-                  className={`px-3 py-2 border transition-all cursor-pointer whitespace-nowrap uppercase ${
-                    active
-                      ? 'bg-[#0066FF] text-[#F5F5F7] border-[#0066FF] font-bold'
-                      : 'bg-[#0E0E10] text-[#71717A] border-[#1A1A1D] hover:border-zinc-500 hover:text-[#F5F5F7]'
-                  }`}
-                >
-                  {b === 'all' ? 'TODAS' : b}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Sort Selector */}
-          <div className="flex items-center gap-2 shrink-0 font-mono text-xs">
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as any)}
-              className="bg-[#0E0E10] border border-[#1A1A1D] text-[#F5F5F7] px-3 py-2 text-xs font-mono focus:outline-none cursor-pointer"
-            >
-              <option value="featured">ORDEN: DESTACADOS</option>
-              <option value="price-asc">PRECIO: MENOR A MAYOR</option>
-              <option value="price-desc">PRECIO: MAYOR A MENOR</option>
-            </select>
-          </div>
+        <div className="text-xs sm:text-sm font-medium text-zinc-500 tabular-nums">
+          Mostrando {filteredProducts.length} de {safeProducts.length} dispositivos
         </div>
       </div>
 
-      {/* ASYMMETRIC GRID: Featured item takes 2 cols, others take 1 */}
+      {/* Filter & Search Bar */}
+      <div className="flex flex-col lg:flex-row gap-3.5 mb-10">
+        {/* Search Input */}
+        <div className="relative flex-1 bg-white dark:bg-[#141519] border border-zinc-200 dark:border-white/15 rounded-full flex items-center px-4 py-2.5 shadow-xs">
+          <Search className="w-4 h-4 text-zinc-500 mr-2.5 shrink-0" />
+          <input
+            type="text"
+            placeholder="Buscar por modelo, procesador o marca..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-transparent text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 text-sm focus:outline-none font-medium"
+          />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => setSearchQuery('')}
+              className="text-zinc-400 hover:text-zinc-900 dark:hover:text-white p-1 cursor-pointer"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+
+        {/* Brand Filter Pills */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+          {brands.map((b) => {
+            const active = selectedBrand === b;
+            return (
+              <button
+                key={b}
+                type="button"
+                onClick={() => {
+                  playSubtleClick();
+                  setSelectedBrand(b);
+                }}
+                className={`px-4 py-2 rounded-full border text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap capitalize ${
+                  active
+                    ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 border-transparent shadow-sm'
+                    : 'bg-white dark:bg-[#141519] border-zinc-200 dark:border-white/15 text-zinc-700 dark:text-zinc-300 hover:text-black dark:hover:text-white hover:border-zinc-300'
+                }`}
+              >
+                {b === 'all' ? 'Todas las marcas' : b}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Sort Selector */}
+        <div className="flex items-center gap-2 shrink-0">
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as any)}
+            className="bg-white dark:bg-[#141519] border border-zinc-200 dark:border-white/15 text-zinc-800 dark:text-zinc-200 rounded-full px-4 py-2.5 text-xs sm:text-sm font-semibold focus:outline-none cursor-pointer shadow-xs"
+          >
+            <option value="featured">Destacados</option>
+            <option value="price-asc">Precio: Menor a Mayor</option>
+            <option value="price-desc">Precio: Mayor a Menor</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Product Grid */}
       {filteredProducts.length === 0 ? (
-        <div className="text-center py-24 border border-[#1A1A1D] bg-[#0E0E10] p-8 font-mono">
-          <p className="text-sm font-bold text-[#F5F5F7] uppercase">SIN COINCIDENCIAS TÉCNICAS</p>
-          <p className="text-xs text-[#71717A] mt-1">Ningún hardware cumple los parámetros de búsqueda especificados.</p>
+        <div className="text-center py-20 rounded-3xl bg-[#F5F5F7] dark:bg-[#121214] border border-black/5 dark:border-white/10 p-8 space-y-3">
+          <p className="text-lg font-bold text-black dark:text-white">No se encontraron productos</p>
+          <p className="text-sm text-zinc-500 max-w-md mx-auto">Probá ajustando el término de búsqueda o seleccionando otra marca.</p>
           <button
             type="button"
             onClick={() => {
@@ -164,13 +162,13 @@ export const PrecisionProductList: React.FC<PrecisionProductListProps> = ({
               setSearchQuery('');
               setSelectedStorage('all');
             }}
-            className="mt-4 px-4 py-2 bg-[#0066FF] text-[#F5F5F7] text-xs font-bold uppercase cursor-pointer"
+            className="mt-4 px-6 py-2.5 rounded-full bg-blue-600 text-white text-sm font-semibold cursor-pointer"
           >
             Restablecer Filtros
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-[#1A1A1D] border border-[#1A1A1D]">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {filteredProducts.map((product, index) => {
             const isWide = index === 0 && Boolean(product.featured);
             return (

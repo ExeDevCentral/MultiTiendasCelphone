@@ -1,7 +1,7 @@
 'use client';
 
-import React from 'react';
-import { X, Trash2, Plus, Minus, ShoppingBag, ArrowRight, MessageSquare, ShieldCheck } from 'lucide-react';
+import React, { useState } from 'react';
+import { X, Trash2, ShoppingBag, ArrowRight, MessageSquare, Tag, Percent } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useStore } from '../context/StoreContext';
 import { playSubtleClick, playCartSuccess } from '../utils/audioHaptics';
@@ -13,6 +13,10 @@ export const CartDrawer = () => {
     itemCount,
     subtotal,
     shippingCost,
+    couponDiscount,
+    appliedCoupon,
+    applyCoupon,
+    removeCoupon,
     total,
     isCartOpen,
     setIsCartOpen,
@@ -22,6 +26,8 @@ export const CartDrawer = () => {
   } = useCart();
 
   const { stores } = useStore();
+  const [couponInput, setCouponInput] = useState('');
+  const [couponError, setCouponError] = useState('');
 
   if (!isCartOpen) return null;
 
@@ -41,6 +47,28 @@ export const CartDrawer = () => {
     showLuxuryNotification('ÍTEM REMOVIDO', name);
   };
 
+  const handleApplyCoupon = (codeToApply) => {
+    const code = codeToApply || couponInput;
+    if (!code) return;
+    playSubtleClick();
+    const res = applyCoupon(code);
+    if (res.success) {
+      playCartSuccess();
+      showLuxuryNotification('CUPÓN CANJEADO', res.message);
+      setCouponError('');
+      setCouponInput('');
+    } else {
+      setCouponError(res.message);
+      showLuxuryNotification('CUPÓN INVÁLIDO', res.message);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    playSubtleClick();
+    removeCoupon();
+    showLuxuryNotification('CUPÓN REMOVIDO', 'Se restauró el importe estándar.');
+  };
+
   const handleProceedToCheckout = () => {
     playSubtleClick();
     setIsCartOpen(false);
@@ -55,19 +83,22 @@ export const CartDrawer = () => {
     const storeInfo = stores.find((s) => s.id === firstStoreId) || stores[0];
     const phone = storeInfo?.phoneWhatsApp || '5493416874786';
 
-    let message = `🛒 *SOLICITUD DE PEDIDO // CELSTORE HARDWARE*\n`;
-    message += `🏬 *Boutique:* ${storeInfo?.name || 'CelStore'}\n`;
+    let message = `[CELSTORE // SOLICITUD DE DESPACHO HARDWARE]\n`;
+    message += `• Boutique: ${storeInfo?.name || 'CelStore'}\n`;
     message += `---------------------------------\n`;
     items.forEach((item, idx) => {
       message += `${idx + 1}. *${item.name}* (x${item.quantity})\n`;
-      if (item.color) message += `   • Acabado: ${item.color}\n`;
-      if (item.storage && item.storage !== 'Base') message += `   • Almacenamiento: ${item.storage}\n`;
-      message += `   • Precio: $${item.price * item.quantity} USD\n`;
+      if (item.color) message += `   - Acabado: ${item.color}\n`;
+      if (item.storage && item.storage !== 'Base') message += `   - Almacenamiento: ${item.storage}\n`;
+      message += `   - Precio: $${item.price * item.quantity} USD\n`;
     });
     message += `---------------------------------\n`;
-    message += `💰 *Subtotal:* $${subtotal} USD\n`;
-    message += `📦 *Envío:* ${shippingCost === 0 ? 'BONIFICADO (GRATIS)' : `$${shippingCost} USD`}\n`;
-    message += `✨ *TOTAL CANÓNICO:* $${total} USD\n\n`;
+    message += `• Subtotal: $${subtotal} USD\n`;
+    if (appliedCoupon && couponDiscount > 0) {
+      message += `• Cupón (${appliedCoupon.code}): -$${couponDiscount} USD\n`;
+    }
+    message += `• Envío: ${shippingCost === 0 ? 'BONIFICADO (GRATIS)' : `$${shippingCost} USD`}\n`;
+    message += `• TOTAL CANÓNICO: $${total} USD\n\n`;
     message += `¿Tienen stock disponible para coordinar despacho?`;
 
     const encoded = encodeURIComponent(message);
@@ -182,15 +213,104 @@ export const CartDrawer = () => {
           {/* Footer & Actions */}
           {items.length > 0 && (
             <div className="p-4 bg-[#0A0A0C] border-t border-[#1A1A1D] space-y-3">
+              
+              {/* Cupón Promocional Section */}
+              <div className="p-2.5 bg-[#141416] border border-[#1A1A1D] space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-[10px] font-bold text-[#A1A1AA] uppercase tracking-wider">
+                    <Tag className="w-3 h-3 text-[#0066FF]" />
+                    <span>Código Promocional / Cupón</span>
+                  </div>
+                  {appliedCoupon && (
+                    <button
+                      type="button"
+                      onClick={handleRemoveCoupon}
+                      className="text-[10px] text-red-400 hover:underline cursor-pointer"
+                    >
+                      Remover
+                    </button>
+                  )}
+                </div>
+
+                {appliedCoupon ? (
+                  <div className="flex items-center justify-between px-2.5 py-1.5 bg-[#0066FF]/10 border border-[#0066FF]/30 text-[#0066FF] text-[11px] font-bold">
+                    <div className="flex items-center gap-1.5">
+                      <Tag className="w-3.5 h-3.5 text-[#0066FF]" strokeWidth={1.5} />
+                      <span>{appliedCoupon.code}: {appliedCoupon.label}</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleRemoveCoupon}
+                      className="text-[#71717A] hover:text-[#F5F5F7] cursor-pointer"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <div className="flex gap-1.5">
+                      <input
+                        type="text"
+                        value={couponInput}
+                        onChange={(e) => {
+                          setCouponInput(e.target.value.toUpperCase());
+                          if (couponError) setCouponError('');
+                        }}
+                        placeholder="EJ: TITANIO10"
+                        className="flex-1 bg-[#0A0A0C] border border-[#1A1A1D] px-2.5 py-1 text-xs text-[#F5F5F7] focus:outline-none focus:border-[#0066FF] uppercase tracking-wider placeholder:text-[#52525B]"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleApplyCoupon()}
+                        className="px-3 py-1 bg-[#1E1E22] hover:bg-[#0066FF] text-[#F5F5F7] text-[10px] font-bold uppercase transition-colors cursor-pointer border border-[#27272A]"
+                      >
+                        Aplicar
+                      </button>
+                    </div>
+
+                    {/* Quick suggestion tags */}
+                    <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                      <span className="text-[9px] text-[#71717A]">Sugeridos:</span>
+                      {['TITANIO10', 'CELSTORE50', 'ATELIERFREE'].map((code) => (
+                        <button
+                          key={code}
+                          type="button"
+                          onClick={() => handleApplyCoupon(code)}
+                          className="px-1.5 py-0.5 bg-[#0A0A0C] hover:border-[#0066FF] border border-[#1A1A1D] text-[9px] text-[#A1A1AA] hover:text-[#0066FF] cursor-pointer transition-colors"
+                        >
+                          {code}
+                        </button>
+                      ))}
+                    </div>
+
+                    {couponError && (
+                      <p className="text-[10px] text-red-400 font-bold">{couponError}</p>
+                    )}
+                  </>
+                )}
+              </div>
+
+              {/* Price Breakdown */}
               <div className="space-y-1.5 text-xs">
                 <div className="flex justify-between text-[#71717A]">
                   <span>SUBTOTAL:</span>
                   <span className="tabular-nums text-[#F5F5F7]">${subtotal.toLocaleString()} USD</span>
                 </div>
+
+                {appliedCoupon && couponDiscount > 0 && (
+                  <div className="flex justify-between text-[#0066FF] font-bold">
+                    <span>DESCUENTO ({appliedCoupon.code}):</span>
+                    <span className="tabular-nums">-${couponDiscount.toLocaleString()} USD</span>
+                  </div>
+                )}
+
                 <div className="flex justify-between text-[#71717A]">
                   <span>ENVÍO PRIORITARIO:</span>
-                  <span className="text-[#0066FF] font-bold">BONIFICADO</span>
+                  <span className={shippingCost === 0 ? 'text-[#0066FF] font-bold' : 'text-[#F5F5F7] tabular-nums'}>
+                    {shippingCost === 0 ? 'BONIFICADO (GRATIS)' : `$${shippingCost} USD`}
+                  </span>
                 </div>
+
                 <div className="flex justify-between text-sm font-bold pt-2 border-t border-[#1A1A1D]">
                   <span className="text-[#F5F5F7]">TOTAL CANÓNICO:</span>
                   <span className="text-[#0066FF] tabular-nums">${total.toLocaleString()} USD</span>

@@ -43,6 +43,7 @@ export default function HomePage() {
       {preview3DProduct && (
         <Photo3DModal
           product={preview3DProduct}
+          isOpen={Boolean(preview3DProduct)}
           onClose={() => setPreview3DProduct(null)}
         />
       )}

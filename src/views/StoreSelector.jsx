@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Store, MapPin, Phone, Star, ArrowRight, ShieldCheck, Terminal, MessageSquare } from 'lucide-react';
+import { Store, MapPin, Phone, Star, ArrowRight, MessageSquare } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 import { playSubtleClick } from '../utils/audioHaptics';
 
@@ -18,100 +18,95 @@ export const StoreSelector = ({ onNavigate }) => {
     e.stopPropagation();
     playSubtleClick();
     const cleanPhone = (phone || '5491100000000').replace(/[^0-9]/g, '');
-    window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent('[CELSTORE // SUCURSAL] Hola, deseo consultar stock disponible en esta boutique.')}`, '_blank');
+    window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent('Hola, deseo consultar stock disponible en esta boutique.')}`, '_blank');
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10 space-y-10 font-mono">
-      {/* Precision Hardware Console Header */}
-      <div className="bg-[#0E0E10] border border-[#1A1A1D] p-6 sm:p-8 space-y-3">
-        <div className="flex items-center gap-2.5">
-          <span className="w-2.5 h-2.5 bg-[#0066FF] animate-pulse" />
-          <span className="text-xs font-bold uppercase tracking-wider text-[#0066FF]">
-            DIRECTORIO DE BOUTIQUES // HUBS ESPECIALIZADOS
-          </span>
-          <span className="text-[10px] text-[#71717A] bg-[#141416] px-2 py-0.5 border border-[#1A1A1D] hidden sm:inline-block">
-            MODO PRUEBA // 0 CONSUMO SUPABASE
-          </span>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 space-y-12 select-none">
+      {/* Apple Header */}
+      <div className="rounded-3xl bg-[#F5F5F7] dark:bg-[#121214] border border-black/5 dark:border-white/10 p-8 sm:p-12 space-y-3">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 text-xs font-semibold">
+          <span>BOUTIQUES OFICIALES</span>
+          <span className="text-zinc-400">•</span>
+          <span>ENTREGA LOCAL INMEDIATA</span>
         </div>
-        <h1 className="text-2xl sm:text-4xl font-bold font-sans tracking-tight text-[#F5F5F7]">
-          Red de Sucursales & Boutiques de Precisión
+        <h1
+          className="text-3xl sm:text-5xl font-bold tracking-tight text-black dark:text-white"
+          style={{ fontFamily: "'Space Grotesk', -apple-system, sans-serif" }}
+        >
+          Nuestras Boutiques Especializadas
         </h1>
-        <p className="text-xs sm:text-sm text-[#71717A] max-w-2xl font-mono leading-relaxed">
-          Cada boutique opera con su propia terminal de inventario, stock verificado en tiempo real, canales directos de WhatsApp y curaduría técnica específica.
+        <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 max-w-2xl leading-relaxed">
+          Cada sucursal cuenta con inventario exclusivo, stock verificado en vivo, asesoría personalizada y entrega con seguro de carga prioritario.
         </p>
       </div>
 
-      {/* Stores Precision Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {stores.map((store, idx) => (
+      {/* Stores Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {stores.map((store) => (
           <div
             key={store.id}
             onClick={() => handleSelectStore(store)}
-            className="bg-[#0E0E10] border border-[#1A1A1D] hover:border-[#0066FF] p-5 flex flex-col justify-between cursor-pointer transition-colors group relative"
+            className="rounded-3xl bg-[#F5F5F7] dark:bg-[#121214] border border-black/5 dark:border-white/10 hover:border-blue-500/40 hover:shadow-xl p-6 flex flex-col justify-between cursor-pointer transition-all duration-300 group"
           >
             <div>
-              {/* Store Header Telemetry */}
-              <div className="flex items-center justify-between border-b border-[#1A1A1D] pb-3 mb-4">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold text-[#0066FF]">
-                    [ {String(idx + 1).padStart(2, '0')} ]
-                  </span>
-                  <span className="text-xs font-bold font-sans text-[#F5F5F7] uppercase tracking-wide">
-                    {store.name}
-                  </span>
-                </div>
-                <span className="text-[10px] px-2 py-0.5 bg-[#141416] border border-[#1A1A1D] text-[#F5F5F7] font-bold">
-                  ★ {store.rating} ({store.reviews})
+              {/* Store Header */}
+              <div className="flex items-center justify-between pb-4 mb-4 border-b border-black/5 dark:border-white/10">
+                <span className="text-lg font-bold text-black dark:text-white">
+                  {store.name}
+                </span>
+                <span className="text-xs px-2.5 py-1 rounded-full bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 font-semibold flex items-center gap-1">
+                  <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
+                  {store.rating}
                 </span>
               </div>
 
-              {/* Banner / Store visual in technical frame */}
-              <div className="h-44 w-full relative bg-[#141416] border border-[#1A1A1D] overflow-hidden mb-4">
+              {/* Banner visual */}
+              <div className="h-48 w-full relative rounded-2xl overflow-hidden mb-5">
                 <img
                   src={store.banner}
                   alt={store.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 brightness-75"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 />
-                <div className="absolute top-2 left-2 text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 bg-[#0E0E10] border border-[#1A1A1D] text-[#0066FF]">
-                  {store.specialty || 'ESPECIALIDAD TÉCNICA'}
+                <div className="absolute top-3 left-3 text-xs font-semibold px-3 py-1 rounded-full bg-black/75 text-white backdrop-blur-md">
+                  {store.specialty || 'Flagships'}
                 </div>
               </div>
 
-              <p className="text-xs text-[#71717A] leading-relaxed mb-4">
+              <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed mb-5">
                 {store.description}
               </p>
 
-              {/* Telemetry metadata */}
-              <div className="space-y-1.5 text-[11px] text-[#71717A] pt-3 border-t border-[#1A1A1D]">
+              {/* Metadata */}
+              <div className="space-y-2 text-xs font-medium text-zinc-500 dark:text-zinc-400 pt-4 border-t border-black/5 dark:border-white/10">
                 <div className="flex items-center gap-2">
-                  <MapPin className="w-3.5 h-3.5 text-[#0066FF] shrink-0" />
+                  <MapPin className="w-4 h-4 text-blue-600 shrink-0" />
                   <span className="truncate">{store.address}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Phone className="w-3.5 h-3.5 text-[#30D158] shrink-0" />
+                  <Phone className="w-4 h-4 text-emerald-600 shrink-0" />
                   <span>{store.phoneWhatsApp}</span>
                 </div>
               </div>
             </div>
 
             {/* Action Row */}
-            <div className="pt-4 mt-4 border-t border-[#1A1A1D] flex items-center gap-2">
+            <div className="pt-5 mt-5 border-t border-black/5 dark:border-white/10 flex items-center gap-3">
               <button
                 type="button"
                 onClick={(e) => handleDirectWhatsApp(e, store.phoneWhatsApp)}
-                className="p-2.5 bg-[#141416] hover:bg-[#1E1E22] border border-[#1A1A1D] hover:border-[#25D366] text-[#25D366] transition-colors cursor-pointer"
-                title="Canal WhatsApp Directo"
+                className="p-3 rounded-full bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 transition-colors cursor-pointer"
+                title="Consultar por WhatsApp"
               >
                 <MessageSquare className="w-4 h-4" />
               </button>
 
               <button
                 type="button"
-                className="flex-1 py-2.5 bg-[#141416] group-hover:bg-[#0066FF] border border-[#1A1A1D] group-hover:border-[#0066FF] text-[#F5F5F7] text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all"
+                className="flex-1 py-3 px-5 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 transition-all shadow-sm"
               >
-                <span>[ INGRESAR A CATÁLOGO ]</span>
-                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                <span>Ver Catálogo</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </button>
             </div>
           </div>

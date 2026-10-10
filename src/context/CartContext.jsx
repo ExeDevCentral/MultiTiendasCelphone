@@ -117,8 +117,32 @@ export const CartProvider = ({ children }) => {
     );
   };
 
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+
+  const applyCoupon = (code) => {
+    const clean = (code || '').trim().toUpperCase();
+    if (clean === 'TITANIO10') {
+      setAppliedCoupon({ code: clean, percent: 10, fixed: 0, label: '10% OFF TITANIO' });
+      return { success: true, message: 'Cupón TITANIO10 aplicado: 10% OFF' };
+    }
+    if (clean === 'ATELIERFREE') {
+      setAppliedCoupon({ code: clean, percent: 0, fixed: 0, freeShipping: true, label: 'ENVÍO BONIFICADO' });
+      return { success: true, message: 'Cupón ATELIERFREE aplicado: Envío bonificado' };
+    }
+    if (clean === 'CELSTORE50') {
+      setAppliedCoupon({ code: clean, percent: 0, fixed: 50, label: '$50 USD OFF' });
+      return { success: true, message: 'Cupón CELSTORE50 aplicado: $50 USD OFF' };
+    }
+    return { success: false, message: 'Código de cupón no reconocido' };
+  };
+
+  const removeCoupon = () => {
+    setAppliedCoupon(null);
+  };
+
   const clearCart = () => {
     setItems([]);
+    setAppliedCoupon(null);
   };
 
   // Calculations
@@ -130,8 +154,13 @@ export const CartProvider = ({ children }) => {
     }
     return acc;
   }, 0);
-  const shippingCost = subtotal > 500 ? 0 : subtotal > 0 ? 15 : 0;
-  const total = subtotal + shippingCost;
+  const couponDiscount = appliedCoupon
+    ? appliedCoupon.percent > 0
+      ? Math.round(subtotal * (appliedCoupon.percent / 100))
+      : (appliedCoupon.fixed || 0)
+    : 0;
+  const shippingCost = (appliedCoupon?.freeShipping || subtotal > 500) ? 0 : subtotal > 0 ? 15 : 0;
+  const total = Math.max(0, subtotal - couponDiscount + shippingCost);
 
   return (
     <CartContext.Provider
@@ -141,6 +170,10 @@ export const CartProvider = ({ children }) => {
         itemCount,
         subtotal,
         discountTotal,
+        couponDiscount,
+        appliedCoupon,
+        applyCoupon,
+        removeCoupon,
         shippingCost,
         total,
         isCartOpen,

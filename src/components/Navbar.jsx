@@ -10,11 +10,19 @@ import {
   Shield,
   X,
   Menu,
-  Terminal
+  Sun,
+  Moon,
+  Compass,
+  Star,
+  Tag,
+  Truck,
+  Terminal,
 } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
+import { useTrackingStore } from '../store/useTrackingStore';
 import { playSubtleClick } from '../utils/audioHaptics';
 
 export const Navbar = ({ currentView, onNavigate }) => {
@@ -32,6 +40,8 @@ export const Navbar = ({ currentView, onNavigate }) => {
 
   const { itemCount, setIsCartOpen } = useCart();
   const { isAuthenticated } = useAuth();
+  const { toggleTheme, isDark } = useTheme();
+  const { openTracking } = useTrackingStore();
 
   const [isStoreMenuOpen, setIsStoreMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -59,98 +69,111 @@ export const Navbar = ({ currentView, onNavigate }) => {
 
   return (
     <>
-      <header className="sticky top-0 z-40 w-full bg-[#0E0E10] border-b border-[#1A1A1D] px-3 sm:px-6 lg:px-8 py-2.5 transition-all select-none">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
+      {/* Top Clean Announcement Strip */}
+      <div className="w-full bg-[#F5F5F7] dark:bg-[#111113] border-b border-black/5 dark:border-white/5 px-4 py-2 text-xs font-medium text-zinc-600 dark:text-zinc-400 flex items-center justify-between transition-colors">
+        <div className="max-w-7xl mx-auto w-full flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
+            <span>10% OFF con cupón <strong className="text-blue-600 dark:text-blue-400 font-bold">TITANIO10</strong></span>
+            <span className="hidden sm:inline text-zinc-400">• Envío asegurado a todo el país</span>
+            <span className="hidden md:inline text-zinc-400">• Garantía oficial 24 meses</span>
+          </div>
+          <div className="hidden sm:flex items-center gap-4 text-xs font-semibold">
+            <span className="text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+              Stock Verificado en Vivo
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Apple Floating Glass Navbar */}
+      <header className="sticky top-0 z-40 w-full backdrop-blur-xl bg-white/85 dark:bg-black/85 border-b border-black/5 dark:border-white/10 transition-colors select-none">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-4">
           
-          {/* Hardware Identifier & Logo */}
+          {/* Brand Logo */}
           <div
             onClick={() => handleNavClick('home')}
-            className="flex items-center gap-3 cursor-pointer group"
+            className="flex items-center gap-2.5 cursor-pointer group"
           >
-            <div className="w-7 h-7 bg-[#141416] border border-[#1A1A1D] flex items-center justify-center font-mono font-bold text-xs text-[#0066FF] group-hover:border-[#0066FF] transition-colors">
+            <div className="w-8 h-8 rounded-xl bg-black dark:bg-white text-white dark:text-black flex items-center justify-center font-bold text-sm shadow-sm group-hover:scale-105 transition-transform">
               C/
             </div>
             <div className="flex flex-col">
-              <div className="flex items-center gap-2">
-                <span className="font-mono font-bold tracking-tight text-sm text-[#F5F5F7]">
-                  CELSTORE
-                </span>
-                <span className="text-[10px] font-mono px-1 py-0.2 bg-[#141416] border border-[#1A1A1D] text-[#0066FF] font-bold">
-                  PRECISION
-                </span>
-              </div>
-              <div className="flex items-center gap-1.5 text-[9px] font-mono text-[#71717A]">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#0066FF] animate-pulse" />
-                <span>MODO PRUEBA // 0 QUOTA</span>
-              </div>
+              <span
+                className="font-bold tracking-tight text-lg text-black dark:text-white"
+                style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+              >
+                CelStore
+              </span>
             </div>
           </div>
 
-          {/* Stepped Switch Navigation */}
-          <nav className="hidden lg:flex items-center bg-[#141416] border border-[#1A1A1D] p-1 font-mono text-[11px] font-bold">
+          {/* Clean Horizontal Links (No boxy beige buttons!) */}
+          <nav className="hidden lg:flex items-center gap-1 text-sm font-medium text-zinc-600 dark:text-zinc-300">
             <button
               type="button"
               onClick={() => handleNavClick('home')}
-              className={`px-3 py-1 transition-all cursor-pointer ${
+              className={`px-3.5 py-1.5 rounded-full transition-all cursor-pointer ${
                 currentView === 'home' && generationFilter === 'all'
-                  ? 'bg-[#F5F5F7] text-[#0E0E10]'
-                  : 'text-[#71717A] hover:text-[#F5F5F7] hover:bg-[#1E1E22]'
+                  ? 'bg-black/5 dark:bg-white/10 text-black dark:text-white font-semibold'
+                  : 'hover:text-black dark:hover:text-white'
               }`}
             >
-              [ 01: CATÁLOGO ]
+              Catálogo
             </button>
 
             <button
               type="button"
               onClick={() => handleNavClick('home', 'last_2_years')}
-              className={`px-3 py-1 transition-all cursor-pointer flex items-center gap-1.5 ${
+              className={`px-3.5 py-1.5 rounded-full transition-all cursor-pointer ${
                 generationFilter === 'last_2_years'
-                  ? 'bg-[#0066FF] text-[#F5F5F7]'
-                  : 'text-[#71717A] hover:text-[#F5F5F7] hover:bg-[#1E1E22]'
+                  ? 'bg-blue-600 text-white font-semibold shadow-sm'
+                  : 'hover:text-black dark:hover:text-white'
               }`}
             >
-              [ 02: FLAGSHIPS ]
+              Flagships
             </button>
 
             <button
               type="button"
               onClick={() => handleNavClick('home', 'vintage_classic')}
-              className={`px-3 py-1 transition-all cursor-pointer ${
+              className={`px-3.5 py-1.5 rounded-full transition-all cursor-pointer ${
                 generationFilter === 'vintage_classic'
-                  ? 'bg-[#0066FF] text-[#F5F5F7]'
-                  : 'text-[#71717A] hover:text-[#F5F5F7] hover:bg-[#1E1E22]'
+                  ? 'bg-blue-600 text-white font-semibold shadow-sm'
+                  : 'hover:text-black dark:hover:text-white'
               }`}
             >
-              [ 03: VINTAGE ]
+              Vintage Clásicos
             </button>
 
             <button
               type="button"
               onClick={() => handleNavClick('accessories')}
-              className={`px-3 py-1 transition-all cursor-pointer ${
+              className={`px-3.5 py-1.5 rounded-full transition-all cursor-pointer ${
                 currentView === 'accessories'
-                  ? 'bg-[#F5F5F7] text-[#0E0E10]'
-                  : 'text-[#71717A] hover:text-[#F5F5F7] hover:bg-[#1E1E22]'
+                  ? 'bg-black/5 dark:bg-white/10 text-black dark:text-white font-semibold'
+                  : 'hover:text-black dark:hover:text-white'
               }`}
             >
-              [ 04: ACCESORIOS ]
+              Accesorios
             </button>
 
             <button
               type="button"
               onClick={() => handleNavClick('store_selector')}
-              className={`px-3 py-1 transition-all cursor-pointer ${
+              className={`px-3.5 py-1.5 rounded-full transition-all cursor-pointer ${
                 currentView === 'store_selector'
-                  ? 'bg-[#F5F5F7] text-[#0E0E10]'
-                  : 'text-[#71717A] hover:text-[#F5F5F7] hover:bg-[#1E1E22]'
+                  ? 'bg-black/5 dark:bg-white/10 text-black dark:text-white font-semibold'
+                  : 'hover:text-black dark:hover:text-white'
               }`}
             >
-              [ 05: BOUTIQUES ]
+              Boutiques
             </button>
           </nav>
 
           {/* Right Action Rack */}
-          <div className="flex items-center gap-2 font-mono">
+          <div className="flex items-center gap-2 sm:gap-2.5">
             {/* Search Key */}
             <button
               type="button"
@@ -158,12 +181,12 @@ export const Navbar = ({ currentView, onNavigate }) => {
                 playSubtleClick();
                 setShowSearchModal(true);
               }}
-              className="flex items-center gap-1.5 px-2.5 py-1 bg-[#141416] border border-[#1A1A1D] hover:border-[#0066FF] text-[#71717A] hover:text-[#F5F5F7] text-[11px] font-bold transition-all cursor-pointer"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-zinc-600 dark:text-zinc-300 text-xs sm:text-sm font-medium transition-all cursor-pointer"
               title="Buscar en inventario"
             >
-              <Search className="w-3 h-3 text-[#0066FF]" />
-              <span className="hidden sm:inline">BUSCAR</span>
-              <span className="hidden sm:inline text-[9px] text-[#71717A] font-normal">[⌘K]</span>
+              <Search className="w-3.5 h-3.5 text-zinc-500" />
+              <span className="hidden sm:inline">Buscar</span>
+              <span className="hidden sm:inline text-xs text-zinc-400 font-mono">⌘K</span>
             </button>
 
             {/* Comparer Tool */}
@@ -174,14 +197,14 @@ export const Navbar = ({ currentView, onNavigate }) => {
                   playSubtleClick();
                   setIsCompareOpen(true);
                 }}
-                className="flex items-center gap-1 px-2 py-1 bg-[#141416] border border-[#0066FF] text-[#0066FF] text-[11px] font-bold cursor-pointer"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 text-xs font-semibold cursor-pointer"
               >
-                <Scale className="w-3 h-3" />
-                <span>[{comparedProducts.length}]</span>
+                <Scale className="w-3.5 h-3.5" />
+                <span>{comparedProducts.length}</span>
               </button>
             )}
 
-            {/* Boutique Hub Selector */}
+            {/* Boutique Dropdown Selector */}
             <div className="relative">
               <button
                 type="button"
@@ -189,176 +212,214 @@ export const Navbar = ({ currentView, onNavigate }) => {
                   playSubtleClick();
                   setIsStoreMenuOpen(!isStoreMenuOpen);
                 }}
-                className="flex items-center gap-2 px-2.5 py-1 bg-[#141416] border border-[#1A1A1D] hover:border-[#0066FF] text-[#F5F5F7] text-[11px] transition-all cursor-pointer max-w-[130px] sm:max-w-[180px]"
+                className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-zinc-700 dark:text-zinc-200 text-xs sm:text-sm font-medium transition-all cursor-pointer max-w-[140px] sm:max-w-[180px]"
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-[#0066FF]" />
-                <span className="truncate uppercase font-bold">{activeStore?.name || 'TODAS'}</span>
-                <ChevronDown className="w-3 h-3 text-[#71717A] shrink-0" />
+                <span className="w-2 h-2 rounded-full bg-blue-600 shrink-0" />
+                <span className="truncate">{activeStore?.name || 'Todas'}</span>
+                <ChevronDown className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
               </button>
 
               {isStoreMenuOpen && (
-                <div className="absolute right-0 mt-1.5 w-72 bg-[#0E0E10] border border-[#1A1A1D] shadow-2xl p-2 z-50 font-mono">
-                  <div className="px-2 py-1.5 border-b border-[#1A1A1D] text-[9px] uppercase tracking-widest text-[#0066FF] font-bold flex items-center justify-between">
-                    <span>// BOUTIQUE HUBS</span>
-                    <Store className="w-3 h-3" />
+                <div className="absolute right-0 mt-2 w-72 bg-white dark:bg-[#161618] border border-black/10 dark:border-white/15 shadow-2xl rounded-2xl p-2 z-50 overflow-hidden">
+                  <div className="px-3 py-2 border-b border-black/5 dark:border-white/10 text-xs uppercase tracking-wider text-blue-600 dark:text-blue-400 font-bold flex items-center justify-between">
+                    <span>Boutiques Oficiales</span>
+                    <Store className="w-3.5 h-3.5" />
                   </div>
                   <button
                     type="button"
                     onClick={() => handleStoreSelect(null)}
-                    className={`w-full text-left px-2 py-2 text-xs transition-all cursor-pointer mt-1 ${
+                    className={`w-full text-left px-3 py-2 text-xs font-medium rounded-xl transition-all cursor-pointer mt-1 ${
                       !activeStore
-                        ? 'bg-[#0066FF] text-[#F5F5F7] font-bold'
-                        : 'text-[#71717A] hover:bg-[#141416] hover:text-[#F5F5F7]'
+                        ? 'bg-blue-600 text-white font-bold'
+                        : 'text-zinc-700 dark:text-zinc-300 hover:bg-black/5 dark:hover:bg-white/10'
                     }`}
                   >
-                    [00] TODAS LAS BOUTIQUES (GLOBAL)
+                    Todas las Boutiques (Catálogo Global)
                   </button>
-                  {stores.map((s, idx) => (
+                  {stores.map((s) => (
                     <button
                       type="button"
                       key={s.id}
                       onClick={() => handleStoreSelect(s)}
-                      className={`w-full text-left px-2 py-2 text-xs transition-all flex items-center justify-between cursor-pointer ${
+                      className={`w-full text-left px-3 py-2 text-xs font-medium rounded-xl transition-all flex items-center justify-between cursor-pointer ${
                         activeStore?.id === s.id
-                          ? 'bg-[#0066FF] text-[#F5F5F7] font-bold'
-                          : 'text-[#71717A] hover:bg-[#141416] hover:text-[#F5F5F7]'
+                          ? 'bg-blue-600 text-white font-bold'
+                          : 'text-zinc-700 dark:text-zinc-300 hover:bg-black/5 dark:hover:bg-white/10'
                       }`}
                     >
-                      <span className="truncate">[{String(idx + 1).padStart(2, '0')}] {s.name}</span>
-                      <span className="text-[10px] text-[#71717A] shrink-0">★ {s.rating}</span>
+                      <span className="truncate">{s.name}</span>
+                      <span className="text-xs text-zinc-400 shrink-0 flex items-center gap-1">
+                        <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
+                        {s.rating}
+                      </span>
                     </button>
                   ))}
                 </div>
               )}
             </div>
 
-            {/* Cart Trigger Button (Electric Blue) */}
+            {/* Live Order Tracker Trigger */}
+            <button
+              type="button"
+              onClick={() => {
+                playSubtleClick();
+                openTracking();
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-zinc-700 dark:text-zinc-200 text-xs sm:text-sm font-medium transition-all cursor-pointer"
+              title="Rastrear pedido en vivo"
+            >
+              <Compass className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+              <span className="hidden sm:inline">Rastreo</span>
+            </button>
+
+            {/* Theme Switcher */}
+            <button
+              type="button"
+              onClick={() => {
+                playSubtleClick();
+                toggleTheme();
+              }}
+              className="p-2 rounded-full bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-zinc-700 dark:text-zinc-200 cursor-pointer transition-colors"
+              title={isDark ? 'Cambiar a Modo Claro' : 'Cambiar a Modo Oscuro'}
+            >
+              {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-blue-600" />}
+            </button>
+
+            {/* Cart Trigger Button */}
             <button
               type="button"
               onClick={() => {
                 playSubtleClick();
                 setIsCartOpen(true);
               }}
-              className="flex items-center gap-1.5 px-3 py-1 bg-[#0066FF] hover:bg-[#0052cc] text-[#F5F5F7] font-mono font-bold text-[11px] uppercase tracking-wider cursor-pointer active:translate-y-[1px] transition-all"
+              className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs sm:text-sm cursor-pointer active:scale-95 transition-all shadow-sm"
               title="Carrito de compras"
             >
-              <ShoppingBag className="w-3.5 h-3.5 fill-current" />
-              <span>CARRITO</span>
-              <span className="px-1 py-0.2 bg-[#0E0E10] text-[#0066FF] text-[10px] tabular-nums font-bold">
-                {String(itemCount).padStart(2, '0')}
+              <ShoppingBag className="w-4 h-4" />
+              <span className="hidden sm:inline">Carrito</span>
+              <span className="px-1.5 py-0.5 rounded-full bg-white text-blue-600 text-xs font-bold tabular-nums">
+                {itemCount}
               </span>
-            </button>
-
-            {/* Admin Key */}
-            <button
-              type="button"
-              onClick={() => {
-                playSubtleClick();
-                if (isAuthenticated) {
-                  onNavigate('admin_dashboard');
-                } else {
-                  onNavigate('admin_login');
-                }
-              }}
-              className="hidden sm:flex p-1.5 bg-[#141416] border border-[#1A1A1D] hover:border-[#0066FF] text-[#71717A] hover:text-[#F5F5F7] cursor-pointer"
-              title="Panel Administrativo"
-            >
-              <Shield className="w-3.5 h-3.5" />
             </button>
 
             {/* Mobile Menu */}
             <button
               type="button"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden p-1.5 bg-[#141416] border border-[#1A1A1D] text-zinc-300 hover:text-white cursor-pointer"
+              className="lg:hidden p-2 rounded-xl bg-black/5 dark:bg-white/5 text-zinc-700 dark:text-zinc-200 cursor-pointer"
             >
-              {isMobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+              {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
         </div>
 
-        {/* Mobile Rack Drawer */}
+        {/* Mobile Menu Drawer */}
         {isMobileMenuOpen && (
-          <div className="lg:hidden mt-2 border-t border-[#1A1A1D] pt-2 space-y-1 font-mono text-xs">
+          <div className="lg:hidden border-t border-black/5 dark:border-white/10 p-4 space-y-2 bg-white dark:bg-black text-sm font-medium">
             <button
               type="button"
               onClick={() => handleNavClick('home')}
-              className="w-full text-left px-3 py-2 bg-[#141416] text-[#F5F5F7]"
+              className="w-full text-left px-4 py-2.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 text-black dark:text-white"
             >
-              [ 01: CATÁLOGO ]
+              Catálogo Completo
             </button>
             <button
               type="button"
               onClick={() => handleNavClick('home', 'last_2_years')}
-              className="w-full text-left px-3 py-2 bg-[#141416] text-[#0066FF] font-bold"
+              className="w-full text-left px-4 py-2.5 rounded-xl text-blue-600 font-semibold"
             >
-              [ 02: FLAGSHIPS 2026 ]
+              Flagships 2026
             </button>
             <button
               type="button"
               onClick={() => handleNavClick('home', 'vintage_classic')}
-              className="w-full text-left px-3 py-2 bg-[#141416] text-[#71717A]"
+              className="w-full text-left px-4 py-2.5 rounded-xl text-zinc-600 dark:text-zinc-400"
             >
-              [ 03: VINTAGE ARCHIVE ]
+              Vintage Clásicos
             </button>
             <button
               type="button"
               onClick={() => handleNavClick('accessories')}
-              className="w-full text-left px-3 py-2 bg-[#141416] text-[#71717A]"
+              className="w-full text-left px-4 py-2.5 rounded-xl text-zinc-600 dark:text-zinc-400"
             >
-              [ 04: ACCESORIOS ]
+              Accesorios
             </button>
             <button
               type="button"
               onClick={() => handleNavClick('store_selector')}
-              className="w-full text-left px-3 py-2 bg-[#141416] text-[#71717A]"
+              className="w-full text-left px-4 py-2.5 rounded-xl text-zinc-600 dark:text-zinc-400"
             >
-              [ 05: BOUTIQUES ]
+              Boutiques
             </button>
+            <div className="grid grid-cols-2 gap-2 pt-2 border-t border-black/5 dark:border-white/10">
+              <button
+                type="button"
+                onClick={() => {
+                  playSubtleClick();
+                  openTracking();
+                  setIsMobileMenuOpen(false);
+                }}
+                className="w-full text-center px-3 py-2.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 font-semibold flex items-center justify-center gap-2"
+              >
+                <Compass className="w-4 h-4" />
+                <span>Rastreo</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  playSubtleClick();
+                  toggleTheme();
+                }}
+                className="w-full text-center px-3 py-2.5 rounded-xl bg-black/5 dark:bg-white/10 font-semibold flex items-center justify-center gap-2"
+              >
+                {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-blue-600" />}
+                <span>{isDark ? 'Modo Claro' : 'Modo Oscuro'}</span>
+              </button>
+            </div>
           </div>
         )}
       </header>
 
       {/* Search Modal */}
       {showSearchModal && (
-        <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4 bg-black/85 backdrop-blur-md">
+        <div className="fixed inset-0 z-50 flex items-start justify-center pt-24 px-4 bg-black/70 backdrop-blur-md">
           <div
             onClick={() => setShowSearchModal(false)}
             className="fixed inset-0"
           />
-          <div className="relative w-full max-w-xl bg-[#0E0E10] border border-[#0066FF] p-5 shadow-2xl z-10 font-mono space-y-3">
-            <div className="flex items-center justify-between text-[10px] text-[#71717A] border-b border-[#1A1A1D] pb-2">
-              <span className="text-[#0066FF] font-bold flex items-center gap-1.5">
-                <Terminal className="w-3.5 h-3.5" /> BÚSQUEDA TÉCNICA // DATASHEET
+          <div className="relative w-full max-w-xl bg-white dark:bg-[#161618] border border-black/10 dark:border-white/15 p-6 shadow-2xl z-10 rounded-2xl space-y-4">
+            <div className="flex items-center justify-between text-xs text-zinc-500 border-b border-black/5 dark:border-white/10 pb-3">
+              <span className="text-blue-600 dark:text-blue-400 font-semibold flex items-center gap-2">
+                <Search className="w-4 h-4" /> Búsqueda en Catálogo CelStore
               </span>
-              <span>ESC PARA CERRAR</span>
+              <span>ESC para cerrar</span>
             </div>
-            <div className="flex items-center gap-2 bg-[#141416] border border-[#1A1A1D] p-2.5">
-              <Search className="w-4 h-4 text-[#0066FF]" />
+            <div className="flex items-center gap-3 bg-black/5 dark:bg-white/5 p-3.5 rounded-xl">
+              <Search className="w-4 h-4 text-zinc-400" />
               <input
                 type="text"
-                placeholder="Ingresar modelo, procesador o RAM (ej. A18, iPhone, S24)..."
+                placeholder="Buscar por modelo, marca o procesador (ej. iPhone 16, S24, A18)..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 autoFocus
-                className="w-full bg-transparent text-[#F5F5F7] placeholder-[#71717A] text-xs font-mono focus:outline-none"
+                className="w-full bg-transparent text-black dark:text-white placeholder-zinc-400 text-sm focus:outline-none"
               />
               <button
                 type="button"
                 onClick={() => setShowSearchModal(false)}
-                className="px-2 py-0.5 bg-[#1E1E22] text-[#71717A] hover:text-[#F5F5F7] text-[10px] cursor-pointer"
+                className="px-2.5 py-1 rounded-lg bg-black/10 dark:bg-white/10 text-xs font-medium cursor-pointer"
               >
-                CERRAR
+                Cerrar
               </button>
             </div>
-            <div className="text-[10px] text-[#71717A] flex justify-between">
-              <span>● FILTRO EN TIEMPO REAL</span>
+            <div className="text-xs text-zinc-500 flex justify-between">
+              <span>Búsqueda instantánea en vivo</span>
               <button
                 type="button"
                 onClick={() => setShowSearchModal(false)}
-                className="text-[#0066FF] hover:underline cursor-pointer"
+                className="text-blue-600 dark:text-blue-400 font-semibold hover:underline cursor-pointer"
               >
-                VER RESULTADOS →
+                Ver todos los resultados →
               </button>
             </div>
           </div>

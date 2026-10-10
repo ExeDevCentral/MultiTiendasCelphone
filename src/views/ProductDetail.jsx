@@ -12,9 +12,7 @@ import {
   Camera,
   BatteryCharging,
   HardDrive,
-  Layers,
-  Scale,
-  Maximize2
+  Layers
 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useStore } from '../context/StoreContext';
@@ -29,8 +27,8 @@ export const ProductDetail = ({ product, onBack, onNavigate, onOpen3DModal }) =>
 
   const colors = product.colors || [
     { name: 'Titanio Natural', hex: '#9d968d', code: 'TN-01' },
-    { name: 'Negro Espacial DLC', hex: '#1f2024', code: 'BK-02' },
-    { name: 'Blanco Cerámico', hex: '#e2e3e8', code: 'WH-03' },
+    { name: 'Negro Espacial DLC', hex: '#222327', code: 'BK-02' },
+    { name: 'Blanco Cerámico', hex: '#e3e4e9', code: 'WH-03' },
     { name: 'Titanio Desierto', hex: '#c5a880', code: 'DT-04' },
   ];
 
@@ -56,8 +54,6 @@ export const ProductDetail = ({ product, onBack, onNavigate, onOpen3DModal }) =>
     peso: '227 g',
     material: 'Titanio Grado 5',
   };
-
-  const isCompared = comparedProducts.some((p) => p.id === product.id);
 
   // Storage price modifier
   const storageModifier = selectedStorage === '1 TB' ? 300 : selectedStorage === '512 GB' ? 150 : 0;
@@ -90,28 +86,31 @@ export const ProductDetail = ({ product, onBack, onNavigate, onOpen3DModal }) =>
       `• Acabado: ${selectedColor.name}\n` +
       `• Almacenamiento: ${selectedStorage}\n` +
       `• Precio: $${currentPrice} USD\n` +
-      `¿Me confirman disponibilidad de stock y método de despacho?`
+      `¿Tienen stock disponible para entrega inmediata?`
     );
     window.open(`https://wa.me/${phone.replace(/\D/g, '')}?text=${message}`, '_blank');
   };
 
   return (
-    <div className="w-full bg-[#0E0E10] text-[#F5F5F7] min-h-screen py-8 select-none font-mono">
+    <div className="w-full bg-white dark:bg-black text-black dark:text-white min-h-screen py-10 select-none transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Top Navigation & Status */}
-        <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-[#1A1A1D] mb-8 text-xs">
+        {/* Top Back Navigation */}
+        <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-black/5 dark:border-white/10 mb-10 text-sm">
           <button
             type="button"
             onClick={onBack}
-            className="flex items-center gap-2 text-[#71717A] hover:text-[#F5F5F7] transition-colors cursor-pointer"
+            className="flex items-center gap-2 text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors cursor-pointer font-semibold"
           >
-            <ArrowLeft className="w-4 h-4 text-[#0066FF]" />
-            <span>[ VOLVER AL CATÁLOGO ]</span>
+            <ArrowLeft className="w-4 h-4 text-blue-600" />
+            <span>Volver al Catálogo</span>
           </button>
 
-          <div className="flex items-center gap-4 text-[11px] text-[#71717A]">
-            <span className="text-[#0066FF] font-bold">● MODO PRUEBA ACTIVO (LOCAL)</span>
+          <div className="flex items-center gap-4 text-xs font-medium text-zinc-500">
+            <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+              Stock Disponible
+            </span>
             <span>SKU: {product.model || product.id}</span>
           </div>
         </div>
@@ -120,11 +119,11 @@ export const ProductDetail = ({ product, onBack, onNavigate, onOpen3DModal }) =>
           
           {/* LEFT 6 COLS: Image Gallery Showcase */}
           <div className="lg:col-span-6 space-y-4">
-            <div className="relative w-full h-[400px] sm:h-[500px] bg-[#0A0A0C] border border-[#1A1A1D] flex items-center justify-center p-8 overflow-hidden">
+            <div className="relative w-full h-[420px] sm:h-[520px] bg-[#F5F5F7] dark:bg-[#121214] border border-black/5 dark:border-white/10 rounded-3xl flex items-center justify-center p-8 overflow-hidden shadow-xs">
               <img
                 src={images[selectedImageIndex] || images[0]}
                 alt={product.name}
-                className="max-h-full max-w-full object-contain filter drop-shadow-[0_20px_40px_rgba(0,0,0,0.9)] transition-all duration-300"
+                className="max-h-full max-w-full object-contain drop-shadow-2xl transition-all duration-300"
               />
 
               {/* 3D Trigger Badge */}
@@ -134,25 +133,26 @@ export const ProductDetail = ({ product, onBack, onNavigate, onOpen3DModal }) =>
                   playSpatialOpen();
                   onOpen3DModal && onOpen3DModal(product);
                 }}
-                className="absolute bottom-4 right-4 px-3 py-1.5 bg-[#141416] hover:bg-[#0066FF] border border-[#1A1A1D] hover:border-[#0066FF] text-xs font-mono text-[#F5F5F7] flex items-center gap-2 transition-all cursor-pointer shadow-sm"
+                className="absolute bottom-4 right-4 px-4 py-2 bg-white/90 dark:bg-black/90 hover:bg-blue-600 hover:text-white dark:hover:bg-blue-600 text-xs sm:text-sm font-semibold text-zinc-800 dark:text-zinc-200 flex items-center gap-2 transition-all cursor-pointer shadow-lg rounded-full backdrop-blur-md"
+                title="Explorar celular en 3D interactivo con chasis 360°"
               >
-                <Box className="w-3.5 h-3.5" />
-                <span>INSPECCIÓN 3D</span>
+                <Box className="w-4 h-4 text-blue-600 dark:text-blue-400 group-hover:text-white" />
+                <span>Ver en 3D (360°)</span>
               </button>
             </div>
 
             {/* Thumbnail Strip */}
             {images.length > 1 && (
-              <div className="flex items-center gap-2 overflow-x-auto pb-2">
+              <div className="flex items-center gap-3 overflow-x-auto pb-2">
                 {images.map((img, idx) => (
                   <button
                     key={idx}
                     type="button"
                     onClick={() => setSelectedImageIndex(idx)}
-                    className={`w-16 h-16 bg-[#0A0A0C] border p-1 transition-all cursor-pointer ${
+                    className={`w-18 h-18 rounded-2xl bg-[#F5F5F7] dark:bg-[#121214] border p-2 transition-all cursor-pointer ${
                       selectedImageIndex === idx
-                        ? 'border-[#0066FF] ring-1 ring-[#0066FF]'
-                        : 'border-[#1A1A1D] opacity-60 hover:opacity-100'
+                        ? 'border-blue-600 ring-2 ring-blue-600/30'
+                        : 'border-black/5 dark:border-white/10 opacity-70 hover:opacity-100'
                     }`}
                   >
                     <img src={img} alt="" className="w-full h-full object-contain" />
@@ -161,20 +161,20 @@ export const ProductDetail = ({ product, onBack, onNavigate, onOpen3DModal }) =>
               </div>
             )}
 
-            {/* Quality & Security Badges */}
+            {/* Guarantees */}
             <div className="grid grid-cols-2 gap-3 pt-2">
-              <div className="p-3 bg-[#141416] border border-[#1A1A1D] flex items-center gap-2.5">
-                <ShieldCheck className="w-4 h-4 text-[#0066FF] shrink-0" />
+              <div className="p-4 rounded-2xl bg-[#F5F5F7] dark:bg-[#121214] border border-black/5 dark:border-white/10 flex items-center gap-3">
+                <ShieldCheck className="w-5 h-5 text-blue-600 shrink-0" />
                 <div>
-                  <div className="text-[11px] font-bold text-[#F5F5F7]">GARANTÍA 24M</div>
-                  <div className="text-[10px] text-[#71717A]">Cobertura oficial de fábrica</div>
+                  <div className="text-xs sm:text-sm font-bold text-black dark:text-white">Garantía 24M</div>
+                  <div className="text-xs text-zinc-500">Cobertura oficial total</div>
                 </div>
               </div>
-              <div className="p-3 bg-[#141416] border border-[#1A1A1D] flex items-center gap-2.5">
-                <Truck className="w-4 h-4 text-[#0066FF] shrink-0" />
+              <div className="p-4 rounded-2xl bg-[#F5F5F7] dark:bg-[#121214] border border-black/5 dark:border-white/10 flex items-center gap-3">
+                <Truck className="w-5 h-5 text-blue-600 shrink-0" />
                 <div>
-                  <div className="text-[11px] font-bold text-[#F5F5F7]">DESPACHO BLINDADO</div>
-                  <div className="text-[10px] text-[#71717A]">Seguro de transporte total</div>
+                  <div className="text-xs sm:text-sm font-bold text-black dark:text-white">Despacho Blindado</div>
+                  <div className="text-xs text-zinc-500">Seguro de transporte</div>
                 </div>
               </div>
             </div>
@@ -183,28 +183,28 @@ export const ProductDetail = ({ product, onBack, onNavigate, onOpen3DModal }) =>
           {/* RIGHT 6 COLS: Product Specs & Ordering */}
           <div className="lg:col-span-6 space-y-6">
             <div>
-              <div className="flex items-center justify-between text-xs text-[#71717A] uppercase mb-1">
-                <span className="text-[#0066FF] font-bold">[{product.brand}]</span>
-                <span>ORIGEN: BOUTIQUE OFICIAL</span>
+              <div className="flex items-center justify-between text-xs sm:text-sm text-zinc-500 uppercase mb-1 font-semibold">
+                <span className="text-blue-600">{product.brand}</span>
+                <span>Boutique Oficial</span>
               </div>
               <h1
-                className="text-3xl sm:text-4xl font-bold text-[#F5F5F7] tracking-tight uppercase"
-                style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+                className="text-3xl sm:text-4xl font-bold tracking-tight text-black dark:text-white"
+                style={{ fontFamily: "'Space Grotesk', -apple-system, sans-serif" }}
               >
                 {product.name}
               </h1>
-              <p className="mt-2 text-xs text-[#71717A] font-sans leading-relaxed">
+              <p className="mt-3 text-sm sm:text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">
                 {product.description}
               </p>
             </div>
 
             {/* COLOR FINISH SELECTOR */}
-            <div className="space-y-2 pt-3 border-t border-[#1A1A1D]">
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-[#71717A]">ACABADO:</span>
-                <span className="text-[#F5F5F7] font-bold">{selectedColor.name}</span>
+            <div className="space-y-3 pt-4 border-t border-black/5 dark:border-white/10">
+              <div className="flex items-center justify-between text-sm font-semibold">
+                <span className="text-zinc-500 dark:text-zinc-400">Color seleccionado:</span>
+                <span className="text-black dark:text-white">{selectedColor.name}</span>
               </div>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2.5">
                 {colors.map((c) => (
                   <button
                     key={c.name}
@@ -213,13 +213,13 @@ export const ProductDetail = ({ product, onBack, onNavigate, onOpen3DModal }) =>
                       playSubtleClick();
                       setSelectedColor(c);
                     }}
-                    className={`px-3 py-1.5 border text-xs transition-all cursor-pointer flex items-center gap-2 ${
+                    className={`px-4 py-2 rounded-full border text-xs sm:text-sm transition-all cursor-pointer flex items-center gap-2 ${
                       selectedColor.name === c.name
-                        ? 'bg-[#141416] border-[#0066FF] text-[#F5F5F7]'
-                        : 'bg-[#0E0E10] border-[#1A1A1D] text-[#71717A] hover:text-[#F5F5F7]'
+                        ? 'border-blue-600 bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 font-semibold shadow-xs'
+                        : 'border-black/10 dark:border-white/15 text-zinc-700 dark:text-zinc-300'
                     }`}
                   >
-                    <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: c.hex }} />
+                    <span className="w-3.5 h-3.5 rounded-full" style={{ backgroundColor: c.hex }} />
                     <span>{c.name}</span>
                   </button>
                 ))}
@@ -227,12 +227,12 @@ export const ProductDetail = ({ product, onBack, onNavigate, onOpen3DModal }) =>
             </div>
 
             {/* STORAGE MODULE SELECTOR */}
-            <div className="space-y-2 pt-3 border-t border-[#1A1A1D]">
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-[#71717A]">CAPACIDAD:</span>
-                <span className="text-[#0066FF] font-bold">{selectedStorage}</span>
+            <div className="space-y-3 pt-4 border-t border-black/5 dark:border-white/10">
+              <div className="flex items-center justify-between text-sm font-semibold">
+                <span className="text-zinc-500 dark:text-zinc-400">Capacidad:</span>
+                <span className="text-blue-600">{selectedStorage}</span>
               </div>
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-4 gap-2.5">
                 {storageOptions.map((st) => (
                   <button
                     key={st}
@@ -241,10 +241,10 @@ export const ProductDetail = ({ product, onBack, onNavigate, onOpen3DModal }) =>
                       playSubtleClick();
                       setSelectedStorage(st);
                     }}
-                    className={`py-2 text-xs text-center border transition-all cursor-pointer ${
+                    className={`py-2.5 rounded-xl text-xs sm:text-sm text-center border transition-all cursor-pointer font-semibold ${
                       selectedStorage === st
-                        ? 'bg-[#0066FF] text-[#F5F5F7] border-[#0066FF] font-bold'
-                        : 'bg-[#0E0E10] border-[#1A1A1D] text-[#71717A] hover:text-[#F5F5F7]'
+                        ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
+                        : 'border-black/10 dark:border-white/15 text-zinc-700 dark:text-zinc-300'
                     }`}
                   >
                     {st}
@@ -254,29 +254,29 @@ export const ProductDetail = ({ product, onBack, onNavigate, onOpen3DModal }) =>
             </div>
 
             {/* PRICING & ACTIONS */}
-            <div className="p-4 bg-[#141416] border border-[#1A1A1D] space-y-4">
+            <div className="p-6 rounded-3xl bg-[#F5F5F7] dark:bg-[#121214] border border-black/5 dark:border-white/10 space-y-5">
               <div className="flex items-baseline justify-between">
                 <div>
-                  <span className="text-[10px] text-[#71717A] uppercase block">PRECIO AUTORITATIVO</span>
+                  <span className="text-xs text-zinc-500 uppercase block font-medium">Precio Final</span>
                   <div className="flex items-baseline gap-1.5">
-                    <span className="text-3xl font-bold text-[#F5F5F7] tracking-tight tabular-nums">
+                    <span className="text-3xl sm:text-4xl font-bold tracking-tight text-black dark:text-white tabular-nums">
                       ${currentPrice.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                     </span>
-                    <span className="text-xs text-[#71717A]">USD</span>
+                    <span className="text-sm text-zinc-500 font-medium">USD</span>
                   </div>
                 </div>
 
-                <div className="text-right text-[10px] text-[#71717A] tabular-nums">
-                  <span className="text-[#0066FF] font-bold block">● STOCK DISPONIBLE: {product.stock || 12}</span>
-                  <span>IVA INCLUIDO</span>
+                <div className="text-right text-xs text-zinc-500 font-medium">
+                  <span className="text-emerald-600 font-bold block">● Stock Disponible: {product.stock || 12}</span>
+                  <span>IVA Incluido</span>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                 <button
                   type="button"
                   onClick={handleAddToCart}
-                  className="py-3 px-4 bg-[#1E1E22] hover:bg-[#2A2A30] border border-[#1A1A1D] text-[#F5F5F7] text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer transition-all"
+                  className="py-3.5 px-5 rounded-full border border-black/10 dark:border-white/15 hover:bg-black/5 dark:hover:bg-white/10 text-black dark:text-white text-sm font-semibold flex items-center justify-center gap-2 cursor-pointer transition-all"
                 >
                   <ShoppingBag className="w-4 h-4" />
                   <span>Añadir al Carrito</span>
@@ -285,7 +285,7 @@ export const ProductDetail = ({ product, onBack, onNavigate, onOpen3DModal }) =>
                 <button
                   type="button"
                   onClick={handleBuyNow}
-                  className="py-3 px-4 bg-[#0066FF] hover:bg-[#0052cc] text-[#F5F5F7] text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer transition-all shadow-sm active:translate-y-[1px]"
+                  className="py-3.5 px-5 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold flex items-center justify-center gap-2 cursor-pointer transition-all shadow-md active:scale-95"
                 >
                   <span>Iniciar Compra</span>
                 </button>
@@ -294,7 +294,7 @@ export const ProductDetail = ({ product, onBack, onNavigate, onOpen3DModal }) =>
               <button
                 type="button"
                 onClick={handleWhatsApp}
-                className="w-full py-2.5 bg-[#25D366]/10 hover:bg-[#25D366]/20 border border-[#25D366]/30 text-[#25D366] text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer"
+                className="w-full py-3.5 rounded-full bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-300/40 text-emerald-600 dark:text-emerald-400 text-sm font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer"
               >
                 <MessageSquare className="w-4 h-4" />
                 <span>Consultar o Reservar por WhatsApp Business</span>
@@ -302,33 +302,33 @@ export const ProductDetail = ({ product, onBack, onNavigate, onOpen3DModal }) =>
             </div>
 
             {/* FULL DATASHEET TABLE */}
-            <div className="border border-[#1A1A1D] divide-y divide-[#1A1A1D] text-xs">
-              <div className="p-3 bg-[#0A0A0C] text-[11px] font-bold text-[#0066FF] uppercase">
-                // FICHA TÉCNICA COMPLETA (DATASHEET)
+            <div className="rounded-2xl border border-black/5 dark:border-white/10 divide-y divide-black/5 dark:divide-white/10 text-xs sm:text-sm overflow-hidden bg-[#F5F5F7] dark:bg-[#121214]">
+              <div className="p-4 bg-black/5 dark:bg-white/5 text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider">
+                Ficha Técnica Oficial
               </div>
-              <div className="p-3 grid grid-cols-3">
-                <span className="text-[#71717A]">PROCESADOR</span>
-                <span className="col-span-2 text-[#F5F5F7]">{specs.procesador || 'Octa-Core Flagship'}</span>
+              <div className="p-3.5 grid grid-cols-3">
+                <span className="text-zinc-500 font-medium">Procesador</span>
+                <span className="col-span-2 font-semibold text-black dark:text-white">{specs.procesador || 'Octa-Core Flagship'}</span>
               </div>
-              <div className="p-3 grid grid-cols-3">
-                <span className="text-[#71717A]">PANTALLA</span>
-                <span className="col-span-2 text-[#F5F5F7]">{specs.pantalla || 'OLED 120Hz'}</span>
+              <div className="p-3.5 grid grid-cols-3">
+                <span className="text-zinc-500 font-medium">Pantalla</span>
+                <span className="col-span-2 font-semibold text-black dark:text-white">{specs.pantalla || 'OLED 120Hz'}</span>
               </div>
-              <div className="p-3 grid grid-cols-3">
-                <span className="text-[#71717A]">CÁMARA</span>
-                <span className="col-span-2 text-[#F5F5F7]">{specs.camara || '48 MP'}</span>
+              <div className="p-3.5 grid grid-cols-3">
+                <span className="text-zinc-500 font-medium">Cámaras</span>
+                <span className="col-span-2 font-semibold text-black dark:text-white">{specs.camara || '48 MP'}</span>
               </div>
-              <div className="p-3 grid grid-cols-3">
-                <span className="text-[#71717A]">BATERÍA</span>
-                <span className="col-span-2 text-[#F5F5F7]">{specs.bateria || '5000 mAh'}</span>
+              <div className="p-3.5 grid grid-cols-3">
+                <span className="text-zinc-500 font-medium">Batería</span>
+                <span className="col-span-2 font-semibold text-black dark:text-white">{specs.bateria || '5000 mAh'}</span>
               </div>
-              <div className="p-3 grid grid-cols-3">
-                <span className="text-[#71717A]">MATERIALES</span>
-                <span className="col-span-2 text-[#F5F5F7]">{specs.material || 'Titanio / Cristal'}</span>
+              <div className="p-3.5 grid grid-cols-3">
+                <span className="text-zinc-500 font-medium">Materiales</span>
+                <span className="col-span-2 font-semibold text-black dark:text-white">{specs.material || 'Titanio / Cristal'}</span>
               </div>
-              <div className="p-3 grid grid-cols-3">
-                <span className="text-[#71717A]">PESO</span>
-                <span className="col-span-2 text-[#F5F5F7] tabular-nums">{specs.peso || '221 g'}</span>
+              <div className="p-3.5 grid grid-cols-3">
+                <span className="text-zinc-500 font-medium">Peso</span>
+                <span className="col-span-2 font-semibold text-black dark:text-white tabular-nums">{specs.peso || '221 g'}</span>
               </div>
             </div>
 

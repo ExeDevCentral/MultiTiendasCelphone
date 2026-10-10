@@ -20,10 +20,12 @@ import { useCart } from '../context/CartContext';
 import { useStore } from '../context/StoreContext';
 import { api } from '../services/api';
 import { playSubtleClick, playCartSuccess } from '../utils/audioHaptics';
+import { useTrackingStore } from '../store/useTrackingStore';
 
 export const CheckoutModal = () => {
   const { isCheckoutOpen, setIsCheckoutOpen, items, total, subtotal, shippingCost, clearCart } = useCart();
   const { stores } = useStore();
+  const { openTracking } = useTrackingStore();
 
   const [step, setStep] = useState('form'); // 'form' | 'success'
   const [loading, setLoading] = useState(false);
@@ -101,12 +103,67 @@ export const CheckoutModal = () => {
         colors: ['#0066FF', '#0052cc', '#F5F5F7', '#71717A', '#30D158'],
       });
 
+      const createdOrder = {
+        orderId: result?.id || `ORD-${Date.now().toString(36).toUpperCase()}`,
+        date: now.toLocaleDateString('es-AR'),
+        time: now.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' }),
+        customerName: formData.name,
+        email: 'pedidos@celstore.com',
+        phone: formData.phone,
+        address: formData.address,
+        city: formData.city,
+        items: snapshotItems.map((it) => ({
+          name: it.name,
+          price: it.price,
+          qty: it.quantity,
+          color: it.color,
+          storage: it.storage,
+        })),
+        total,
+        subtotal,
+        paymentMethod: 'Coordinación Inmediata / MercadoPago',
+        securityHash: '8f9b4c2d7a1e0f3c5b8a9d1e2f4a6b8c7e9d0a1b2c3d4e5f',
+      };
+      try {
+        localStorage.setItem('celstore_last_order', JSON.stringify(createdOrder));
+      } catch (e) {
+        console.warn('localStorage error', e);
+      }
+
       clearCart();
     } catch (err) {
       console.warn('Checkout fallback simulation:', err);
       const fallbackCode = `ORD-${Date.now().toString(36).toUpperCase()}`;
       setOrderResult({ id: fallbackCode, total });
       setStep('success');
+
+      const fallbackOrder = {
+        orderId: fallbackCode,
+        date: now.toLocaleDateString('es-AR'),
+        time: now.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' }),
+        customerName: formData.name,
+        email: 'pedidos@celstore.com',
+        phone: formData.phone,
+        address: formData.address,
+        city: formData.city,
+        items: snapshotItems.map((it) => ({
+          name: it.name,
+          price: it.price,
+          qty: it.quantity,
+          color: it.color,
+          storage: it.storage,
+        })),
+        total,
+        subtotal,
+        paymentMethod: 'Coordinación Inmediata (Demo Offline)',
+        securityHash: '8f9b4c2d7a1e0f3c5b8a9d1e2f4a6b8c7e9d0a1b2c3d4e5f',
+      };
+      try {
+        localStorage.setItem('celstore_last_order', JSON.stringify(fallbackOrder));
+      } catch (e) {
+        console.warn('localStorage error', e);
+      }
+
       clearCart();
     } finally {
       setLoading(false);
@@ -132,34 +189,34 @@ export const CheckoutModal = () => {
     const orderTotal = total || orderResult?.total || 0;
     const arsEstimate = Math.round(orderTotal * 1350).toLocaleString('es-AR');
 
-    let msg = `🧾 *CELSTORE™ PRECISION // BOLETA DE CONTROL ELECTRÓNICA*\n`;
+    let msg = `[CELSTORE™ PRECISION // BOLETA DE CONTROL ELECTRÓNICA]\n`;
     msg += `═════════════════════════════════════\n`;
-    msg += `📄 *ORDEN FISCAL:* #${orderId}\n`;
-    msg += `📅 *FECHA/HORA:* ${orderTimestamp || new Date().toLocaleString('es-AR')}\n`;
-    msg += `🏢 *TERMINAL:* AR-ROS-BUE-POS-04 // CAEA-2026\n`;
+    msg += `• ORDEN FISCAL: #${orderId}\n`;
+    msg += `• FECHA/HORA: ${orderTimestamp || new Date().toLocaleString('es-AR')}\n`;
+    msg += `• TERMINAL: AR-ROS-BUE-POS-04 // CAEA-2026\n`;
     msg += `═════════════════════════════════════\n\n`;
-    msg += `👤 *TITULAR:* ${formData.name.toUpperCase()}\n`;
-    msg += `📱 *WHATSAPP:* ${formData.phone}\n`;
-    msg += `📍 *ENTREGA:* ${formData.address}, ${formData.city}\n`;
-    if (formData.notes) msg += `📝 *INSTRUCCIÓN:* ${formData.notes}\n`;
-    msg += `\n📦 *DETALLE DE HARDWARE ADQUIRIDO:*\n`;
+    msg += `• TITULAR: ${formData.name.toUpperCase()}\n`;
+    msg += `• WHATSAPP: ${formData.phone}\n`;
+    msg += `• ENTREGA: ${formData.address}, ${formData.city}\n`;
+    if (formData.notes) msg += `• INSTRUCCIÓN: ${formData.notes}\n`;
+    msg += `\n[DETALLE DE HARDWARE ADQUIRIDO]\n`;
 
     purchasedItems.forEach((item, idx) => {
       const storageTag = item.storage && item.storage !== 'Base' ? ` [${item.storage}]` : '';
       const colorTag = item.color ? ` (${item.color})` : '';
       msg += `${idx + 1}. *${item.name}*${storageTag}${colorTag}\n`;
-      msg += `   • Cantidad: ${item.quantity}u × $${item.price} USD = *$${item.price * item.quantity} USD*\n`;
+      msg += `   - Cantidad: ${item.quantity}u × $${item.price} USD = *$${item.price * item.quantity} USD*\n`;
     });
 
     msg += `\n─────────────────────────────────\n`;
-    msg += `💵 *SUBTOTAL NETO:* $${orderTotal} USD\n`;
-    msg += `🚚 *DESPACHO BLINDADO:* $0.00 USD (BONIFICADO)\n`;
-    msg += `🛡️ *SEGURO OFICIAL:* 24 MESES INCLUIDO\n`;
-    msg += `💰 *TOTAL CANÓNICO:* *$${orderTotal.toLocaleString()} USD*\n`;
-    msg += `🇦🇷 *REF. CAMBIARIA:* ~$${arsEstimate} ARS\n`;
+    msg += `• SUBTOTAL NETO: $${orderTotal} USD\n`;
+    msg += `• DESPACHO BLINDADO: $0.00 USD (BONIFICADO)\n`;
+    msg += `• SEGURO OFICIAL: 24 MESES INCLUIDO\n`;
+    msg += `• TOTAL CANÓNICO: *$${orderTotal.toLocaleString()} USD*\n`;
+    msg += `• REF. CAMBIARIA: ~$${arsEstimate} ARS\n`;
     msg += `─────────────────────────────────\n`;
-    msg += `🔐 *HASH SHA-256:* 8f9b4c2d7a1e0f3c5b8a9d1e2f4a6b8c\n`;
-    msg += `⚡ *ESTADO:* RESERVA ATÓMICA DE STOCK CONFIRMADA\n\n`;
+    msg += `• HASH SHA-256: 8f9b4c2d7a1e0f3c5b8a9d1e2f4a6b8c\n`;
+    msg += `• ESTADO: RESERVA ATÓMICA DE STOCK CONFIRMADA\n\n`;
     msg += `¡Hola! Acabo de registrar esta orden y emitir la boleta técnica en la web. ¿Me confirman recepción para coordinar despacho?`;
 
     const encoded = encodeURIComponent(msg);
@@ -425,6 +482,41 @@ export const CheckoutModal = () => {
 
               {/* Action Buttons Rack */}
               <div className="space-y-2 pt-1">
+                {/* Live Order Tracker Trigger */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    playCartSuccess();
+                    const orderToTrack = {
+                      orderId: orderResult?.id || `ORD-${Date.now().toString(36).toUpperCase()}`,
+                      date: new Date().toLocaleDateString('es-AR'),
+                      time: new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' }),
+                      customerName: formData.name,
+                      email: 'pedidos@celstore.com',
+                      phone: formData.phone,
+                      address: formData.address,
+                      city: formData.city,
+                      items: purchasedItems.map((it) => ({
+                        name: it.name,
+                        price: it.price,
+                        qty: it.quantity,
+                        color: it.color,
+                        storage: it.storage,
+                      })),
+                      total,
+                      subtotal,
+                      paymentMethod: 'Coordinación Inmediata / MercadoPago',
+                      securityHash: '8f9b4c2d7a1e0f3c5b8a9d1e2f4a6b8c7e9d0a1b2c3d4e5f',
+                    };
+                    handleClose();
+                    openTracking(orderToTrack);
+                  }}
+                  className="w-full py-3 bg-[#0066FF] hover:bg-[#0052cc] text-[#F5F5F7] font-mono font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer transition-all shadow-lg active:translate-y-[1px]"
+                >
+                  <Truck className="w-4 h-4" />
+                  <span>[ 🚚 VER RASTREO SATELITAL, EMAIL & GARANTÍA 24M ]</span>
+                </button>
+
                 {/* WhatsApp Button */}
                 <button
                   type="button"

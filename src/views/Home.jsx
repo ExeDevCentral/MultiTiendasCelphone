@@ -1,27 +1,28 @@
 'use client';
 
 import React from 'react';
+import { MessageCircle, ShieldCheck, Truck, Headphones } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 import { PrecisionHero } from '../components/PrecisionHero';
 import { PrecisionProductList } from '../components/PrecisionProductList';
-import { Truck, ShieldCheck, Activity, MessageCircle } from 'lucide-react';
 
-export const Home = ({ onNavigate, onOpenDetail, onOpen3DModal }) => {
-  const { products } = useStore();
+export const Home = ({ onOpenDetail, onOpen3DModal }) => {
+  const { filteredProducts, products: allProducts, open3DModal } = useStore();
 
-  // Find flagship or default
-  const flagshipProduct = products.find((p) => p.id === 'prod-iphone-16-pro-max') ||
+  const products = filteredProducts.length > 0 ? filteredProducts : allProducts;
+
+  // Flagship Hero Product
+  const flagshipProduct =
+    products.find((p) => p.name.includes('iPhone 16 Pro') || p.featured) ||
     products[0] || {
-      id: 'prod-iphone-16-pro-max',
+      id: 'flagship-default',
       name: 'iPhone 16 Pro Max',
       brand: 'Apple',
-      model: 'A3296',
-      price: 1399.0,
-      stock: 14,
-      description: 'Chasis de titanio Grado 5 forjado a alta presión. Arquitectura A18 Pro a 3nm y botón de control de cámara táctil.',
+      price: 1399,
+      description: 'Chasis de titanio de Grado 5 forjado a alta presión, chip A18 Pro a 3nm y cámara Fusion de 48MP.',
       specs: {
         ram: '8 GB LPDDR5X',
-        almacenamiento: '512 GB NVMe',
+        almacenamiento: '512 GB',
         camara: '48 MP Fusion (f/1.78) + 48 MP Ultra Wide + 12 MP 5x Telephoto',
         bateria: '4685 mAh (33h video)',
         procesador: 'Apple A18 Pro (3nm)',
@@ -33,71 +34,80 @@ export const Home = ({ onNavigate, onOpenDetail, onOpen3DModal }) => {
     };
 
   return (
-    <div className="w-full bg-[#0E0E10] text-[#F5F5F7] min-h-screen">
-      {/* 1. TOP DATASHEET STATUS BAR */}
-      <section className="bg-[#0A0A0C] border-b border-[#1A1A1D] px-4 sm:px-6 lg:px-8 py-2 text-[11px] font-mono text-[#71717A]">
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#0066FF] animate-pulse" />
-            <span className="text-[#F5F5F7] font-bold">CELSTORE // PRECISION HARDWARE STORE</span>
-            <span className="text-zinc-600">•</span>
-            <span className="text-[#71717A] hidden sm:inline">DESPACHO INMEDIATO CON SEGURO DE CARGA</span>
+    <div className="w-full bg-white dark:bg-black text-zinc-900 dark:text-zinc-100 min-h-screen transition-colors">
+      
+      {/* 1. HERO SECTION WITH DIRECT 3D PHONE */}
+      <PrecisionHero
+        flagshipProduct={flagshipProduct}
+        onOpen3D={onOpen3DModal || open3DModal}
+        onOpenDetail={onOpenDetail}
+      />
+
+      {/* 2. VALUE PROPOSITIONS STRIP */}
+      <section className="border-b border-zinc-200/80 dark:border-white/10 py-8 bg-[#F8F9FB] dark:bg-[#0A0A0D] transition-colors">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="flex items-center gap-4 p-4 rounded-2xl bg-white dark:bg-[#131418] border border-zinc-200/90 dark:border-white/10 shadow-xs">
+            <div className="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+              <Truck className="w-6 h-6" />
+            </div>
+            <div>
+              <h4 className="font-bold text-sm text-zinc-900 dark:text-white">Envío Asegurado</h4>
+              <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-0.5 font-medium">Despacho con seguro de carga a todo el país.</p>
+            </div>
           </div>
 
-          <div className="hidden md:flex items-center gap-6 text-[10px] tabular-nums">
-            <span className="flex items-center gap-1.5">
-              <Truck className="w-3.5 h-3.5 text-[#0066FF]" />
-              ENVÍO BLINDADO PRIORITARIO
-            </span>
-            <span className="flex items-center gap-1.5">
-              <ShieldCheck className="w-3.5 h-3.5 text-[#0066FF]" />
-              GARANTÍA OFICIAL 24 MESES
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Activity className="w-3.5 h-3.5 text-[#0066FF]" />
-              STOCK VERIFICADO EN VIVO
-            </span>
+          <div className="flex items-center gap-4 p-4 rounded-2xl bg-white dark:bg-[#131418] border border-zinc-200/90 dark:border-white/10 shadow-xs">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+              <ShieldCheck className="w-6 h-6" />
+            </div>
+            <div>
+              <h4 className="font-bold text-sm text-zinc-900 dark:text-white">Garantía Oficial 24M</h4>
+              <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-0.5 font-medium">Cobertura de fábrica y soporte de software.</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4 p-4 rounded-2xl bg-white dark:bg-[#131418] border border-zinc-200/90 dark:border-white/10 shadow-xs">
+            <div className="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+              <Headphones className="w-6 h-6" />
+            </div>
+            <div>
+              <h4 className="font-bold text-sm text-zinc-900 dark:text-white">Asesoría Personalizada</h4>
+              <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-0.5 font-medium">Atención uno a uno con especialistas en telefonía.</p>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* 2. PRECISION HERO (60% Viewport, 3/4 Angle Phone, Floating Specs) */}
-      <PrecisionHero
-        flagshipProduct={flagshipProduct}
-        onOpen3D={onOpen3DModal}
-        onOpenDetail={onOpenDetail}
-      />
-
-      {/* 3. ASYMMETRIC CATALOG GRID & FILTER SHEET */}
+      {/* 3. CATALOG GRID & FILTER */}
       <PrecisionProductList
         products={products}
         onSelectProduct={onOpenDetail}
       />
 
-      {/* 4. WHATSAPP COORDINATION BAR */}
-      <section className="border-t border-[#1A1A1D] bg-[#0A0A0C] py-12 px-4 sm:px-6">
-        <div className="max-w-3xl mx-auto text-center space-y-3 font-mono">
-          <span className="text-[10px] text-[#0066FF] font-bold uppercase tracking-wider block">
-            // PEDIDOS PERSONALIZADOS & COORDINACIÓN
+      {/* 4. APPLE-STYLE WHATSAPP CONCIERGE BANNER */}
+      <section className="border-t border-zinc-200/80 dark:border-white/10 py-16 px-4 sm:px-6 bg-[#F8F9FB] dark:bg-[#0A0A0D] transition-colors">
+        <div className="max-w-2xl mx-auto text-center space-y-4">
+          <span className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider block">
+            ATENCIÓN PERSONALIZADA
           </span>
           <h3
-            className="text-xl sm:text-2xl font-bold text-[#F5F5F7] uppercase"
-            style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+            className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-white"
+            style={{ fontFamily: "'Space Grotesk', -apple-system, sans-serif" }}
           >
-            ¿Querés consultar stock en tiempo real o coordinar envío?
+            ¿Querés consultar stock o coordinar tu entrega?
           </h3>
-          <p className="text-xs text-[#71717A] max-w-lg mx-auto font-sans leading-relaxed">
-            Atención directa vía WhatsApp Business con un asesor técnico. Realizá tu reserva de equipo y coordiná el método de entrega de forma personalizada.
+          <p className="text-sm sm:text-base text-zinc-700 dark:text-zinc-300 max-w-lg mx-auto leading-relaxed">
+            Nuestro equipo de asesores boutique está disponible para ayudarte a elegir tu equipo ideal y coordinar despacho inmediato.
           </p>
           <div className="pt-2">
             <a
               href="https://wa.me/5493416874786?text=Hola%2C%20quisiera%20consultar%20por%20un%20celular%20en%20CelStore"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-[#0066FF] hover:bg-[#0052cc] text-[#F5F5F7] font-mono font-bold text-xs uppercase transition-all shadow-sm cursor-pointer"
+              className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-semibold text-sm transition-all shadow-md cursor-pointer"
             >
-              <MessageCircle className="w-4 h-4 fill-current" />
-              <span>CONSULTAR POR WHATSAPP BUSINESS</span>
+              <MessageCircle className="w-5 h-5 fill-current" />
+              <span>Consultar por WhatsApp Business</span>
             </a>
           </div>
         </div>
