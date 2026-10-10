@@ -58,13 +58,59 @@ export const Navbar = ({ currentView, onNavigate }) => {
     }
   };
 
+  const scrollToCatalog = () => {
+    if (typeof window !== 'undefined') {
+      const elem = document.getElementById('catalog');
+      if (elem) {
+        elem.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        window.scrollTo({ top: 680, behavior: 'smooth' });
+      }
+    }
+  };
+
+  const handleLogoClick = () => {
+    playSubtleClick();
+    setGenerationFilter('all');
+    if (typeof window !== 'undefined' && window.location.pathname === '/') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      onNavigate('home');
+    }
+    setIsMobileMenuOpen(false);
+  };
+
   const handleNavClick = (view, genCategory = null) => {
     playSubtleClick();
     if (genCategory) {
       setGenerationFilter(genCategory);
+    } else if (view === 'home') {
+      setGenerationFilter('all');
     }
-    onNavigate(view);
+
+    if (view === 'home') {
+      if (typeof window !== 'undefined' && window.location.pathname === '/') {
+        scrollToCatalog();
+      } else {
+        onNavigate('home');
+        setTimeout(() => scrollToCatalog(), 200);
+      }
+    } else {
+      onNavigate(view);
+    }
     setIsMobileMenuOpen(false);
+  };
+
+  const handleSearchSubmit = () => {
+    setShowSearchModal(false);
+    if (typeof window !== 'undefined') {
+      if (window.location.pathname !== '/') {
+        onNavigate('home');
+      }
+      setTimeout(() => {
+        scrollToCatalog();
+      }, 150);
+    }
   };
 
   return (
@@ -93,7 +139,7 @@ export const Navbar = ({ currentView, onNavigate }) => {
           
           {/* Brand Logo */}
           <div
-            onClick={() => handleNavClick('home')}
+            onClick={handleLogoClick}
             className="flex items-center gap-2.5 cursor-pointer group"
           >
             <div className="w-8 h-8 rounded-xl bg-black dark:bg-white text-white dark:text-black flex items-center justify-center font-bold text-sm shadow-sm group-hover:scale-105 transition-transform">
@@ -109,15 +155,15 @@ export const Navbar = ({ currentView, onNavigate }) => {
             </div>
           </div>
 
-          {/* Clean Horizontal Links (No boxy beige buttons!) */}
-          <nav className="hidden lg:flex items-center gap-1 text-sm font-medium text-zinc-600 dark:text-zinc-300">
+          {/* Clean Horizontal Links with High Contrast & Clear Active Indicators */}
+          <nav className="hidden lg:flex items-center gap-1.5 text-sm font-semibold">
             <button
               type="button"
               onClick={() => handleNavClick('home')}
-              className={`px-3.5 py-1.5 rounded-full transition-all cursor-pointer ${
+              className={`px-4 py-1.5 rounded-full transition-all cursor-pointer ${
                 currentView === 'home' && generationFilter === 'all'
-                  ? 'bg-black/5 dark:bg-white/10 text-black dark:text-white font-semibold'
-                  : 'hover:text-black dark:hover:text-white'
+                  ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 shadow-sm'
+                  : 'text-zinc-600 dark:text-zinc-300 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
               }`}
             >
               Catálogo
@@ -126,10 +172,10 @@ export const Navbar = ({ currentView, onNavigate }) => {
             <button
               type="button"
               onClick={() => handleNavClick('home', 'last_2_years')}
-              className={`px-3.5 py-1.5 rounded-full transition-all cursor-pointer ${
-                generationFilter === 'last_2_years'
-                  ? 'bg-blue-600 text-white font-semibold shadow-sm'
-                  : 'hover:text-black dark:hover:text-white'
+              className={`px-4 py-1.5 rounded-full transition-all cursor-pointer ${
+                currentView === 'home' && generationFilter === 'last_2_years'
+                  ? 'bg-blue-600 text-white shadow-sm'
+                  : 'text-zinc-600 dark:text-zinc-300 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
               }`}
             >
               Flagships
@@ -138,10 +184,10 @@ export const Navbar = ({ currentView, onNavigate }) => {
             <button
               type="button"
               onClick={() => handleNavClick('home', 'vintage_classic')}
-              className={`px-3.5 py-1.5 rounded-full transition-all cursor-pointer ${
-                generationFilter === 'vintage_classic'
-                  ? 'bg-blue-600 text-white font-semibold shadow-sm'
-                  : 'hover:text-black dark:hover:text-white'
+              className={`px-4 py-1.5 rounded-full transition-all cursor-pointer ${
+                currentView === 'home' && generationFilter === 'vintage_classic'
+                  ? 'bg-blue-600 text-white shadow-sm'
+                  : 'text-zinc-600 dark:text-zinc-300 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
               }`}
             >
               Vintage Clásicos
@@ -150,10 +196,10 @@ export const Navbar = ({ currentView, onNavigate }) => {
             <button
               type="button"
               onClick={() => handleNavClick('accessories')}
-              className={`px-3.5 py-1.5 rounded-full transition-all cursor-pointer ${
+              className={`px-4 py-1.5 rounded-full transition-all cursor-pointer ${
                 currentView === 'accessories'
-                  ? 'bg-black/5 dark:bg-white/10 text-black dark:text-white font-semibold'
-                  : 'hover:text-black dark:hover:text-white'
+                  ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 shadow-sm'
+                  : 'text-zinc-600 dark:text-zinc-300 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
               }`}
             >
               Accesorios
@@ -162,10 +208,10 @@ export const Navbar = ({ currentView, onNavigate }) => {
             <button
               type="button"
               onClick={() => handleNavClick('store_selector')}
-              className={`px-3.5 py-1.5 rounded-full transition-all cursor-pointer ${
+              className={`px-4 py-1.5 rounded-full transition-all cursor-pointer ${
                 currentView === 'store_selector'
-                  ? 'bg-black/5 dark:bg-white/10 text-black dark:text-white font-semibold'
-                  : 'hover:text-black dark:hover:text-white'
+                  ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 shadow-sm'
+                  : 'text-zinc-600 dark:text-zinc-300 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
               }`}
             >
               Boutiques
@@ -401,6 +447,9 @@ export const Navbar = ({ currentView, onNavigate }) => {
                 placeholder="Buscar por modelo, marca o procesador (ej. iPhone 16, S24, A18)..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleSearchSubmit();
+                }}
                 autoFocus
                 className="w-full bg-transparent text-black dark:text-white placeholder-zinc-400 text-sm focus:outline-none"
               />
@@ -413,10 +462,10 @@ export const Navbar = ({ currentView, onNavigate }) => {
               </button>
             </div>
             <div className="text-xs text-zinc-500 flex justify-between">
-              <span>Búsqueda instantánea en vivo</span>
+              <span>Presioná Enter para buscar</span>
               <button
                 type="button"
-                onClick={() => setShowSearchModal(false)}
+                onClick={handleSearchSubmit}
                 className="text-blue-600 dark:text-blue-400 font-semibold hover:underline cursor-pointer"
               >
                 Ver todos los resultados →
