@@ -294,11 +294,19 @@ function PhoneChassis({
   );
 }
 
+/**
+ * @param {{
+ *   productName?: string;
+ *   activeColorHex?: string;
+ *   autoRotate?: boolean;
+ *   onResetView?: () => void;
+ * }} props
+ */
 export function RealPhone3DViewer({
   productName = 'iPhone 16 Pro Max',
   activeColorHex = '#c5a880',
   autoRotate = false,
-  onResetView,
+  onResetView = undefined,
 }) {
   const controlsRef = useRef();
 
