@@ -1,15 +1,27 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
+  poweredByHeader: false,
   transpilePackages: [
     'three',
     '@react-three/fiber',
     '@react-three/drei',
     'lucide-react',
     'lenis',
-    'framer-motion'
+    'framer-motion',
   ],
+  experimental: {
+    optimizePackageImports: [
+      'three',
+      '@react-three/fiber',
+      '@react-three/drei',
+      'lucide-react',
+      'framer-motion',
+      'lenis',
+    ],
+  },
   images: {
+    formats: ['image/avif', 'image/webp'],
     remotePatterns: [
       {
         protocol: 'https',
@@ -22,7 +34,7 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'replicate.delivery',
-      }
+      },
     ],
   },
   webpack: (config) => {

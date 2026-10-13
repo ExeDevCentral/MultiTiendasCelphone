@@ -18,11 +18,15 @@ export default function AdminDashboardPage() {
     else router.push('/');
   };
 
+  const handleAdminNavigate = (view, params = {}) => {
+    handleNavigate(view, params);
+  };
+
   return (
     <>
       <Navbar currentView="admin_dashboard" onNavigate={handleNavigate} />
       <main className="flex-1">
-        <AdminDashboard onNavigate={handleNavigate} />
+        <AdminDashboard onNavigate={handleAdminNavigate} />
       </main>
       <Footer onNavigate={handleNavigate} />
     </>
