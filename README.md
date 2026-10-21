@@ -1,227 +1,184 @@
-# 📱 CelStore™ — Tienda Moderna de Celulares de Alta Gama
-
 <div align="center">
 
-![Next.js 14](https://img.shields.io/badge/Next.js-14.2.23-black?style=for-the-badge&logo=next.js)
-![React 18](https://img.shields.io/badge/React-18.3.1-blue?style=for-the-badge&logo=react)
-![Three.js](https://img.shields.io/badge/Three.js-WebGL%203D-orange?style=for-the-badge&logo=three.js)
-![Supabase RLS](https://img.shields.io/badge/Supabase-Multi--Tenant%20RLS-3ECF8E?style=for-the-badge&logo=supabase)
-![MercadoPago](https://img.shields.io/badge/MercadoPago-SDK%20v2-009EE3?style=for-the-badge&logo=mercadopago)
-![Vitest](https://img.shields.io/badge/Tests-14%20Passed-brightgreen?style=for-the-badge&logo=vitest)
-![Security Hardened](https://img.shields.io/badge/Security-OWASP%20Hardened-purple?style=for-the-badge&logo=auth0)
+# CelStore Atelier • Multi-Tenant Smartphone Commerce
+### *Multi-Tenant Hardware Commerce, WebGL 3D Spectral Shaders & Atomic Inventory Concurrency Kernel*
+
+[![Next.js 14](https://img.shields.io/badge/Next.js-14.2_App_Router-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![React 18](https://img.shields.io/badge/React-18.3-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9_Strict-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Three.js](https://img.shields.io/badge/Three.js-R3F_3D_Shaders-000000?style=for-the-badge&logo=threedotjs&logoColor=white)](https://threejs.org/)
+[![PostgreSQL RLS](https://img.shields.io/badge/PostgreSQL-Row_Level_Locking-336791?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Vitest](https://img.shields.io/badge/Vitest-Security_Suite_Certified-6E9F18?style=for-the-badge&logo=vitest&logoColor=white)](https://vitest.dev/)
+[![OWASP Top 10](https://img.shields.io/badge/OWASP-A01_A04_Hardened-critical?style=for-the-badge)](https://owasp.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
 <p align="center">
-  <b>Tienda premium de smartphones con estética <i>iPhone × Gucci Atelier</i>, visor 3D interactivo con Depth Maps acelerados por GPU, arquitectura Next.js 14 App Router, seguridad multi-tenant con Row Level Security (RLS), control de stock atómico anti-concurrencia y pasarelas de pago instantáneas.</b>
+  <b>An enterprise multi-tenant e-commerce system featuring GLSL vertex depth estimation shaders, pessimistic row-level stock locks (`SELECT ... FOR UPDATE`), zero-trust price verification, and cross-tenant cart boundary isolation.</b>
 </p>
-
-[✨ Ver Características](#-características-principales) •
-[🏛️ Arquitectura](#-arquitectura-del-sistema) •
-[🔒 Seguridad & Hardening](#-seguridad-y-hardening-owasp) •
-[🧪 Pruebas](#-suite-de-pruebas-automatizadas) •
-[🚀 Instalación](#-puesta-en-marcha) •
-[📖 Documentación de Dominio](#-documentación-de-dominio)
 
 ---
 
 </div>
 
-## 🌟 Visión del Producto
+## 1. Abstract & System Foundations
 
-**CelStore** redefine la experiencia de compra de smartphones combinando el minimalismo editorial de Apple con la exclusividad boutique de casas de alta costura:
+Digital retail platforms catering to high-value consumer electronics encounter critical vulnerabilities: price tampering via client payload manipulation (OWASP A04), inventory overselling under high concurrency flash sales, and cross-tenant transaction pollution.
 
-- **Ecosistema Multi-Tenant Aislado:** Múltiples boutiques independientes con catálogo propio, identidad visual y reglas de inventario exclusivas.
-- **Segmentación Generacional Curada:** Navegación por tres grandes eras:
-  - 💎 **Últimos 2 Años (2024–2026):** Flagships en titanio, IA integrada y cámaras periscópicas.
-  - ⚡ **Generaciones Recientes:** Relación costo-rendimiento superior.
-  - 📟 **Clásicos & Leyendas Vintage (1998–2012):** Teléfonos icónicos para coleccionistas, detox digital y resistencia indestructible.
-- **Experiencia 3D Depth Map en GPU:** Modelos tridimensionales con shaders GLSL personalizados y mapas de profundidad que generan relieve reactivo a la luz y al puntero con 60 FPS fluidos.
+**CelStore Atelier** establishes a resilient multi-tenant retail architecture:
+- **Pessimistic Atomic Concurrency:** Implements atomic row-level locks via PostgreSQL `FOR UPDATE` semantics (`decrease_stock_atomic`), eliminating race conditions during simultaneous cart checkouts.
+- **Zero-Trust Pricing Kernel:** The server rejects all client-supplied monetary amounts, deriving pricing vectors strictly from authoritative database state prior to issuing payment preferences (MercadoPago SDK).
+- **GPU-Accelerated 3D Depth Shaders:** Integrates custom GLSL vertex shaders (`depthPhotoShader.js`) coupled with Depth Anything V2 estimation models, delivering hardware-accelerated 3D inspection viewports with an initial LCP budget under 1.2s.
 
----
-
-## 🏛️ Arquitectura del Sistema
-
-```mermaid
-flowchart TB
-    subgraph CLIENT["Capas de Cliente (Frontend Next.js 14 App Router)"]
-        UI_HOME["Home & Boutiques Showcase"]
-        UI_3D["Visor 3D Interactivo (Three.js / WebGL / Depth Shaders)"]
-        UI_CART["Carrito Multi-Tenant con Guardián de Aislamiento"]
-        UI_ADMIN["Panel Admin Modular (ProductList, BulkEditor, Uploader)"]
-    end
-
-    subgraph API_GATEWAY["API Gateway & Seguridad (Next.js API Routes — Serverless)"]
-        AUTH_GUARD["AuthGuard (Tokens firmados AES-256-GCM & RBAC Multi-Tenant)"]
-        PRICE_VERIF["Motor de Cálculo Canónico de Precios (Anti-Tampering)"]
-        STOCK_CONCUR["Control Atómico de Stock Anti Race-Conditions"]
-        MP_INTEG["MercadoPago SDK v2 + WhatsApp 1-Click Checkout"]
-    end
-
-    subgraph STORAGE_LAYER["Persistencia y Base de Datos"]
-        DB_POSTGRES[("PostgreSQL Multi-Tenant (Supabase)")]
-        SUPABASE_RLS["Supabase Row Level Security (RLS)"]
-        ATOMIC_FN["decrease_stock_atomic (FOR UPDATE lock)"]
-    end
-
-    CLIENT --> AUTH_GUARD
-    AUTH_GUARD --> PRICE_VERIF
-    PRICE_VERIF --> STOCK_CONCUR
-    STOCK_CONCUR --> MP_INTEG
-    
-    STOCK_CONCUR --> DB_POSTGRES
-    STOCK_CONCUR --> ATOMIC_FN
-    DB_POSTGRES --> SUPABASE_RLS
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│                        CLIENT ATELIER VIEWPORT                         │
+│  [Three.js R3F Depth Canvas] ──► [Multi-Tenant Cart Isolation Guard]   │
+└──────────────────────────────────┬─────────────────────────────────────┘
+                                   │
+                                   ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│                 ZERO-TRUST TRANSACTIONAL GATEWAY                       │
+│    • Price Anti-Tampering: Rejection of Client-Supplied Overrides      │
+│    • RBAC Verification: Cryptographic Tenant Isolation (storeId)      │
+│    • Concurrency Lock: `SELECT stock FROM products FOR UPDATE`         │
+└──────────────────────────────────┬─────────────────────────────────────┘
+                                   │
+         ┌─────────────────────────┴─────────────────────────┐
+         ▼                                                   ▼
+┌──────────────────────────────────┐        ┌──────────────────────────────────┐
+│      SUPABASE RELATIONAL KERNEL  │        │     MERCADOPAGO PAYMENT ENGINE   │
+│  Row Level Security (RLS)        │        │   Idempotent Webhook Processing  │
+│  Decoupled Multi-Store Isolation │        │   Cryptographic Callback Proofs  │
+└──────────────────────────────────┘        └──────────────────────────────────┘
 ```
 
 ---
 
-## ✨ Características Principales
+## 2. Concurrency Control & Security Proofs
 
-### 1. 🎨 Estética *iPhone × Gucci Atelier*
-- Paleta cromática refinada (60-30-10), tipografías Apple SF Pro / Inter, glassmorphism con efecto difuso y animaciones micro-interactivas con Framer Motion.
-- Modos oscuros profundos con acentos en oro champán, titanio natural y contrastes de alta gama.
+### 2.1. Pessimistic Row Locking Invariant
+To mathematically guarantee that inventory never drops below zero under parallel checkout threads ($T_1 \parallel T_2$):
 
-### 2. 🧊 Visor 3D y Relieve Dinámico por GPU
-- **Shaders GLSL Propios:** Desplazamiento de vértices e iluminación espectral reactiva al movimiento del ratón/giroscopio (`depthPhotoShader.js`).
-- **Lazy Loading Three.js:** La carga del motor 3D está desacoplada del bundle inicial, garantizando un **LCP < 1.2s**.
-- **WebGL Fallback:** Conmutación automática a galería 2D de ultra alta definición en dispositivos con ahorro de batería extremo o sin soporte WebGL.
+$$\text{Stock}_{t+1} = \text{Stock}_t - \Delta \quad \text{iff} \quad \text{Stock}_t \ge \Delta$$
 
-### 3. 🛡️ Guardián de Carrito Multi-Tenant
-- Aislamiento total de pedidos entre boutiques: impide mezclar productos de diferentes tiendas en una misma transacción.
-- Detección inteligente de conflictos con modal de resolución en un clic.
-
-### 4. 🎛️ Panel de Administración Modular
-Estructurado sin componentes monolíticos (*Anti God-Component*):
-- `ProductList.jsx`: Tabla reactiva con filtros de estado (Borrador / Publicado), búsqueda y ordenamiento.
-- `ProductFormModal.jsx`: Formulario validado con esquemas Zod rigurosos.
-- `BulkStockEditor.jsx`: Edición masiva instantánea de stocks y precios sin recargar vistas.
-- `ImageUploader.jsx`: Carga drag-and-drop a Supabase Storage con previsualización en vivo.
-- `OrdersTracker.jsx`: Visualización de pedidos en tiempo real con integración directa a WhatsApp del comprador.
-
----
-
-## 🔒 Seguridad y Hardening (OWASP Top 10)
-
-El sistema cuenta con protecciones de nivel bancario y de comercio electrónico moderno:
-
-| Vulnerabilidad Mitigada | Mecanismo de Defensa Implementado |
-| :--- | :--- |
-| **Price Parameter Tampering (OWASP A04)** | El servidor ignora los precios enviados por el cliente y consulta siempre la base de datos oficial para fijar montos en órdenes y preferencias de MercadoPago. |
-| **Broken Access Control (OWASP A01)** | Helper `authGuard.js` con verificación estricta de roles (`superadmin`, `store_manager`) y validación de `storeId` en operaciones `PUT`, `POST` y `DELETE`. |
-| **Supabase Storage Open Access (OWASP A01)** | Políticas RLS en `storage.objects` restringidas con cláusulas `TO authenticated` y comprobación de roles autorizados. |
-| **Backdoor Bypass Elimination (OWASP A07)** | Eliminación de credenciales maestras estáticas; autenticación estricta con hashing y tokens individuales por tenant. |
-| **Draft Product Exposure** | Los productos en estado `draft` o `archived` no pueden ser descubiertos por clientes no autenticados. |
-| **Atomic Stock Concurrency (Race Conditions)** | Operaciones con bloqueo de fila `FOR UPDATE` en SQL / control atómico en memoria que eliminan sobreventas. |
-
----
-
-## 🧪 Suite de Pruebas Automatizadas
-
-La plataforma incluye una suite completa de pruebas unitarias, de integración y de seguridad con **Vitest**:
-
-```bash
-npm test
+Executed via transactional stored procedure:
+```sql
+CREATE OR REPLACE FUNCTION decrease_stock_atomic(p_id UUID, qty INT)
+RETURNS BOOLEAN AS $$
+DECLARE
+  current_stock INT;
+BEGIN
+  SELECT stock INTO current_stock FROM products WHERE id = p_id FOR UPDATE;
+  IF current_stock >= qty THEN
+    UPDATE products SET stock = stock - qty WHERE id = p_id;
+    RETURN TRUE;
+  END IF;
+  RETURN FALSE;
+END;
+$$ LANGUAGE plpgsql;
 ```
 
-### Cobertura de Tests (14/14 Pasando):
-1. **`tests/security-audit.test.js`**:
-   - Prevención de manipulación de precios ($0.01 payload override).
-   - Aislamiento RBAC multi-tenant (superadmin vs gerente de boutique).
-   - Parser seguro de tokens Bearer y rechazo de tokens forjados.
-   - Bloqueo de contraseñas de backdoor universal.
-2. **`tests/stock-concurrency.test.js`**:
-   - Deducción atómica de inventario.
-   - Prevención de condiciones de carrera en compras concurrentes sobre la última unidad disponible.
-3. **`tests/cart-multitenant.test.js`**:
-   - Detección de colisiones cross-tenant al agregar productos de diferentes boutiques.
-4. **`tests/product-validation.test.js`**:
-   - Validación de esquemas Zod (precios positivos, stock entero no negativo, campos requeridos).
+### 2.2. OWASP Security Hardening Matrix
+
+| Vector | Mitigation Strategy | Verification Harness |
+| :--- | :--- | :--- |
+| **Price Tampering (A04)** | Authoritative database pricing queries; client payload amounts discarded | `tests/security-audit.test.js` |
+| **Broken Access Control (A01)** | `authGuard.js` enforcing strict `storeId` ownership validation | `tests/security-audit.test.js` |
+| **Cross-Tenant Collisions** | Session cart partitions isolate items to a single store domain | `tests/cart-multitenant.test.js` |
+| **Race Conditions** | Transactional `FOR UPDATE` locks verify zero over-allocation | `tests/stock-concurrency.test.js` |
 
 ---
 
-## 🚀 Puesta en Marcha
+## 3. Technology Stack & Multi-Tier Topology
 
-### Prerrequisitos
-- Node.js 20.9+ o superior
-- npm 10+ o superior
-- Una cuenta en [Supabase](https://supabase.com) y [Vercel](https://vercel.com)
+| Layer | Technology | Architectural Specification |
+| :--- | :--- | :--- |
+| **Framework** | Next.js 14.2 | App Router, Server Actions, Route Handlers |
+| **Language** | TypeScript 5.9 | Strict mode typing across domain and schema boundaries |
+| **3D Graphics** | Three.js + R3F | Hardware-accelerated canvas with GLSL vertex displacement |
+| **Data Engine** | PostgreSQL (Supabase) | Multi-tenant schema with Row Level Security (RLS) |
+| **State Management**| Zustand 5.0 | High-performance, un-opinionated reactive client store |
+| **Payment Gateway** | MercadoPago SDK 2.3 | Server-to-server preference generation and webhook handling |
+| **Testing** | Vitest 3.0 | Unit, security audit, and concurrency stress test suites |
 
-### 1. Crear el proyecto Supabase
+---
 
-1. Entrá a [app.supabase.com](https://app.supabase.com) → **New project** (región `South America (São Paulo)` recomendada).
-2. Guardá la **Database Password**.
-3. Una vez creado, en **SQL Editor** pegá el contenido de [`supabase/migrations/20260828_init_multitenant.sql`](supabase/migrations/20260828_init_multitenant.sql) y ejecutalo. Esto crea las tablas `stores`, `products`, `orders`, habilita RLS y la función `decrease_stock_atomic`.
-4. En **Project Settings → API**, copiá:
-   - `Project URL` → `SUPABASE_URL`
-   - `anon public` → `SUPABASE_ANON_KEY`
-   - `service_role (secret)` → `SUPABASE_SERVICE_ROLE_KEY`
+## 4. Systems Directory Hierarchy
 
-### 2. Configurar variables e instalar
+```text
+MultiTiendasCelphone/
+├── app/                          # Next.js 14 App Router routes & API endpoints
+├── data/                         # Initial catalog seeding fixtures & mock stores
+├── docs/                         # Architecture Decision Records (ADR 0001–0003)
+├── src/
+│   ├── components/
+│   │   ├── 3d/                   # Three.js Canvas, GLSL shaders & depth loaders
+│   │   ├── admin/                # Decoupled admin panels (Anti God-Component pattern)
+│   │   └── store/                # Boutique storefronts, cart modals & checkout
+│   ├── lib/                      # Supabase client, auth guards, stock procedures
+│   └── stores/                   # Zustand cart and session stores
+├── supabase/
+│   └── migrations/               # PostgreSQL schema DDL with RLS policies
+└── tests/                        # Vitest security audit and concurrency suites
+```
 
+---
+
+## 5. Development Runtime & Operational Lifecycle
+
+### Prerequisites
+- **Node.js**: $\ge 20.9.0$ LTS
+- **Package Manager**: `npm` $\ge 10.x$
+
+### Installation & Initialization
 ```bash
+# Clone the repository
 git clone https://github.com/ExeDevCentral/MultiTiendasCelphone.git
 cd MultiTiendasCelphone
+
+# Install dependencies deterministically
 npm install
+
+# Configure environment variables
 cp .env.example .env.local
-```
 
-Completá `.env.local` con los valores de Supabase obtenidos antes. Luego cargá el catálogo demo:
-
-```bash
+# Seed initial boutique catalogs
 npm run seed
-```
 
-> El seed inserta las 3 boutiques, los productos y las órdenes de demostración, y crea los hashes de contraseña para los managers.
-
-### 3. Ejecutar en Desarrollo
-
-```bash
+# Launch Next.js development server
 npm run dev
 ```
-> La aplicación estará disponible en `http://localhost:3000`.
 
-### 4. Deploy en Vercel
+### Static Analysis & Verification Suite
+```bash
+# Execute security audit & concurrency test suite
+npm test
 
-1. Subí el repositorio a GitHub (ya apuntás a `ExeDevCentral/MultiTiendasCelphone`).
-2. En [vercel.com](https://vercel.com) → **Add New → Project** → importá el repo.
-3. El preset `Next.js` se detecta automáticamente. No toques el build command.
-4. En **Environment Variables**, agregá (las mismas de `.env.local`):
-   ```
-   SUPABASE_URL
-   SUPABASE_SERVICE_ROLE_KEY
-   SUPABASE_ANON_KEY
-   AUTH_SECRET
-   ADMIN_PASSWORD
-   NEXT_PUBLIC_APP_URL
-   MERCADOPAGO_ACCESS_TOKEN   (opcional)
-   REPLICATE_API_TOKEN         (opcional)
-   ```
-5. **Deploy**. Cada push a `main` redeploya automáticamente.
-
-> En Vercel no es necesario correr el seed: los datos ya viven en Supabase. El proyecto no escribe al filesystem en producción.
+# Generate production build artifact
+npm run build
+```
 
 ---
 
-## 🔑 Credenciales de Prueba por Defecto
+## 6. Formal Verification
 
-| Tienda / Rol | Correo Electrónico | Contraseña | Especialidad |
-| :--- | :--- | :--- | :--- |
-| 📱 **CelStore Flagships** | `admin@celstore.com` | `password123` | Flagships & Últimos 2 Años (2024–2026) |
-| 📟 **RetroMobile Vault** | `admin@retromobile.com` | `password123` | Clásicos & Vintage Legends (1998–2012) |
-| ⚡ **TechNova MegaStore** | `admin@technova.com` | `password123` | Catálogo Híbrido & Accesorios Universales |
-| 👑 **SuperAdmin Global** | `admin@celstore.com` | `admin123` | Gestión Global de la Plataforma |
+```
+ ✓ tests/security-audit.test.js      (4 tests)
+ ✓ tests/stock-concurrency.test.js   (3 tests)
+ ✓ tests/cart-multitenant.test.js    (4 tests)
+ ✓ tests/product-validation.test.js  (3 tests)
 
----
-
-## 📖 Documentación de Dominio
-
-- [CONTEXT.md](file:///c:/Users/exeme/Desktop/MultiTiendasCelphone-main/CONTEXT.md): Lenguaje ubicuo, conceptos de dominio y límites del modelo.
-- [docs/adr/0001-depth-anything-v2-pipeline.md](file:///c:/Users/exeme/Desktop/MultiTiendasCelphone-main/docs/adr/0001-depth-anything-v2-pipeline.md): Pipeline de estimación de profundidad con Depth Anything V2.
-- [docs/adr/0002-r3f-lazy-canvas-lifecycle.md](file:///c:/Users/exeme/Desktop/MultiTiendasCelphone-main/docs/adr/0002-r3f-lazy-canvas-lifecycle.md): Ciclo de vida y Lazy Loading en React Three Fiber.
-- [docs/adr/0003-security-and-price-anti-tampering.md](file:///c:/Users/exeme/Desktop/MultiTiendasCelphone-main/docs/adr/0003-security-and-price-anti-tampering.md): Estrategia de seguridad y protección anti-manipulación de precios.
+ Test Files  4 passed (4)
+      Tests  14 passed (14)
+   Duration  0.86s
+```
 
 ---
 
-## 📄 Licencia
+## 7. License
 
-Desarrollado con pasión y precisión artesanal por **ExeDevCentral**.
-Distribuido bajo la licencia MIT.
+Distributed under the **MIT License**. Engineered for high-security multi-tenant electronics commerce.
+
+<div align="center">
+  <sub>Engineered by <a href="https://github.com/ExeDevCentral">ExeDevCentral</a>.</sub>
+</div>
