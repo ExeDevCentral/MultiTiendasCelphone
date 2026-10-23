@@ -126,3 +126,30 @@
     background-color: rgba(255, 255, 255, 0.18);
   }
 }
+/* Mobile Apple Store Catalog Responsive */
+@media (max-width: 768px) {
+  .product-catalog-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+  }
+  .btn-apple-primary, .btn-apple-secondary {
+    min-height: 48px;
+    width: 100%;
+    font-size: 0.95rem;
+  }
+  .catalog-hero h1 {
+    font-size: clamp(1.8rem, 6vw, 2.5rem) !important;
+  }
+  .sticky-cart-bar {
+    padding-bottom: env(safe-area-inset-bottom, 12px);
+  }
+}
+
+@media (max-width: 480px) {
+  .product-catalog-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .product-card {
+    padding: 14px 12px !important;
+  }
+}
