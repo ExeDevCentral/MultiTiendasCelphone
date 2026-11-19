@@ -173,6 +173,9 @@ npm run build
    Duration  0.86s
 ```
 
+### Mobile Boutique Ergonomics (`< 768px`)
+- **Minimalist Mobile Bottom Dock**: De-clutters the mobile top bar and provides a 5-action thumb-zone dock (`Catálogo`, `Buscar`, `Carrito`, `Boutiques`, `Rastreo`) with live cart badge and `pb-24` clearance so 3D previews and product cards never overlap.
+
 ---
 
 ## 7. License
@@ -183,4 +186,4 @@ Distributed under the **MIT License**. Engineered for high-security multi-tenant
   <sub>Engineered by <a href="https://github.com/ExeDevCentral">ExeDevCentral</a>.</sub>
 </div>
 
-<!-- ExeDevCentral Audit & Quality Stamp: 2026-11-14 (Phase 10/10) -->
+<!-- ExeDevCentral Audit & Quality Stamp: 2026-11-19 (Mobile UX & Zero-Overlap Verification) -->
