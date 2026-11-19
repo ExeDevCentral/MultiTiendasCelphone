@@ -40,7 +40,7 @@ export default function RootLayout({ children }) {
             <CartProvider>
               <AuthProvider>
                 <SmoothScroll>
-                  <div className="min-h-screen flex flex-col overflow-x-hidden relative">
+                  <div className="min-h-screen flex flex-col overflow-x-hidden relative pb-24 md:pb-0">
                     <GoldParticles />
                     {children}
                     <CartDrawer />

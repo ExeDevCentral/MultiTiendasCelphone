@@ -219,7 +219,7 @@ export const Navbar = ({ currentView, onNavigate }) => {
           </nav>
 
           {/* Right Action Rack */}
-          <div className="flex items-center gap-2 sm:gap-2.5">
+          <div className="flex items-center gap-1.5 sm:gap-2.5">
             {/* Search Key */}
             <button
               type="button"
@@ -227,10 +227,11 @@ export const Navbar = ({ currentView, onNavigate }) => {
                 playSubtleClick();
                 setShowSearchModal(true);
               }}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-zinc-600 dark:text-zinc-300 text-xs sm:text-sm font-medium transition-all cursor-pointer"
+              className="flex items-center gap-2 px-2.5 sm:px-3 py-1.5 rounded-full bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-zinc-600 dark:text-zinc-300 text-xs sm:text-sm font-medium transition-all cursor-pointer"
               title="Buscar en inventario"
+              aria-label="Buscar en catálogo"
             >
-              <Search className="w-3.5 h-3.5 text-zinc-500" />
+              <Search className="w-4 h-4 sm:w-3.5 sm:h-3.5 text-zinc-500" />
               <span className="hidden sm:inline">Buscar</span>
               <span className="hidden sm:inline text-xs text-zinc-400 font-mono">⌘K</span>
             </button>
@@ -243,15 +244,15 @@ export const Navbar = ({ currentView, onNavigate }) => {
                   playSubtleClick();
                   setIsCompareOpen(true);
                 }}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 text-xs font-semibold cursor-pointer"
+                className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 text-xs font-semibold cursor-pointer"
               >
                 <Scale className="w-3.5 h-3.5" />
                 <span>{comparedProducts.length}</span>
               </button>
             )}
 
-            {/* Boutique Dropdown Selector */}
-            <div className="relative">
+            {/* Boutique Dropdown Selector (Desktop >= md; en celular vive en el dock inferior) */}
+            <div className="relative hidden md:block">
               <button
                 type="button"
                 onClick={() => {
@@ -304,14 +305,14 @@ export const Navbar = ({ currentView, onNavigate }) => {
               )}
             </div>
 
-            {/* Live Order Tracker Trigger */}
+            {/* Live Order Tracker Trigger (Desktop >= md; en celular vive en el dock inferior) */}
             <button
               type="button"
               onClick={() => {
                 playSubtleClick();
                 openTracking();
               }}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-zinc-700 dark:text-zinc-200 text-xs sm:text-sm font-medium transition-all cursor-pointer"
+              className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-zinc-700 dark:text-zinc-200 text-xs sm:text-sm font-medium transition-all cursor-pointer"
               title="Rastrear pedido en vivo"
             >
               <Compass className="w-4 h-4 text-blue-600 dark:text-blue-400" />
@@ -474,6 +475,83 @@ export const Navbar = ({ currentView, onNavigate }) => {
           </div>
         </div>
       )}
+
+      {/* Mobile Only Ergonomic Bottom Dock (< md) — Minimalista, bien espaciado, sin superponerse */}
+      <nav
+        aria-label="Navegación rápida móvil de CelStore"
+        className="md:hidden fixed bottom-3 inset-x-3 z-40 select-none pb-[env(safe-area-inset-bottom)]"
+      >
+        <div className="mx-auto max-w-md rounded-2xl border border-black/10 dark:border-white/15 bg-white/95 dark:bg-[#0e0e11]/95 backdrop-blur-2xl shadow-[0_14px_36px_rgba(0,0,0,0.45)] p-1.5 grid grid-cols-5 items-center gap-1">
+          <button
+            type="button"
+            onClick={() => handleNavClick('home')}
+            className={`flex flex-col items-center justify-center py-1.5 rounded-xl transition-all cursor-pointer ${
+              currentView === 'home' && generationFilter === 'all'
+                ? 'bg-blue-600/12 text-blue-600 dark:text-blue-400 font-bold'
+                : 'text-zinc-600 dark:text-zinc-400'
+            }`}
+          >
+            <Tag className="w-4 h-4" />
+            <span className="text-[10px] font-semibold mt-1 leading-none">Catálogo</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              playSubtleClick();
+              setShowSearchModal(true);
+            }}
+            className="flex flex-col items-center justify-center py-1.5 rounded-xl text-zinc-600 dark:text-zinc-400 active:scale-95 transition-all cursor-pointer"
+          >
+            <Search className="w-4 h-4" />
+            <span className="text-[10px] font-semibold mt-1 leading-none">Buscar</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              playSubtleClick();
+              setIsCartOpen(true);
+            }}
+            className="relative flex flex-col items-center justify-center py-1.5 rounded-xl bg-blue-600 text-white font-bold shadow-sm active:scale-95 transition-all cursor-pointer"
+          >
+            <div className="relative flex items-center gap-1">
+              <ShoppingBag className="w-4 h-4" />
+              {itemCount > 0 && (
+                <span className="px-1 py-0.2 rounded-full bg-white text-blue-600 text-[9px] font-extrabold tabular-nums">
+                  {itemCount}
+                </span>
+              )}
+            </div>
+            <span className="text-[10px] font-bold mt-1 leading-none">Carrito</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handleNavClick('store_selector')}
+            className={`flex flex-col items-center justify-center py-1.5 rounded-xl transition-all cursor-pointer ${
+              currentView === 'store_selector'
+                ? 'bg-blue-600/12 text-blue-600 dark:text-blue-400 font-bold'
+                : 'text-zinc-600 dark:text-zinc-400'
+            }`}
+          >
+            <Store className="w-4 h-4" />
+            <span className="text-[10px] font-semibold mt-1 leading-none">Boutiques</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              playSubtleClick();
+              openTracking();
+            }}
+            className="flex flex-col items-center justify-center py-1.5 rounded-xl text-zinc-600 dark:text-zinc-400 active:scale-95 transition-all cursor-pointer"
+          >
+            <Compass className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+            <span className="text-[10px] font-semibold mt-1 leading-none">Rastreo</span>
+          </button>
+        </div>
+      </nav>
     </>
   );
 };
