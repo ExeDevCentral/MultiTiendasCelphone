@@ -29,3 +29,7 @@ out
 .env
 .env.*
 !.env.example
+
+# Local environment and build artifacts
+coverage/
+.vercel/

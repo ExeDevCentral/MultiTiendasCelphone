@@ -61,5 +61,11 @@
     "tailwindcss": "^4.0.0",
     "typescript": "^5.9.3",
     "vitest": "^3.0.7"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ExeDevCentral/MultiTiendasCelphone.git"
+  },
+  "homepage": "https://multi-tiendas-celphone.vercel.app",
+  "license": "MIT"
 }
